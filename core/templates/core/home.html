@@ -1,0 +1,120 @@
+{% extends 'core/base.html' %}
+{% load embed_video_tags %}
+
+{% block title %}Network Hub{% endblock %}
+
+{% block content %}
+
+<div style="margin-top: 40px;">
+
+    <div class="shelf-section">
+        <h2 class="retro-font shelf-title" style="color: var(--accent);">New Videos</h2>
+        <div class="shelf-grid">
+            {% for video in new_videos %}
+                <div class="video-card">
+                    <div class="video-thumb-container">
+                         {% video video.url '100% x 100%' %}
+                    </div>
+                    <div style="padding: 10px; font-size: 0.8rem; color: #fff;">
+                        <span style="color: var(--primary); font-size: 0.7rem; display: block; margin-bottom: 4px;">
+                            {{ video.get_channel_display }}
+                        </span>
+                        {{ video.title }}
+                    </div>
+                </div>
+            {% empty %}
+                <p>No videos available.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="shelf-section">
+        <h2 class="retro-font shelf-title" style="color: var(--primary);">Recent Acquisitions</h2>
+        <div class="shelf-grid">
+            {% for item in recent_acquisitions %}
+                <div class="card">
+                    {% if item.kind == 'game' %}
+                        <a href="{% url 'library:game_detail' item.slug %}">
+                            {% if item.box_art %}
+                                <img src="{{ item.box_art.url }}" alt="{{ item.title }}" style="width: 100%; display: block;">
+                            {% else %}
+                                <div style="height: 250px; background: #222; display: flex; align-items: center; justify-content: center; color: #666;">No Art</div>
+                            {% endif %}
+                        </a>
+                        <div class="card-title">{{ item.title }}</div>
+                        <div class="card-meta">Game</div>
+                    {% else %}
+                        <a href="{% url 'hardware:hardware_detail' item.slug %}"> {% if item.image %}
+                                <img src="{{ item.image.url }}" alt="{{ item.name }}" style="width: 100%; display: block;">
+                            {% else %}
+                                <div style="height: 250px; background: #222; display: flex; align-items: center; justify-content: center; color: #666;">No Image</div>
+                            {% endif %}
+                        </a>
+                        <div class="card-title">{{ item.name }}</div>
+                        <div class="card-meta">Hardware</div>
+                    {% endif %}
+                </div>
+            {% empty %}
+                <p>The collection is empty.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="shelf-section">
+        <h2 class="retro-font shelf-title" style="color: #fff;">Recently Updated</h2>
+        <div class="shelf-grid">
+            {% for item in recently_updated %}
+                <div class="card">
+                     {% if item.kind == 'game' %}
+                        <a href="{% url 'library:game_detail' item.slug %}">
+                            {% if item.box_art %}
+                                <img src="{{ item.box_art.url }}" alt="{{ item.title }}" style="width: 100%; display: block;">
+                            {% else %}
+                                <div style="height: 250px; background: #222; display: flex; align-items: center; justify-content: center; color: #666;">No Art</div>
+                            {% endif %}
+                        </a>
+                        <div class="card-title">
+                            <span style="color: var(--secondary); font-size: 0.7rem; display: block;">UPDATED</span>
+                            {{ item.title }}
+                        </div>
+                    {% else %}
+                        <a href="{% url 'hardware:hardware_detail' item.slug %}">
+                            {% if item.image %}
+                                <img src="{{ item.image.url }}" alt="{{ item.name }}" style="width: 100%; display: block;">
+                            {% else %}
+                                <div style="height: 250px; background: #222; display: flex; align-items: center; justify-content: center; color: #666;">No Image</div>
+                            {% endif %}
+                        </a>
+                        <div class="card-title">
+                            <span style="color: var(--secondary); font-size: 0.7rem; display: block;">UPDATED</span>
+                            {{ item.name }}
+                        </div>
+                    {% endif %}
+                </div>
+            {% empty %}
+                <p>No updates found.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+
+<style>
+    /* Fix the video scanlines by forcing the video on top */
+    .video-thumb-container {
+        position: relative;
+        padding-bottom: 56.25%;
+        height: 0;
+        overflow: hidden;
+        z-index: 1000; /* <--- THIS REMOVES THE SCANLINES FROM THE VIDEO */
+    }
+    .video-thumb-container iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+</style>
+
+{% endblock %}

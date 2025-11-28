@@ -1,0 +1,25 @@
+{% extends 'core/base.html' %}
+{% block title %}Hardware Database{% endblock %}
+
+{% block content %}
+    <h1 class="retro-font">Hardware Vault</h1>
+
+    <div class="grid">
+        {% for item in items %}
+            <div class="card">
+                <a href="{% url 'hardware:hardware_detail' item.slug %}">
+                    {% if item.image %}
+                        <img src="{{ item.image.url }}" alt="{{ item.name }}">
+                    {% else %}
+                        <div style="height: 250px; background: #222; display: flex; align-items: center; justify-content: center;">No Image</div>
+                    {% endif %}
+                </a>
+
+                <div class="card-title">{{ item.name }}</div>
+                <div class="card-meta">{{ item.manufacturer }}</div>
+            </div>
+        {% empty %}
+            <p>The vault is empty.</p>
+        {% endfor %}
+    </div>
+{% endblock %}

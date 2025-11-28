@@ -1,0 +1,28 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Library{% endblock %}
+
+{% block content %}
+    <h1 class="retro-font">Game Library</h1>
+
+    <div class="grid">
+        {% for game in games %}
+            <div class="card">
+                <a href="{% url 'library:game_detail' game.slug %}">                    {% if game.box_art %}
+                        <img src="{{ game.box_art.url }}" alt="{{ game.title }}">
+                    {% else %}
+                        <div style="height: 280px; background: #000; display: flex; align-items: center; justify-content: center; color: #555;">NO ART</div>
+                    {% endif %}
+                </a>
+
+                <div class="card-title">{{ game.title }}</div>
+                <div class="card-meta">
+                    <span>{{ game.platform.name }}</span>
+                    <span style="color: var(--secondary);">{{ game.get_condition_display }}</span>
+                </div>
+            </div>
+        {% empty %}
+            <p>The archives are incomplete...</p>
+        {% endfor %}
+    </div>
+{% endblock %}

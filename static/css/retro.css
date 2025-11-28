@@ -1,0 +1,196 @@
+/* RETRO.CSS - 480pDreams Theme */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto:wght@300;400;700&display=swap');
+
+:root {
+    --bg-color: #0b0c15;       /* Deep space black/blue */
+    --text-color: #e0e0e0;     /* Soft white */
+    --primary: #ff00ff;        /* Hot Pink */
+    --secondary: #00ffff;      /* Cyan */
+    --accent: #f9d71c;         /* Golden Yellow (Dreamcast swirl color) */
+    --scanline-color: rgba(18, 16, 16, 0.3);
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Roboto', sans-serif; /* Readable body text */
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+}
+
+/* Typography */
+h1, h2, h3, .retro-font {
+    font-family: 'Press Start 2P', cursive; /* Pixel header font */
+    text-transform: uppercase;
+    color: var(--secondary);
+    text-shadow: 2px 2px 0px #000;
+}
+
+h1 {
+    color: var(--primary);
+    border-bottom: 2px solid var(--secondary);
+    padding-bottom: 10px;
+}
+
+/* Layout */
+.container {
+    max-width: 95vw;
+    margin: 0 auto;
+    padding: 0 20px; /* Adjusted padding */
+}
+
+/* Navigation */
+nav {
+    background: #111;
+    border-bottom: 3px solid var(--primary);
+    padding: 15px 0; /* Reduced from 20px to 15px for height */
+}
+
+/* This aligns Logo (Left) and Links (Right) */
+nav .nav-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    gap: 30px;
+    margin: 0;
+}
+
+nav a {
+    color: #fff;
+    text-decoration: none;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.8rem;
+    transition: color 0.2s;
+}
+
+nav a:hover {
+    color: var(--secondary);
+    text-shadow: 0 0 10px var(--secondary);
+}
+
+/* New Logo Class */
+.nav-logo {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 1.2rem;
+    color: var(--primary);
+    text-decoration: none;
+    text-shadow: 2px 2px 0 #000;
+}
+
+/* Cards (Games) */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 30px;
+    margin-top: 30px;
+}
+
+.card {
+    background: #1a1a24;
+    border: 2px solid #333;
+    border-radius: 0; /* Retro keeps it square */
+    padding: 10px;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent);
+}
+
+.card img {
+    width: 100%;
+    aspect-ratio: 3/4; /* Standard box art ratio */
+    object-fit: cover;
+    border: 1px solid #000;
+}
+
+.card-title {
+    font-weight: bold;
+    margin-top: 10px;
+    color: #fff;
+}
+
+.card-meta {
+    font-size: 0.8rem;
+    color: #888;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+}
+
+/* CRT Scanline Overlay */
+.scanlines {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(
+        to bottom,
+        var(--scanline-color) 50%,
+        rgba(0, 0, 0, 0) 50%
+    );
+    background-size: 100% 4px;
+    pointer-events: none; /* Let clicks pass through */
+    z-index: 999;
+}
+
+/* HORIZONTAL SHELVES (Homepage) */
+.shelf-section {
+    margin-bottom: 50px;
+}
+
+.shelf-title {
+    font-size: 1.2rem;
+    color: var(--secondary);
+    border-bottom: 2px solid #333;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.shelf-grid {
+    display: grid;
+    /* 250px is a good sweet spot. On a 32" (approx 2500px wide), this fits ~9 items. */
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+/* Video Card specific tweaks */
+.video-card {
+    background: #000;
+    border: 2px solid #333;
+    transition: transform 0.2s;
+    /* NEW: Create a stacking context above the scanlines */
+    position: relative;
+    z-index: 1002;
+}
+
+.video-card:hover {
+    transform: scale(1.02);
+    border-color: var(--primary);
+    /* NEW: Ensure it stays on top during hover */
+    z-index: 1003;
+}
+
+.video-thumb-container {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+    height: 0;
+    overflow: hidden;
+}
+
+.video-thumb-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}

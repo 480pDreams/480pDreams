@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>480pDreams | {% block title %}Home{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/retro.css' %}">
+</head>
+<body>
+
+    <div class="scanlines"></div>
+
+    <nav>
+        <div class="container nav-flex">
+            <a href="{% url 'core:home' %}" class="nav-logo">480p DREAMS</a>
+
+            <ul>
+                <li><a href="{% url 'core:home' %}">HOME</a></li>
+                <li><a href="{% url 'library:game_list' %}">GAMES</a></li>
+                <li><a href="{% url 'core:hardware' %}">HARDWARE</a></li>
+                <li><a href="{% url 'core:about' %}">ABOUT</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <footer style="text-align: center; padding: 40px; color: #666; font-size: 0.8rem;">
+        &copy; 2025 480pDreams Network. Built with Django.
+    </footer>
+
+</body>
+</html>

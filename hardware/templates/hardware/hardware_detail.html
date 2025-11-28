@@ -1,0 +1,30 @@
+{% extends 'core/base.html' %}
+{% block title %}Hardware: {{ item.name }}{% endblock %}
+
+{% block content %}
+<div style="margin-top: 20px;">
+    <a href="{% url 'hardware:hardware_list' %}" style="color: #888; text-decoration: none;">&larr; Back to Hardware</a>
+
+    <div style="display: flex; gap: 40px; margin-top: 20px; flex-wrap: wrap;">
+
+        <div style="flex: 1; min-width: 300px;">
+            <div style="border: 2px solid #333; padding: 10px; background: #000;">
+                {% if item.image %}
+                    <img src="{{ item.image.url }}" alt="{{ item.name }}" style="width: 100%; display: block;">
+                {% else %}
+                    <div style="height: 400px; background: #222; display: flex; align-items: center; justify-content: center;">No Image</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div style="flex: 2; min-width: 300px;">
+            <h1 style="margin-top: 0; font-size: 2rem; color: var(--secondary);">{{ item.name }}</h1>
+            <h3 style="color: #888; margin-top: -10px;">{{ item.manufacturer }}</h3>
+
+            <div style="font-size: 1.1rem; line-height: 1.8; color: #ccc; margin-top: 20px;">
+                {{ item.description|linebreaks }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
