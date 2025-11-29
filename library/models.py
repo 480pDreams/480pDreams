@@ -70,8 +70,8 @@ class Genre(models.Model):
         # --- META DATA ---
         title = models.CharField(max_length=200)
         slug = models.SlugField(unique=True)
-        platform = models.ForeignKey(Platform, on_delete=models.CASCADE, related_name='games')
-        genres = models.ManyToManyField(Genre, blank=True)
+        platform = models.ForeignKey('Platform', on_delete=models.CASCADE, related_name='games')
+        genres = models.ManyToManyField('Genre', blank=True)
 
         developer = models.CharField(max_length=200, blank=True)
         publisher = models.CharField(max_length=200, blank=True)
