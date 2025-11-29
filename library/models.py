@@ -60,53 +60,53 @@ class Genre(models.Model):
 # ===========================
 # MAIN GAME MODEL
 # ===========================
-    class Game(models.Model):
-        REGION_CHOICES = [
-            ('NTSC-U', 'NTSC-U (Americas)'),
-            ('NTSC-J', 'NTSC-J (Japan)'),
-            ('PAL', 'PAL (Europe/Aus)'),
-        ]
+class Game(models.Model):
+    REGION_CHOICES = [
+        ('NTSC-U', 'NTSC-U (Americas)'),
+        ('NTSC-J', 'NTSC-J (Japan)'),
+        ('PAL', 'PAL (Europe/Aus)'),
+    ]
 
-        # --- META DATA ---
-        title = models.CharField(max_length=200)
-        slug = models.SlugField(unique=True)
-        platform = models.ForeignKey('Platform', on_delete=models.CASCADE, related_name='games')
-        genres = models.ManyToManyField('Genre', blank=True)
+    # --- META DATA ---
+    title = models.CharField(max_length=200)
+    slug = models.SlugField(unique=True)
+    platform = models.ForeignKey('Platform', on_delete=models.CASCADE, related_name='games')
+    genres = models.ManyToManyField('Genre', blank=True)
 
-        developer = models.CharField(max_length=200, blank=True)
-        publisher = models.CharField(max_length=200, blank=True)
-        release_date = models.DateField(null=True, blank=True)
+    developer = models.CharField(max_length=200, blank=True)
+    publisher = models.CharField(max_length=200, blank=True)
+    release_date = models.DateField(null=True, blank=True)
 
-        # --- COLLECTION TRACKING (NEW) ---
-        region = models.CharField(max_length=20, choices=REGION_CHOICES, default='NTSC-U')
+    # --- COLLECTION TRACKING (NEW) ---
+    region = models.CharField(max_length=20, choices=REGION_CHOICES, default='NTSC-U')
 
-        # The "Holy Trinity" of collecting
-        own_game = models.BooleanField(default=False, verbose_name="Own Game/Disc",
-                                       help_text="Check this to turn the card COLOR.")
-        own_box = models.BooleanField(default=False, verbose_name="Own Box/Case")
-        own_manual = models.BooleanField(default=False, verbose_name="Own Manual")
+    # The "Holy Trinity" of collecting
+    own_game = models.BooleanField(default=False, verbose_name="Own Game/Disc",
+                                   help_text="Check this to turn the card COLOR.")
+    own_box = models.BooleanField(default=False, verbose_name="Own Box/Case")
+    own_manual = models.BooleanField(default=False, verbose_name="Own Manual")
 
-        # NOTE: "Condition" field removed (calculated by what you own),
-        # but we can keep a notes field if you want specific condition notes (e.g. "Torn label")
-        condition_notes = models.CharField(max_length=200, blank=True, help_text="e.g. 'Cracked case' or 'Mint'")
+    # NOTE: "Condition" field removed (calculated by what you own),
+    # but we can keep a notes field if you want specific condition notes (e.g. "Torn label")
+    condition_notes = models.CharField(max_length=200, blank=True, help_text="e.g. 'Cracked case' or 'Mint'")
 
-        # --- ART ASSETS ---
-        box_art = models.ImageField(upload_to='games/covers/', blank=True)
-        back_art = models.ImageField(upload_to='games/covers/', blank=True)
-        spine_art = models.ImageField(upload_to='games/spines/', blank=True)
-        media_art = models.ImageField(upload_to='games/media/', blank=True)
-        screenshot = models.ImageField(upload_to='games/screenshots/', blank=True)
+    # --- ART ASSETS ---
+    box_art = models.ImageField(upload_to='games/covers/', blank=True)
+    back_art = models.ImageField(upload_to='games/covers/', blank=True)
+    spine_art = models.ImageField(upload_to='games/spines/', blank=True)
+    media_art = models.ImageField(upload_to='games/media/', blank=True)
+    screenshot = models.ImageField(upload_to='games/screenshots/', blank=True)
 
-        # --- CONTENT FIELDS ---
-        description = models.TextField(blank=True, help_text="The official back-of-box description.")
-        written_review = models.TextField(blank=True, help_text="Your personal review text.")
-        video_playthrough = EmbedVideoField(blank=True, help_text="Main Gameplay/First Look URL")
-        video_review = EmbedVideoField(blank=True, help_text="Main Review Video URL")
+    # --- CONTENT FIELDS ---
+    description = models.TextField(blank=True, help_text="The official back-of-box description.")
+    written_review = models.TextField(blank=True, help_text="Your personal review text.")
+    video_playthrough = EmbedVideoField(blank=True, help_text="Main Gameplay/First Look URL")
+    video_review = EmbedVideoField(blank=True, help_text="Main Review Video URL")
 
-        # --- TIMESTAMPS ---
-        is_favorite = models.BooleanField(default=False)
-        created_at = models.DateTimeField(auto_now_add=True)
-        updated_at = models.DateTimeField(auto_now=True)
+    # --- TIMESTAMPS ---
+    is_favorite = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def save(self, *args, **kwargs):
         # Check if this is a new upload or an update
