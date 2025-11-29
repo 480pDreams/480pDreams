@@ -165,7 +165,7 @@ class Genre(models.Model):
 
 # 1. SPECIAL ITEMS (Maps, OBI, Stickers)
 class GameComponent(models.Model):
-    game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='components')
+    game = models.ForeignKey('Game', on_delete=models.CASCADE, related_name='components')
     name = models.CharField(max_length=100, help_text="e.g. Map, OBI Strip, Reg Card")
     is_owned = models.BooleanField(default=True)  # Default true because usually you add what you have
 
@@ -175,7 +175,7 @@ class GameComponent(models.Model):
 
 # 2. EXTRA VIDEOS (The Vault)
 class GameVideo(models.Model):
-    game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='extra_videos')
+    game = models.ForeignKey('Game', on_delete=models.CASCADE, related_name='extra_videos')
     title = models.CharField(max_length=100)
     url = EmbedVideoField()
     is_patron_only = models.BooleanField(default=False)
