@@ -1,6 +1,5 @@
 import os
 from pathlib import Path
-import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -172,12 +171,19 @@ LOGOUT_REDIRECT_URL = '/'
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 
 # ==================================
-# PRODUCTION SETTINGS (S3 & DB)
+# STATIC & MEDIA FILES (Local / PythonAnywhere)
 # ==================================
-import os
-import dj_database_url
 
-# 1. DATABASE: Use Local SQLite by default, but switch to Postgres on Railway
+# Static files (CSS, JavaScript, Images)
+STATIC_URL = '/static/'
+# This is where 'collectstatic' will dump files for PythonAnywhere to serve
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Media files (User uploaded content)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Default Database (SQLite) - Simple and Free
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -185,32 +191,5 @@ DATABASES = {
     }
 }
 
-database_url = os.environ.get("DATABASE_URL")
-if database_url:
-    DATABASES['default'] = dj_database_url.parse(database_url)
-
-# 2. SECURITY: If on Server, use strict settings
-if os.environ.get('RAILWAY_ENVIRONMENT'):
-    DEBUG = False
-    ALLOWED_HOSTS = ['*']
-    CSRF_TRUSTED_ORIGINS = ['https://*.up.railway.app']
-else:
-    DEBUG = True
-    ALLOWED_HOSTS = []
-
-# 3. AWS S3 STORAGE (For Images)
-if os.environ.get('AWS_ACCESS_KEY_ID'):
-    AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
-    AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
-    AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
-    AWS_S3_REGION_NAME = 'us-east-1'  # Change if your bucket is elsewhere
-
-    # New Django 5.0+ Storages Format
-    STORAGES = {
-        "default": {
-            "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
-        },
-        "staticfiles": {
-            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-        },
-    }
+# Security: Allow PythonAnywhere host
+ALLOWED_HOSTS = ['*'] # We can lock this down to your-username.pythonanywhere.com later
