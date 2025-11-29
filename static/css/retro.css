@@ -204,9 +204,12 @@ nav a:hover {
 
 .card img {
     width: 100%;
-    aspect-ratio: 3/4;
+    aspect-ratio: 2/3;
     object-fit: cover;
+    object-position: top center;
     border: 1px solid #000;
+    display: block;
+    background-color: #000
 }
 
 .card-title {

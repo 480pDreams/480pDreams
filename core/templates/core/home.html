@@ -36,7 +36,7 @@
                     {% if item.kind == 'game' %}
                         <a href="{% url 'library:game_detail' item.slug %}">
                             {% if item.box_art %}
-                                <img src="{{ item.box_art.url }}" alt="{{ item.title }}" style="width: 100%; display: block;">
+                                <img src="{{ item.box_art.url }}" alt="{{ item.title }}">
                             {% else %}
                                 <div style="height: 250px; background: #222; display: flex; align-items: center; justify-content: center; color: #666;">No Art</div>
                             {% endif %}
@@ -45,7 +45,7 @@
                         <div class="card-meta">Game</div>
                     {% else %}
                         <a href="{% url 'hardware:hardware_detail' item.slug %}"> {% if item.image %}
-                                <img src="{{ item.image.url }}" alt="{{ item.name }}" style="width: 100%; display: block;">
+                                <img src="{{ item.image.url }}" alt="{{ item.name }}">
                             {% else %}
                                 <div style="height: 250px; background: #222; display: flex; align-items: center; justify-content: center; color: #666;">No Image</div>
                             {% endif %}
@@ -68,7 +68,7 @@
                      {% if item.kind == 'game' %}
                         <a href="{% url 'library:game_detail' item.slug %}">
                             {% if item.box_art %}
-                                <img src="{{ item.box_art.url }}" alt="{{ item.title }}" style="width: 100%; display: block;">
+                                <img src="{{ item.box_art.url }}" alt="{{ item.title }}">
                             {% else %}
                                 <div style="height: 250px; background: #222; display: flex; align-items: center; justify-content: center; color: #666;">No Art</div>
                             {% endif %}
@@ -80,7 +80,7 @@
                     {% else %}
                         <a href="{% url 'hardware:hardware_detail' item.slug %}">
                             {% if item.image %}
-                                <img src="{{ item.image.url }}" alt="{{ item.name }}" style="width: 100%; display: block;">
+                                <img src="{{ item.image.url }}" alt="{{ item.name }}">
                             {% else %}
                                 <div style="height: 250px; background: #222; display: flex; align-items: center; justify-content: center; color: #666;">No Image</div>
                             {% endif %}
