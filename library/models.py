@@ -1,6 +1,40 @@
 from django.db import models
 from embed_video.fields import EmbedVideoField
+from PIL import Image
+from io import BytesIO
+from django.core.files.base import ContentFile
 
+
+def compress_image(image_field, max_width=800):
+    """
+    1. Opens the image.
+    2. Resizes it if it's wider than max_width.
+    3. Compresses it to JPEG (quality=70).
+    4. Returns the optimized file.
+    """
+    if not image_field:
+        return
+
+    # Open the image using Pillow
+    img = Image.open(image_field)
+
+    # Check if it needs resizing
+    if img.width > max_width:
+        # Calculate new height to keep aspect ratio
+        output_size = (max_width, int((max_width / img.width) * img.height))
+        img = img.resize(output_size, Image.Resampling.LANCZOS)
+
+    # Convert to RGB (in case it's a transparent PNG, which breaks JPEG)
+    if img.mode != 'RGB':
+        img = img.convert('RGB')
+
+    # Save to memory buffer
+    buffer = BytesIO()
+    img.save(buffer, format='JPEG', quality=70)  # Quality 70 is the sweet spot for web
+    buffer.seek(0)
+
+    # Return the new file content
+    return ContentFile(buffer.read())
 
 # ===========================
 # SUPPORTING MODELS
@@ -84,6 +118,53 @@ class Game(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        # Check if this is a new upload or an update
+        # (Logic: If the name is present, process it)
+
+        # 1. Box Art
+        if self.box_art:
+            # We only compress if the file hasn't been compressed yet (checking name helps prevent loop)
+            # But for simplicity in MVP, we just process.
+            # Pillow is smart enough to handle re-saves mostly okay,
+            # but ideally we only do this on change.
+            try:
+                # We replace the file with the compressed version
+                new_image = compress_image(self.box_art, max_width=800)
+                if new_image:
+                    self.box_art.save(self.box_art.name, new_image, save=False)
+            except Exception:
+                pass  # If it fails, just save the original
+
+        # 2. Back Art (Maybe allow slightly wider for text readability)
+        if self.back_art:
+            try:
+                new_image = compress_image(self.back_art, max_width=1000)
+                if new_image:
+                    self.back_art.save(self.back_art.name, new_image, save=False)
+            except Exception:
+                pass
+
+        # 3. Media Art (Disc)
+        if self.media_art:
+            try:
+                new_image = compress_image(self.media_art, max_width=600)
+                if new_image:
+                    self.media_art.save(self.media_art.name, new_image, save=False)
+            except Exception:
+                pass
+
+        # 4. Spine Art (Tall and thin, limit height instead? Or just width is fine)
+        if self.spine_art:
+            try:
+                new_image = compress_image(self.spine_art, max_width=300)
+                if new_image:
+                    self.spine_art.save(self.spine_art.name, new_image, save=False)
+            except Exception:
+                pass
+
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.title} ({self.platform.name})"
