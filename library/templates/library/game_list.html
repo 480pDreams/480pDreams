@@ -3,26 +3,85 @@
 {% block title %}Library{% endblock %}
 
 {% block content %}
-    <h1 class="retro-font">Game Library</h1>
 
-    <div class="grid">
-        {% for game in games %}
-            <div class="card">
-                <a href="{% url 'library:game_detail' game.slug %}">                    {% if game.box_art %}
-                        <img src="{{ game.box_art.url }}" alt="{{ game.title }}">
-                    {% else %}
-                        <div style="height: 280px; background: #000; display: flex; align-items: center; justify-content: center; color: #555;">NO ART</div>
-                    {% endif %}
-                </a>
+    <div style="display: flex; gap: 30px; margin-top: 30px; flex-wrap: wrap;">
 
-                <div class="card-title">{{ game.title }}</div>
-                <div class="card-meta">
-                    <span>{{ game.platform.name }}</span>
-                    <span style="color: var(--secondary);">{{ game.get_condition_display }}</span>
+        <div style="flex: 1; min-width: 200px; max-width: 250px; padding: 20px; border: 1px solid var(--primary); height: fit-content; background: #000;">
+            <h3 class="retro-font" style="font-size: 1rem; margin-top: 0; color: var(--secondary);">Filter</h3>
+
+            <form method="get">
+                <div style="margin-bottom: 15px;">
+                    <label style="display:block; color: #888; font-size: 0.8rem; margin-bottom: 5px;">TITLE</label>
+                    {{ filter.form.title }}
                 </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label style="display:block; color: #888; font-size: 0.8rem; margin-bottom: 5px;">PLATFORM</label>
+                    {{ filter.form.platform }}
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display:block; color: #888; font-size: 0.8rem; margin-bottom: 5px;">STATUS</label>
+                    {{ filter.form.own_game }}
+                </div>
+
+                <button type="submit" style="width: 100%; padding: 10px; background: var(--secondary); color: #000; border: none; font-family: 'Press Start 2P'; cursor: pointer; transition: 0.2s;">
+                    SEARCH
+                </button>
+
+                <a href="{% url 'library:game_list' %}" style="display: block; text-align: center; margin-top: 10px; color: #666; font-size: 0.7rem;">CLEAR FILTERS</a>
+            </form>
+        </div>
+
+        <div style="flex: 3; min-width: 300px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px;">
+                <h1 class="retro-font" style="margin: 0; font-size: 1.5rem;">Game Library</h1>
+                <span style="color: #666;">{{ games.count }} TITLES FOUND</span>
             </div>
-        {% empty %}
-            <p>The archives are incomplete...</p>
-        {% endfor %}
+
+            <div class="grid">
+                {% for game in games %}
+                    <div class="card {% if not game.own_game %}ghost{% endif %}">
+                        <a href="{% url 'library:game_detail' game.slug %}">
+                            {% if game.box_art %}
+                                <img src="{{ game.box_art.url }}" alt="{{ game.title }}">
+                            {% else %}
+                                <div style="height: 200px; background: #000; display: flex; align-items: center; justify-content: center; color: #555;">NO ART</div>
+                            {% endif %}
+                        </a>
+
+                        <div class="card-title">{{ game.title }}</div>
+                        <div class="card-meta">
+                            <span>{{ game.platform.name }}</span>
+                            {% if not game.own_game %}
+                                <span style="color: #666; float: right;">[GHOST]</span>
+                            {% else %}
+                                <span style="color: var(--secondary); float: right;">OWNED</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% empty %}
+                    <p>No games found matching criteria.</p>
+                {% endfor %}
+            </div>
+        </div>
+
     </div>
+
+    <style>
+        select, input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            background: #111;
+            color: #fff;
+            border: 1px solid #444;
+            font-family: monospace;
+            box-sizing: border-box;
+        }
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--secondary);
+        }
+    </style>
+
 {% endblock %}

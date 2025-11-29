@@ -60,64 +60,53 @@ class Genre(models.Model):
 # ===========================
 # MAIN GAME MODEL
 # ===========================
-class Game(models.Model):
-    STATUS_CHOICES = [
-        ('backlog', 'In Backlog'),
-        ('playing', 'Currently Playing'),
-        ('beaten', 'Beaten'),
-        ('completed', '100% Completed'),
-        ('abandoned', 'Abandoned'),
-    ]
+    class Game(models.Model):
+        REGION_CHOICES = [
+            ('NTSC-U', 'NTSC-U (Americas)'),
+            ('NTSC-J', 'NTSC-J (Japan)'),
+            ('PAL', 'PAL (Europe/Aus)'),
+        ]
 
-    REGION_CHOICES = [
-        ('NTSC-U', 'NTSC-U (Americas)'),
-        ('NTSC-J', 'NTSC-J (Japan)'),
-        ('PAL', 'PAL (Europe/Aus)'),
-    ]
+        # --- META DATA ---
+        title = models.CharField(max_length=200)
+        slug = models.SlugField(unique=True)
+        platform = models.ForeignKey(Platform, on_delete=models.CASCADE, related_name='games')
+        genres = models.ManyToManyField(Genre, blank=True)
 
-    CONDITION_CHOICES = [
-        ('CIB', 'Complete in Box'),
-        ('LOOSE', 'Loose (Cart/Disc Only)'),
-        ('BOX_ONLY', 'Box Only'),
-        ('MANUAL_MISSING', 'Box + Game (No Manual)'),
-        ('SEALED', 'New / Sealed'),
-    ]
+        developer = models.CharField(max_length=200, blank=True)
+        publisher = models.CharField(max_length=200, blank=True)
+        release_date = models.DateField(null=True, blank=True)
 
-    # --- META DATA ---
-    title = models.CharField(max_length=200)
-    slug = models.SlugField(unique=True)
-    platform = models.ForeignKey(Platform, on_delete=models.CASCADE, related_name='games')
-    genres = models.ManyToManyField(Genre, blank=True)
+        # --- COLLECTION TRACKING (NEW) ---
+        region = models.CharField(max_length=20, choices=REGION_CHOICES, default='NTSC-U')
 
-    developer = models.CharField(max_length=200, blank=True)
-    publisher = models.CharField(max_length=200, blank=True)
-    release_date = models.DateField(null=True, blank=True)
+        # The "Holy Trinity" of collecting
+        own_game = models.BooleanField(default=False, verbose_name="Own Game/Disc",
+                                       help_text="Check this to turn the card COLOR.")
+        own_box = models.BooleanField(default=False, verbose_name="Own Box/Case")
+        own_manual = models.BooleanField(default=False, verbose_name="Own Manual")
 
-    # --- COLLECTION DETAILS ---
-    region = models.CharField(max_length=20, choices=REGION_CHOICES, default='NTSC-U')
-    condition = models.CharField(max_length=20, choices=CONDITION_CHOICES, default='CIB')
+        # NOTE: "Condition" field removed (calculated by what you own),
+        # but we can keep a notes field if you want specific condition notes (e.g. "Torn label")
+        condition_notes = models.CharField(max_length=200, blank=True, help_text="e.g. 'Cracked case' or 'Mint'")
 
-    # --- ART ASSETS ---
-    box_art = models.ImageField(upload_to='games/covers/', blank=True)
-    back_art = models.ImageField(upload_to='games/covers/', blank=True)
-    spine_art = models.ImageField(upload_to='games/spines/', blank=True)
-    media_art = models.ImageField(upload_to='games/media/', blank=True)
-    screenshot = models.ImageField(upload_to='games/screenshots/', blank=True)
+        # --- ART ASSETS ---
+        box_art = models.ImageField(upload_to='games/covers/', blank=True)
+        back_art = models.ImageField(upload_to='games/covers/', blank=True)
+        spine_art = models.ImageField(upload_to='games/spines/', blank=True)
+        media_art = models.ImageField(upload_to='games/media/', blank=True)
+        screenshot = models.ImageField(upload_to='games/screenshots/', blank=True)
 
-    # --- CONTENT FIELDS (NEW) ---
-    description = models.TextField(blank=True, help_text="The official back-of-box description.")
+        # --- CONTENT FIELDS ---
+        description = models.TextField(blank=True, help_text="The official back-of-box description.")
+        written_review = models.TextField(blank=True, help_text="Your personal review text.")
+        video_playthrough = EmbedVideoField(blank=True, help_text="Main Gameplay/First Look URL")
+        video_review = EmbedVideoField(blank=True, help_text="Main Review Video URL")
 
-    # 1. Main Content (One per game)
-    written_review = models.TextField(blank=True, help_text="Your personal review text.")
-    video_playthrough = EmbedVideoField(blank=True, help_text="Main Gameplay/First Look URL")
-    video_review = EmbedVideoField(blank=True, help_text="Main Review Video URL")
-
-    # --- STATUS ---
-    ownership_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='backlog')
-    is_favorite = models.BooleanField(default=False)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+        # --- TIMESTAMPS ---
+        is_favorite = models.BooleanField(default=False)
+        created_at = models.DateTimeField(auto_now_add=True)
+        updated_at = models.DateTimeField(auto_now=True)
 
     def save(self, *args, **kwargs):
         # Check if this is a new upload or an update
@@ -171,13 +160,25 @@ class Game(models.Model):
 
 
 # ===========================
-# EXTRA VIDEOS (The Vault)
+# CHILD MODELS (Extras & Videos)
 # ===========================
+
+# 1. SPECIAL ITEMS (Maps, OBI, Stickers)
+class GameComponent(models.Model):
+    game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='components')
+    name = models.CharField(max_length=100, help_text="e.g. Map, OBI Strip, Reg Card")
+    is_owned = models.BooleanField(default=True)  # Default true because usually you add what you have
+
+    def __str__(self):
+        return self.name
+
+
+# 2. EXTRA VIDEOS (The Vault)
 class GameVideo(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='extra_videos')
     title = models.CharField(max_length=100)
     url = EmbedVideoField()
-    is_patron_only = models.BooleanField(default=False, help_text="Check this if only Patrons should see this.")
+    is_patron_only = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.title} ({self.game.title})"

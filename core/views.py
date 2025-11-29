@@ -15,8 +15,8 @@ def home(request):
 
     # ROW 2 & 3: Get Data
     # Fetch 5 of each to be safe
-    recent_games = list(Game.objects.order_by('-created_at')[:10])
-    recent_hardware = list(Hardware.objects.order_by('-created_at')[:10])
+    recent_games = list(Game.objects.filter(own_game=True).order_by('-created_at')[:10])
+    updated_games = list(Game.objects.filter(own_game=True).order_by('-updated_at')[:10])
 
     updated_games = list(Game.objects.order_by('-updated_at')[:10])
     updated_hardware = list(Hardware.objects.order_by('-updated_at')[:10])
