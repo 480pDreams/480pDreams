@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -137,8 +138,6 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-import os
-
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
@@ -182,7 +181,17 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# Default Database (SQLite) - Simple and Free
+# ==================================
+# SECURITY & ENVIRONMENT CONFIG
+# ==================================
+
+# 1. DEFAULT: LOCAL DEVELOPMENT
+# By default, we assume we are on your laptop
+DEBUG = True
+ALLOWED_HOSTS = ['*']  # Allowed locally for ease of use
+SECRET_KEY = 'django-insecure-local-key-change-me-in-production'
+
+# Database: SQLite (Local)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -190,5 +199,30 @@ DATABASES = {
     }
 }
 
-# Security: Allow PythonAnywhere host
-ALLOWED_HOSTS = ['*'] # We can lock this down to your-username.pythonanywhere.com later
+# 2. PRODUCTION OVERRIDES (PythonAnywhere)
+# We will trigger this by setting a variable in the server's WSGI file
+if os.environ.get('DJANGO_ENV') == 'production':
+
+    # A. Security
+    DEBUG = False  # Critical: Never show errors to public
+
+    # B. Allowed Hosts (The lock you asked for)
+    # Replace 'YOUR_PA_USERNAME' with your actual pythonanywhere subdomain just in case
+    ALLOWED_HOSTS = ['www.480pdreams.com', '480pdreams.com', '.pythonanywhere.com']
+
+    # C. Secret Key (Load from Server Environment)
+    # If not found, it crashes (good! better than using a weak key)
+    if os.environ.get('SECRET_KEY'):
+        SECRET_KEY = os.environ.get('SECRET_KEY')
+
+    # D. HTTPS / SSL Settings
+    # Tell Django to trust PythonAnywhere's SSL
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+    # Force cookies to be secure (only sent over HTTPS)
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+
+    # E. Static/Media Paths (For PythonAnywhere)
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
