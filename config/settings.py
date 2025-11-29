@@ -27,11 +27,21 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+
+    #Auth Apps
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.patreon',
+
+    #Site Apps
     'core',
     'blog',
     'library',
     'embed_video',
     'hardware',
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -43,6 +53,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware'
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -50,7 +61,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -134,3 +145,72 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 SECURE_REFERRER_POLICY = 'no-referrer-when-downgrade'
+
+# --- ALLAUTH CONFIGURATION ---
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend', # Needed to login by username in Admin.
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+# --- SOCIAL ACCOUNT SETTINGS ---
+SOCIALACCOUNT_PROVIDERS = {
+    'patreon': {
+        'SCOPE': ['identity', 'campaigns', 'campaigns.members'],
+        'VERSION': 'v2',
+    }
+}
+SOCIALACCOUNT_LOGIN_ON_GET = True
+
+SITE_ID = 1
+
+# Redirect users here after they log in
+LOGIN_REDIRECT_URL = '/'
+# Redirect users here after they log out
+LOGOUT_REDIRECT_URL = '/'
+
+# Simplifies the login process (no email confirmation needed for MVP)
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+
+# ==================================
+# PRODUCTION SETTINGS (S3 & DB)
+# ==================================
+import os
+import dj_database_url
+
+# 1. DATABASE: Use Local SQLite by default, but switch to Postgres on Railway
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+
+database_url = os.environ.get("DATABASE_URL")
+if database_url:
+    DATABASES['default'] = dj_database_url.parse(database_url)
+
+# 2. SECURITY: If on Server, use strict settings
+if os.environ.get('RAILWAY_ENVIRONMENT'):
+    DEBUG = False
+    ALLOWED_HOSTS = ['*']
+    CSRF_TRUSTED_ORIGINS = ['https://*.up.railway.app']
+else:
+    DEBUG = True
+    ALLOWED_HOSTS = []
+
+# 3. AWS S3 STORAGE (For Images)
+if os.environ.get('AWS_ACCESS_KEY_ID'):
+    AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+    AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
+    AWS_S3_REGION_NAME = 'us-east-1'  # Change if your bucket is elsewhere
+
+    # New Django 5.0+ Storages Format
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }

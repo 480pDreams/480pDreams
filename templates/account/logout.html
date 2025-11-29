@@ -1,0 +1,29 @@
+{% extends "core/base.html" %}
+{% load allauth %}
+
+{% block title %}Terminate Session{% endblock %}
+
+{% block content %}
+<div style="max-width: 400px; margin: 100px auto; border: 2px solid #f00; padding: 30px; background: #000; text-align: center;">
+
+    <h1 class="retro-font" style="color: #f00; font-size: 1.5rem; margin-bottom: 20px;">
+        WARNING
+    </h1>
+
+    <p style="color: #ccc; margin-bottom: 30px; font-family: monospace;">
+        Are you sure you want to terminate your session?
+    </p>
+
+    <form method="POST" action="{% url 'account_logout' %}">
+        {% csrf_token %}
+        <button type="submit" style="padding: 15px 30px; background: #f00; color: #fff; font-family: 'Press Start 2P', cursive; border: none; cursor: pointer;">
+            CONFIRM SHUTDOWN
+        </button>
+    </form>
+
+    <div style="margin-top: 20px;">
+        <a href="javascript:history.back()" style="color: #666; font-size: 0.8rem;">CANCEL</a>
+    </div>
+
+</div>
+{% endblock %}

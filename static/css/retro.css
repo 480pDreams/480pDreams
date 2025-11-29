@@ -1,53 +1,131 @@
-/* RETRO.CSS - 480pDreams Theme */
+/* 480pDreams Global Stylesheet */
+/* IMPORTS */
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap'); /* Matrix/PC-98 Font */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap'); /* Japanese Support */
+@import url('https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap'); /* Terminal Font */
 
+/* =========================================
+   THEME ENGINE (CSS VARIABLES)
+   ========================================= */
+
+/* 1. DEFAULT: "RETRO" (Dreamcast / Synthwave) */
 :root {
-    --bg-color: #0b0c15;       /* Deep space black/blue */
-    --text-color: #e0e0e0;     /* Soft white */
+    --bg-color: #0b0c15;
+    --text-color: #e0e0e0;
     --primary: #ff00ff;        /* Hot Pink */
     --secondary: #00ffff;      /* Cyan */
-    --accent: #f9d71c;         /* Golden Yellow (Dreamcast swirl color) */
-    --scanline-color: rgba(18, 16, 16, 0.3);
+    --accent: #f9d71c;         /* Yellow */
+    --card-bg: #1a1a24;
+    --nav-bg: #111;
+    --scanline-display: block; /* Scanlines ON */
+    --font-header: 'Press Start 2P', cursive;
+    --font-body: 'Roboto', sans-serif;
+    --border-style: 2px solid #333;
+    --shadow-style: none;
 }
+
+/* 2. MODERN (Slick Dark Mode) */
+[data-theme="modern"] {
+    --bg-color: #121212;
+    --text-color: #f3f4f6;
+    --primary: #3b82f6;        /* Modern Blue */
+    --secondary: #10b981;      /* Emerald Green */
+    --accent: #f59e0b;         /* Amber */
+    --card-bg: #1e1e1e;
+    --nav-bg: #1f2937;
+    --scanline-display: none;  /* Scanlines OFF */
+    --font-header: 'Roboto', sans-serif;
+    --font-body: 'Roboto', sans-serif;
+    --border-style: 1px solid #374151;
+    --shadow-style: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+}
+
+/* 3. WINDOWS 98 (Brutalist Desktop) */
+[data-theme="win98"] {
+    --bg-color: #008080;       /* Classic Teal */
+    --text-color: #000000;     /* Black Text */
+    --primary: #000080;        /* Title Bar Blue */
+    --secondary: #808080;      /* Gray */
+    --accent: #c0c0c0;         /* Window Gray */
+    --card-bg: #c0c0c0;        /* Gray Windows */
+    --nav-bg: #c0c0c0;
+    --scanline-display: none;  /* Scanlines OFF */
+    --font-header: 'Arial', sans-serif;
+    --font-body: 'Arial', sans-serif;
+    --border-style: 2px outset #fff; /* 3D Bevel Look */
+    --shadow-style: 4px 4px 0px #000;
+}
+
+/* 4. PC-98 (Retro Japanese Computer) */
+[data-theme="pc98"] {
+    --bg-color: #000022;       /* Deep NEC Blue */
+    --text-color: #e6e6e6;
+    --primary: #55ff55;        /* Phosphor Green */
+    --secondary: #ff5555;      /* Alert Red */
+    --accent: #55ffff;         /* Cyan */
+    --card-bg: #000033;
+    --nav-bg: #000044;
+    --scanline-display: block; /* Scanlines ON */
+    --font-header: 'VT323', monospace;
+    --font-body: 'Noto Sans JP', sans-serif;
+    --border-style: 2px solid #fff;
+    --shadow-style: none;
+}
+
+/* =========================================
+   GLOBAL LAYOUT
+   ========================================= */
 
 body {
     background-color: var(--bg-color);
     color: var(--text-color);
-    font-family: 'Roboto', sans-serif; /* Readable body text */
+    font-family: var(--font-body);
     margin: 0;
     padding: 0;
     line-height: 1.6;
+    transition: background-color 0.3s, color 0.3s;
 }
 
-/* Typography */
 h1, h2, h3, .retro-font {
-    font-family: 'Press Start 2P', cursive; /* Pixel header font */
+    font-family: var(--font-header);
     text-transform: uppercase;
-    color: var(--secondary);
-    text-shadow: 2px 2px 0px #000;
+    color: var(--primary); /* Defaults to primary color */
 }
 
-h1 {
-    color: var(--primary);
-    border-bottom: 2px solid var(--secondary);
-    padding-bottom: 10px;
+/* Specific Win98 Override for Headers inside cards */
+[data-theme="win98"] .card h1,
+[data-theme="win98"] .card h2,
+[data-theme="win98"] .card-title {
+    background: var(--primary);
+    color: #fff; /* White text on Blue background */
+    padding: 2px 5px;
+    font-size: 0.9rem;
+    font-weight: bold;
 }
 
-/* Layout */
+/* Layout Container */
 .container {
     max-width: 95vw;
     margin: 0 auto;
-    padding: 0 20px; /* Adjusted padding */
+    padding: 0 20px;
 }
 
-/* Navigation */
+/* =========================================
+   NAVIGATION
+   ========================================= */
 nav {
-    background: #111;
+    background: var(--nav-bg);
     border-bottom: 3px solid var(--primary);
-    padding: 15px 0; /* Reduced from 20px to 15px for height */
+    padding: 15px 0;
 }
 
-/* This aligns Logo (Left) and Links (Right) */
+/* Win98 Nav Tweak */
+[data-theme="win98"] nav {
+    border-bottom: 2px outset #fff;
+    border-top: 2px outset #fff;
+}
+
 nav .nav-flex {
     display: flex;
     justify-content: space-between;
@@ -63,51 +141,70 @@ nav ul {
 }
 
 nav a {
-    color: #fff;
+    color: var(--text-color); /* Adapts to theme text color */
     text-decoration: none;
-    font-family: 'Press Start 2P', cursive;
+    font-family: var(--font-header);
     font-size: 0.8rem;
     transition: color 0.2s;
 }
+
+/* Ensure links are visible on dark navs */
+nav a { color: #fff; }
+[data-theme="win98"] nav a { color: #000; font-weight: bold; }
 
 nav a:hover {
     color: var(--secondary);
     text-shadow: 0 0 10px var(--secondary);
 }
 
-/* New Logo Class */
 .nav-logo {
-    font-family: 'Press Start 2P', cursive;
+    font-family: var(--font-header);
     font-size: 1.2rem;
     color: var(--primary);
     text-decoration: none;
-    text-shadow: 2px 2px 0 #000;
 }
 
-/* Cards (Games) */
-.grid {
+/* =========================================
+   CARDS & GRIDS
+   ========================================= */
+.grid, .shelf-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 30px;
-    margin-top: 30px;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.shelf-section {
+    margin-bottom: 50px;
+}
+
+.shelf-title {
+    font-size: 1.2rem;
+    color: var(--secondary);
+    border-bottom: var(--border-style);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
 }
 
 .card {
-    background: #1a1a24;
-    border: 2px solid #333;
-    border-radius: 0; /* Retro keeps it square */
+    background: var(--card-bg);
+    border: var(--border-style);
     padding: 10px;
-    transition: transform 0.2s, border-color 0.2s;
+    box-shadow: var(--shadow-style);
+    transition: transform 0.2s;
+    /* Stacking Context for Video Z-Index fix */
+    position: relative;
+    z-index: 1002;
 }
 
 .card:hover {
     transform: translateY(-5px);
-    border-color: var(--accent);
+    border-color: var(--primary);
+    z-index: 1003;
 }
 
 .card img {
     width: 100%;
-    aspect-ratio: 3/4; /* Standard box art ratio */
+    aspect-ratio: 3/4;
     object-fit: cover;
     border: 1px solid #000;
 }
@@ -115,19 +212,59 @@ nav a:hover {
 .card-title {
     font-weight: bold;
     margin-top: 10px;
-    color: #fff;
+    color: var(--text-color);
 }
 
 .card-meta {
     font-size: 0.8rem;
     color: #888;
-    display: flex;
-    justify-content: space-between;
     margin-top: 5px;
 }
 
-/* CRT Scanline Overlay */
+/* Win98 Card Meta Tweak */
+[data-theme="win98"] .card-meta { color: #000; }
+
+/* =========================================
+   VIDEO CONTAINERS (Homepage)
+   ========================================= */
+.video-card {
+    background: #000;
+    border: var(--border-style);
+    transition: transform 0.2s;
+    position: relative;
+    z-index: 1002;
+}
+
+.video-card:hover {
+    transform: scale(1.02);
+    border-color: var(--primary);
+    z-index: 1003;
+}
+
+/* Force Videos above Scanlines */
+.video-thumb-container, .video-wrapper {
+    position: relative;
+    z-index: 1000 !important;
+    background: #000;
+    padding-bottom: 56.25%; /* 16:9 */
+    height: 0;
+    overflow: hidden;
+}
+
+.video-thumb-container iframe, .video-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1001 !important;
+}
+
+/* =========================================
+   CRT SCANLINE OVERLAY
+   ========================================= */
 .scanlines {
+    display: var(--scanline-display); /* Toggles based on theme */
     position: fixed;
     top: 0;
     left: 0;
@@ -139,58 +276,6 @@ nav a:hover {
         rgba(0, 0, 0, 0) 50%
     );
     background-size: 100% 4px;
-    pointer-events: none; /* Let clicks pass through */
+    pointer-events: none;
     z-index: 999;
-}
-
-/* HORIZONTAL SHELVES (Homepage) */
-.shelf-section {
-    margin-bottom: 50px;
-}
-
-.shelf-title {
-    font-size: 1.2rem;
-    color: var(--secondary);
-    border-bottom: 2px solid #333;
-    padding-bottom: 10px;
-    margin-bottom: 20px;
-}
-
-.shelf-grid {
-    display: grid;
-    /* 250px is a good sweet spot. On a 32" (approx 2500px wide), this fits ~9 items. */
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
-}
-
-/* Video Card specific tweaks */
-.video-card {
-    background: #000;
-    border: 2px solid #333;
-    transition: transform 0.2s;
-    /* NEW: Create a stacking context above the scanlines */
-    position: relative;
-    z-index: 1002;
-}
-
-.video-card:hover {
-    transform: scale(1.02);
-    border-color: var(--primary);
-    /* NEW: Ensure it stays on top during hover */
-    z-index: 1003;
-}
-
-.video-thumb-container {
-    position: relative;
-    padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
-    height: 0;
-    overflow: hidden;
-}
-
-.video-thumb-container iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
 }

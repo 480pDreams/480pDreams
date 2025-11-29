@@ -1,0 +1,80 @@
+{% extends "core/base.html" %}
+{% load allauth %}
+{% load socialaccount %}  {% block title %}System Access{% endblock %}
+
+{% block content %}
+<div style="max-width: 400px; margin: 60px auto; border: 2px solid var(--primary); padding: 20px; background: #000; box-shadow: 6px 6px 0px #333;">
+
+    <h1 class="retro-font" style="text-align: center; color: var(--primary); font-size: 1.5rem; margin-bottom: 30px;">
+        SYSTEM LOGIN
+    </h1>
+
+    <div style="margin-bottom: 30px; text-align: center;">
+        <a href="{% provider_login_url 'patreon' %}"
+           style="display: block; width: 100%; padding: 15px; background: #FF424D; color: #fff; font-family: 'Press Start 2P', cursive; text-decoration: none; box-sizing: border-box; border: 2px solid #fff;">
+           LOG IN WITH PATREON
+        </a>
+        <div style="margin: 20px 0; color: #666; font-size: 0.8rem;">--- OR USE ID ---</div>
+    </div>
+    <form class="retro-form" method="POST" action="{% url 'account_login' %}">
+        {% csrf_token %}
+
+        {% if form.errors %}
+            <div style="background: #500; color: #fff; padding: 10px; margin-bottom: 20px; font-size: 0.8rem; border: 1px solid #f00;">
+                ACCESS DENIED: INVALID CREDENTIALS
+            </div>
+        {% endif %}
+
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; color: var(--secondary); font-family: 'Press Start 2P', cursive; font-size: 0.7rem; margin-bottom: 10px;">
+                USER_ID
+            </label>
+            {{ form.login }}
+        </div>
+
+        <div style="margin-bottom: 30px;">
+            <label style="display: block; color: var(--secondary); font-family: 'Press Start 2P', cursive; font-size: 0.7rem; margin-bottom: 10px;">
+                PASSCODE
+            </label>
+            {{ form.password }}
+        </div>
+
+        <button type="submit" style="width: 100%; padding: 15px; background: var(--primary); color: #000; font-family: 'Press Start 2P', cursive; border: none; cursor: pointer; transition: 0.2s;">
+            INITIALIZE SESSION
+        </button>
+
+        {% if redirect_field_value %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+        {% endif %}
+    </form>
+
+    <div style="margin-top: 20px; text-align: center; font-size: 0.8rem;">
+        <a href="{% url 'account_reset_password' %}" style="color: #666; text-decoration: none;">Forgot Passcode?</a>
+        <br><br>
+        <span style="color: #444;">Need access?</span>
+        <a href="{% url 'account_signup' %}" style="color: var(--secondary);">REGISTER</a>
+    </div>
+
+</div>
+
+<style>
+    .retro-form input {
+        width: 100%;
+        padding: 10px;
+        background: #111;
+        border: 1px solid #444;
+        color: #fff;
+        font-family: monospace;
+        box-sizing: border-box;
+    }
+    .retro-form input:focus {
+        outline: none;
+        border-color: var(--secondary);
+        background: #222;
+    }
+    .retro-form button:hover {
+        background: #fff;
+        transform: translate(2px, 2px);
+    }
+</style>
+{% endblock %}

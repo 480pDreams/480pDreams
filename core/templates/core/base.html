@@ -20,6 +20,28 @@
                 <li><a href="{% url 'library:game_list' %}">GAMES</a></li>
                 <li><a href="{% url 'core:hardware' %}">HARDWARE</a></li>
                 <li><a href="{% url 'core:about' %}">ABOUT</a></li>
+
+                <li style="margin-left: 20px;">
+                    <select id="theme-selector" style="background: #000; color: var(--primary); border: 1px solid #333; font-family: 'Press Start 2P'; font-size: 0.6rem; padding: 5px; cursor: pointer;">
+                        <option value="retro">THEME: RETRO</option>
+                        <option value="modern">THEME: MODERN</option>
+                        <option value="win98">THEME: WIN 98</option>
+                        <option value="pc98">THEME: PC-98</option>
+                    </select>
+                </li>
+
+                {% if user.is_authenticated %}
+                    <li style="border-left: 1px solid #444; padding-left: 20px; margin-left: 10px;">
+                        <span style="color: var(--primary); font-size: 0.6rem;">
+                            {{ user.username|upper|truncatechars:10 }}
+                        </span>
+                    </li>
+                    <li><a href="{% url 'account_logout' %}" style="color: #666;">LOGOUT</a></li>
+                {% else %}
+                    <li style="border-left: 1px solid #444; padding-left: 20px; margin-left: 10px;">
+                        <a href="{% url 'account_login' %}" style="color: var(--secondary);">LOGIN</a>
+                    </li>
+                {% endif %}
             </ul>
         </div>
     </nav>
@@ -32,6 +54,58 @@
     <footer style="text-align: center; padding: 40px; color: #666; font-size: 0.8rem;">
         &copy; 2025 480pDreams Network. Built with Django.
     </footer>
+
+<script>
+        const themeSelect = document.getElementById('theme-selector');
+        const rootElement = document.documentElement; // The <html> tag
+
+        // 1. DETERMINE CURRENT THEME
+        // Default to 'retro'
+        let currentTheme = 'retro';
+
+        {% if user.is_authenticated %}
+            // If logged in, get from Database (via Python)
+            currentTheme = "{{ user.profile.theme }}";
+        {% else %}
+            // If guest, check LocalStorage
+            const localTheme = localStorage.getItem('site_theme');
+            if (localTheme) currentTheme = localTheme;
+        {% endif %}
+
+        // 2. APPLY THEME ON LOAD
+        if (currentTheme !== 'retro') {
+            rootElement.setAttribute('data-theme', currentTheme);
+            themeSelect.value = currentTheme;
+        }
+
+        // 3. LISTEN FOR CHANGES
+        themeSelect.addEventListener('change', function() {
+            const newTheme = this.value;
+
+            // Apply Visuals
+            if (newTheme === 'retro') {
+                rootElement.removeAttribute('data-theme');
+            } else {
+                rootElement.setAttribute('data-theme', newTheme);
+            }
+
+            // Save Preference
+            {% if user.is_authenticated %}
+                // Logged In: Save to Database via AJAX
+                fetch("{% url 'core:update_theme' %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({ 'theme': newTheme })
+                });
+            {% else %}
+                // Guest: Save to Browser Storage
+                localStorage.setItem('site_theme', newTheme);
+            {% endif %}
+        });
+    </script>
 
 </body>
 </html>

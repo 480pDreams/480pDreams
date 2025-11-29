@@ -1,0 +1,60 @@
+{% extends "core/base.html" %}
+{% load allauth %}
+
+{% block title %}New User Registration{% endblock %}
+
+{% block content %}
+<div style="max-width: 400px; margin: 60px auto; border: 2px solid var(--primary); padding: 20px; background: #000; box-shadow: 6px 6px 0px #333;">
+
+    <h1 class="retro-font" style="text-align: center; color: var(--secondary); font-size: 1.2rem; margin-bottom: 30px;">
+        CREATE IDENTITY
+    </h1>
+
+    <form class="retro-form" method="POST" action="{% url 'account_signup' %}">
+        {% csrf_token %}
+
+        {% for field in form %}
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; color: #aaa; font-family: 'Press Start 2P', cursive; font-size: 0.6rem; margin-bottom: 10px;">
+                    {{ field.label|upper }}
+                </label>
+                <div class="field-wrapper">
+                    {{ field }}
+                </div>
+                {% if field.errors %}
+                    <div style="color: #f00; font-size: 0.7rem; margin-top: 5px;">{{ field.errors.0 }}</div>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <button type="submit" style="width: 100%; padding: 15px; background: var(--secondary); color: #000; font-family: 'Press Start 2P', cursive; border: none; cursor: pointer; transition: 0.2s;">
+            REGISTER USER
+        </button>
+    </form>
+
+    <div style="margin-top: 20px; text-align: center; font-size: 0.8rem;">
+        <span style="color: #444;">Already have access?</span>
+        <a href="{% url 'account_login' %}" style="color: var(--primary);">LOGIN</a>
+    </div>
+
+</div>
+
+<style>
+    /* Reuse the form styles */
+    .retro-form input {
+        width: 100%;
+        padding: 10px;
+        background: #111;
+        border: 1px solid #444;
+        color: #fff;
+        font-family: monospace;
+        box-sizing: border-box;
+    }
+    .retro-form input:focus {
+        outline: none;
+        border-color: var(--secondary);
+        background: #222;
+    }
+    .field-wrapper ul { list-style: none; padding: 0; margin: 0; } /* Hides weird django help text formatting */
+</style>
+{% endblock %}

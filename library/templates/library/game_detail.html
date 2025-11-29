@@ -41,42 +41,99 @@
         <div style="flex: 2; min-width: 300px;">
             <h1 style="margin-top: 0; font-size: 2rem;">{{ game.title }}</h1>
 
-            <div style="margin-bottom: 20px;">
-                {% for genre in game.genres.all %}
-                    <span style="background: var(--primary); color: #000; padding: 2px 8px; font-size: 0.7rem; font-weight: bold; margin-right: 5px;">{{ genre.name }}</span>
-                {% endfor %}
+            <hr style="border: 0; border-top: 1px dashed #333; margin: 30px 0;">
+
+            <h2 class="retro-font" style="font-size: 1.2rem; color: var(--secondary);">480p Review</h2>
+
+            {% if game.written_review %}
+                <div style="font-size: 1.1rem; line-height: 1.8; color: #fff;">
+                    {{ game.written_review|linebreaks }}
+                </div>
+            {% else %}
+                <div style="border: 2px dashed #333; padding: 20px; background: rgba(0,0,0,0.3); text-align: center;">
+                    <p style="color: #666; font-family: monospace; margin: 0;">
+                        [ DATA MISSING ]<br>
+                        This title has not been reviewed by the curator yet.
+                    </p>
+                </div>
+            {% endif %}
+
+
+            <div style="display: flex; flex-wrap: wrap; gap: 20px; margin-top: 40px;">
+
+                <div style="flex: 1; min-width: 300px;">
+                    <h3 class="retro-font" style="font-size: 0.8rem; margin-bottom: 10px;">Review Video</h3>
+
+                    {% if game.video_review %}
+                        <div class="video-wrapper">
+                            {% video game.video_review '100% x 100%' %}
+                        </div>
+                    {% else %}
+                        <div style="width: 100%; padding-bottom: 56.25%; background: #000; border: 1px solid #333; position: relative;">
+                            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+                                <div style="font-size: 2rem; opacity: 0.3;">📺</div>
+                                <div style="color: #444; font-size: 0.8rem; margin-top: 10px; font-family: monospace;">NO SIGNAL</div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div style="flex: 1; min-width: 300px;">
+                    <h3 class="retro-font" style="font-size: 0.8rem; margin-bottom: 10px;">First Look / Playthrough</h3>
+
+                    {% if game.video_playthrough %}
+                        <div class="video-wrapper">
+                            {% video game.video_playthrough '100% x 100%' %}
+                        </div>
+                    {% else %}
+                        <div style="width: 100%; padding-bottom: 56.25%; background: #000; border: 1px solid #333; position: relative;">
+                            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+                                <div style="font-size: 2rem; opacity: 0.3;">🎮</div>
+                                <div style="color: #444; font-size: 0.8rem; margin-top: 10px; font-family: monospace;">NOT PLAYED YET</div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+
             </div>
 
-            <div style="font-size: 1.1rem; line-height: 1.8; color: #ccc;">
-                {{ game.description|linebreaks }}
-            </div>
 
-            {% if game.video_review %}
-                <div style="margin-top: 40px;">
-                    <h3 class="retro-font" style="font-size: 1rem; border-bottom: 1px solid #333; padding-bottom: 10px;">Video Review</h3>
+            {% if game.extra_videos.exists %}
+                <div style="margin-top: 50px; border-top: 4px solid var(--primary); padding-top: 20px;">
+                    <h2 class="retro-font" style="font-size: 1.2rem; color: var(--primary);">
+                        Bonus Tapes
+                    </h2>
 
-                    <div class="video-wrapper">
-                        {% video game.video_review '100% x 100%' %}
+                    <div class="grid" style="gap: 20px;">
+                        {% for extra in game.extra_videos.all %}
+
+                            {% if not extra.is_patron_only or user.profile.is_patron %}
+
+                                <div style="background: #000; border: 1px solid #333; padding: 10px;">
+                                    <h4 style="margin: 0 0 10px 0; color: #fff; font-size: 0.9rem;">
+                                        {% if extra.is_patron_only %}
+                                            <span style="color: var(--primary);">[LOCKED]</span>
+                                        {% endif %}
+                                        {{ extra.title }}
+                                    </h4>
+                                    <div class="video-wrapper">
+                                        {% video extra.url '100% x 100%' %}
+                                    </div>
+                                </div>
+
+                            {% else %}
+
+                                <div style="background: #111; border: 1px dashed #444; padding: 20px; text-align: center; display: flex; flex-direction: column; justify-content: center; height: 100%;">
+                                    <div style="font-size: 2rem;">🔒</div>
+                                    <div style="color: #666; margin-top: 10px;">{{ extra.title }}</div>
+                                    <div style="color: var(--primary); font-size: 0.7rem; margin-top: 5px;">PATRONS ONLY</div>
+                                    <a href="https://patreon.com/yourlink" target="_blank" style="margin-top: 10px; color: #fff; text-decoration: underline; font-size: 0.8rem;">Unlock This</a>
+                                </div>
+
+                            {% endif %}
+
+                        {% endfor %}
                     </div>
-
-                    <style>
-                        .video-wrapper {
-                            position: relative;
-                            padding-bottom: 56.25%; /* 16:9 Ratio */
-                            height: 0;
-                            overflow: hidden;
-                            background: #000;
-                            border: 2px solid #333;
-                        }
-                        .video-wrapper iframe {
-                            position: absolute;
-                            top: 0;
-                            left: 0;
-                            width: 100%;
-                            height: 100%;
-                            z-index: 1000
-                        }
-                    </style>
                 </div>
             {% endif %}
         </div>

@@ -4,7 +4,10 @@ from hardware.models import Hardware
 from .models import NetworkVideo
 from itertools import chain
 from operator import attrgetter
-
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+import json
+from .models import UserProfile
 
 def home(request):
     # ROW 1: New Videos
@@ -51,3 +54,27 @@ def about(request):
 
 def hardware(request):
     return render(request, 'core/hardware.html')
+
+
+@login_required
+def update_theme(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            new_theme = data.get('theme')
+
+            # SELF-HEALING LOGIC:
+            # Instead of assuming the profile exists, we use 'get_or_create'.
+            # This fixes the issue for old Superusers or broken accounts.
+            profile, created = UserProfile.objects.get_or_create(user=request.user)
+
+            profile.theme = new_theme
+            profile.save()
+
+            return JsonResponse({'status': 'ok'})
+        except Exception as e:
+            # Print error to terminal so we can see it if it happens again
+            print(f"Theme Update Error: {e}")
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+    return JsonResponse({'status': 'error'}, status=400)
