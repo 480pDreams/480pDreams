@@ -186,10 +186,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # ==================================
 
 # 1. DEFAULT: LOCAL DEVELOPMENT
-# By default, we assume we are on your laptop
+# If 'DJANGO_ENV' is missing, we assume we are on your laptop.
 DEBUG = True
-ALLOWED_HOSTS = ['*']  # Allowed locally for ease of use
-SECRET_KEY = 'django-insecure-local-key-change-me-in-production'
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]']
+SECRET_KEY = 'django-insecure-local-key'
 
 # Database: SQLite (Local)
 DATABASES = {
@@ -200,29 +200,24 @@ DATABASES = {
 }
 
 # 2. PRODUCTION OVERRIDES (PythonAnywhere)
-# We will trigger this by setting a variable in the server's WSGI file
+# This only runs if the server explicitly says "I am production"
 if os.environ.get('DJANGO_ENV') == 'production':
 
     # A. Security
-    DEBUG = False  # Critical: Never show errors to public
+    DEBUG = False
 
-    # B. Allowed Hosts (The lock you asked for)
-    # Replace 'YOUR_PA_USERNAME' with your actual pythonanywhere subdomain just in case
+    # B. Allowed Hosts
     ALLOWED_HOSTS = ['www.480pdreams.com', '480pdreams.com', '.pythonanywhere.com']
 
-    # C. Secret Key (Load from Server Environment)
-    # If not found, it crashes (good! better than using a weak key)
+    # C. Secret Key
     if os.environ.get('SECRET_KEY'):
         SECRET_KEY = os.environ.get('SECRET_KEY')
 
-    # D. HTTPS / SSL Settings
-    # Tell Django to trust PythonAnywhere's SSL
+    # D. HTTPS Settings
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
-    # Force cookies to be secure (only sent over HTTPS)
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
 
-    # E. Static/Media Paths (For PythonAnywhere)
+    # E. Static Paths
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
