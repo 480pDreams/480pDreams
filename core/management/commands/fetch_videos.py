@@ -1,16 +1,16 @@
 from django.core.management.base import BaseCommand
 from core.models import NetworkVideo
+from django.core.files.base import ContentFile
+from library.models import compress_image  # <--- Reusing your existing tool!
 import feedparser
-from datetime import datetime
-import time
+import requests
+from io import BytesIO
 
 
 class Command(BaseCommand):
-    help = 'Fetches latest videos from YouTube RSS feeds'
+    help = 'Fetches latest videos, downloads HD thumbs, and compresses them'
 
     def handle(self, *args, **kwargs):
-        # 1. Configuration: Map Channel IDs to your Database Choices
-        # Find ID by viewing source of channel page -> "externalId"
         CHANNELS = [
             {
                 'name': '480pDreams (Main)',
@@ -41,12 +41,39 @@ class Command(BaseCommand):
                 title = entry.title
 
                 if not NetworkVideo.objects.filter(url=video_url).exists():
-                    NetworkVideo.objects.create(
+                    self.stdout.write(f"  + Processing: {title}")
+
+                    video_obj = NetworkVideo(
                         title=title,
                         channel=channel['type'],
-                        url=video_url,
-                        thumbnail = f"https://img.youtube.com/vi/{video_id}/maxresdefault.jpg"
+                        url=video_url
                     )
-                    self.stdout.write(self.style.SUCCESS(f"  + Added: {title}"))
+
+                    # 1. Download High Res
+                    thumb_url = f"https://img.youtube.com/vi/{video_id}/maxresdefault.jpg"
+                    response = requests.get(thumb_url)
+
+                    if response.status_code != 200:
+                        # Fallback
+                        thumb_url = f"https://img.youtube.com/vi/{video_id}/hqdefault.jpg"
+                        response = requests.get(thumb_url)
+
+                    # 2. Compress & Save
+                    if response.status_code == 200:
+                        # Wrap the raw downloaded bytes in a container so Pillow can read it
+                        image_stream = BytesIO(response.content)
+
+                        # Run your compressor (Resize to 800px width is perfect for shelves)
+                        compressed_file = compress_image(image_stream, max_width=800)
+
+                        if compressed_file:
+                            file_name = f"{video_id}.jpg"
+                            video_obj.thumbnail.save(file_name, compressed_file, save=True)
+                        else:
+                            # If compression fails, save raw
+                            video_obj.thumbnail.save(f"{video_id}.jpg", ContentFile(response.content), save=True)
+                    else:
+                        video_obj.save()
+
                 else:
-                    self.stdout.write(f"  - Skipped (Exists): {title}")
+                    self.stdout.write(f"  - Skipped: {title}")
