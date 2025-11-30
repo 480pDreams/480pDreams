@@ -346,3 +346,63 @@ nav a:hover {
 .thumb-btn.active img {
     filter: brightness(1);
 }
+
+/* VIRTUAL BOOKSHELF MODE */
+.shelf-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0; /* Spines touch each other */
+    padding: 40px 20px;
+    background-color: #3e2723; /* Dark Wood */
+    background-image: repeating-linear-gradient(45deg, #3e2723 0, #3e2723 10px, #4e342e 10px, #4e342e 20px); /* Wood texture */
+    border: 4px solid #1a100e;
+    box-shadow: inset 0 0 20px #000;
+    align-items: flex-end; /* Align bottoms */
+    min-height: 250px;
+    overflow-x: auto;
+}
+
+.spine-item {
+    width: 40px; /* Standard Spine Width */
+    height: 200px; /* Standard Spine Height */
+    transition: transform 0.2s, z-index 0.2s;
+    position: relative;
+    cursor: pointer;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.5); /* Shadow for depth */
+}
+
+.spine-item:hover {
+    transform: scale(1.1) translateY(-10px);
+    z-index: 100;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.8);
+}
+
+.spine-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* FAUX SPINE (Auto-generated if image missing) */
+.faux-spine {
+    width: 100%;
+    height: 100%;
+    background: #222;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #555;
+    writing-mode: vertical-rl; /* Vertical Text */
+    text-orientation: mixed;
+    font-family: sans-serif;
+    font-size: 0.7rem;
+    padding: 5px 0;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+/* Platform Colors for Faux Spines */
+.faux-spine.ps2 { background: #000; border-top: 10px solid #000; }
+.faux-spine.gcn { background: #fff; border-top: 10px solid #000; color: #000; }
+.faux-spine.xbox { background: #333; border-top: 10px solid #5dc21e; }

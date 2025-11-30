@@ -85,6 +85,10 @@
         <div style="flex: 3; min-width: 300px;">
             <div style="display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px;">
                 <h1 class="retro-font" style="margin: 0; font-size: 1.5rem;">Game Library</h1>
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="setView('grid')" class="view-btn active" id="btn-grid">GRID</button>
+                    <button onclick="setView('shelf')" class="view-btn" id="btn-shelf">SHELF</button>
+                </div>
                 <span style="color: #666; font-family: monospace;">{{ games.count }} TITLES FOUND</span>
             </div>
 
@@ -115,6 +119,21 @@
                     </div>
                 {% endfor %}
             </div>
+
+            <div id="view-shelf" class="shelf-container" style="display: none;">
+                {% for game in games %}
+                    <a href="{% url 'library:game_detail' game.slug %}" class="spine-item" title="{{ game.title }}">
+                        {% if game.spine_art %}
+                            <img src="{{ game.spine_art.url }}" alt="{{ game.title }}">
+                        {% else %}
+                            <div class="faux-spine">
+                                {{ game.title|truncatechars:25 }}
+                            </div>
+                        {% endif %}
+                    </a>
+                {% endfor %}
+            </div>
+
         </div>
 
     </div>
@@ -264,5 +283,45 @@
             color: #fff !important;
         }
     </style>
+
+<script>
+    function setView(viewMode) {
+        const grid = document.querySelector('.grid');
+        const shelf = document.getElementById('view-shelf');
+        const btnGrid = document.getElementById('btn-grid');
+        const btnShelf = document.getElementById('btn-shelf');
+
+        if (viewMode === 'shelf') {
+            grid.style.display = 'none';
+            shelf.style.display = 'flex';
+            btnShelf.style.color = 'var(--secondary)';
+            btnGrid.style.color = '#666';
+        } else {
+            grid.style.display = 'grid';
+            shelf.style.display = 'none';
+            btnGrid.style.color = 'var(--secondary)';
+            btnShelf.style.color = '#666';
+        }
+
+        // Save preference
+        localStorage.setItem('library_view', viewMode);
+    }
+
+    // Load saved view
+    const savedView = localStorage.getItem('library_view');
+    if (savedView) setView(savedView);
+</script>
+
+<style>
+    .view-btn {
+        background: transparent;
+        border: none;
+        font-family: 'Press Start 2P';
+        font-size: 0.7rem;
+        cursor: pointer;
+        color: #666;
+    }
+    .view-btn:hover { color: #fff; }
+</style>
 
 {% endblock %}
