@@ -1,0 +1,25 @@
+{% extends 'core/base.html' %}
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 40px auto; background: #111; border: 1px solid #333; padding: 40px;">
+
+    <a href="{% url 'blog:post_list' %}" style="color: #888; text-decoration: none;">&larr; Back to News</a>
+
+    <h1 style="font-size: 2.5rem; margin-top: 10px; color: var(--primary);">{{ post.title }}</h1>
+
+    <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 30px; font-size: 0.8rem; color: #888;">
+        <span>{{ post.published_date|date:"F j, Y" }}</span>
+        <span style="color: var(--secondary);">{{ post.get_category_display }}</span>
+    </div>
+
+    {% if post.image %}
+        <img src="{{ post.image.url }}" style="width: 100%; display: block; border: 1px solid #444; margin-bottom: 30px;">
+    {% endif %}
+
+    <div style="font-size: 1.1rem; line-height: 1.8; color: #ddd;">
+        {{ post.content|linebreaks }}
+    </div>
+
+</div>
+{% endblock %}

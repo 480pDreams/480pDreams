@@ -22,5 +22,6 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     path('', include('core.urls')),
     path('library/', include('library.urls')),
-    path('hardware/', include('hardware.urls')), # <--- Add this
+    path('hardware/', include('hardware.urls')),
+    path('blog/', include('blog.urls')),
 ]

@@ -28,6 +28,27 @@
         </div>
     </div>
 
+    {% if latest_news %}
+    <div class="shelf-section">
+        <h2 class="retro-font shelf-title" style="color: #fff;">Latest Headlines</h2>
+        <div class="shelf-grid">
+            {% for post in latest_news %}
+                <div class="card">
+                    <a href="{% url 'blog:post_detail' post.slug %}">
+                        {% if post.image %}
+                            <img src="{{ post.image.url }}" alt="{{ post.title }}" style="aspect-ratio: 16/9; object-fit: cover;">
+                        {% else %}
+                            <div style="height: 140px; background: #222; display: flex; align-items: center; justify-content: center; color: #666;">NEWS</div>
+                        {% endif %}
+                    </a>
+                    <div class="card-title" style="font-size: 0.9rem;">{{ post.title }}</div>
+                    <div class="card-meta">{{ post.published_date|date:"M d" }}</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
     <div class="shelf-section">
         <h2 class="retro-font shelf-title" style="color: var(--primary);">Recent Acquisitions</h2>
         <div class="shelf-grid">

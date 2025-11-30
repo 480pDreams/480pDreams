@@ -1,0 +1,32 @@
+{% extends 'core/base.html' %}
+{% block title %}Newsstand{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 40px auto;">
+    <h1 class="retro-font">Newsstand</h1>
+
+    <div style="display: flex; flex-direction: column; gap: 30px;">
+        {% for post in posts %}
+            <div style="border: 1px solid #333; background: #111; padding: 20px;">
+                <div style="display: flex; gap: 20px;">
+                    {% if post.image %}
+                        <div style="flex: 0 0 150px;">
+                            <img src="{{ post.image.url }}" style="width: 100%; aspect-ratio: 16/9; object-fit: cover; border: 1px solid #444;">
+                        </div>
+                    {% endif %}
+                    <div>
+                        <div style="color: var(--secondary); font-size: 0.7rem; text-transform: uppercase;">{{ post.get_category_display }}</div>
+                        <h2 style="margin: 5px 0; font-size: 1.5rem;">
+                            <a href="{% url 'blog:post_detail' post.slug %}" style="color: #fff; text-decoration: none;">{{ post.title }}</a>
+                        </h2>
+                        <div style="color: #888; font-size: 0.8rem;">{{ post.published_date|date:"M d, Y" }}</div>
+                        <p style="color: #ccc;">{{ post.content|truncatewords:30 }}</p>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p>No headlines today.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

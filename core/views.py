@@ -7,6 +7,7 @@ from django.http import JsonResponse
 import json
 from itertools import chain
 from operator import attrgetter
+from blog.models import Post
 
 
 def home(request):
@@ -22,6 +23,7 @@ def home(request):
     # <--- THESE LINES WERE MISSING/BROKEN --->
     recent_hardware = list(Hardware.objects.order_by('-created_at')[:10])
     updated_hardware = list(Hardware.objects.order_by('-updated_at')[:10])
+    latest_news = Post.objects.filter(is_published=True)[:3]
 
     # --- TAG DATA ---
     for g in recent_games: g.kind = 'game'
@@ -49,6 +51,7 @@ def home(request):
         'new_videos': new_videos,
         'recent_acquisitions': recent_acquisitions,
         'recently_updated': recently_updated,
+        'latest_news': latest_news,
     }
     return render(request, 'core/home.html', context)
 
