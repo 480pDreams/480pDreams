@@ -37,16 +37,16 @@ class GameFilter(django_filters.FilterSet):
     release_year_min = django_filters.NumberFilter(field_name='release_date', lookup_expr='year__gte')
     release_year_max = django_filters.NumberFilter(field_name='release_date', lookup_expr='year__lte')
 
-    # 5. BOOLEANS - Removing 'widget=CheckboxInput' temporarily to test logic
-    # We will use standard dropdowns (Unknown/Yes/No) for a moment to debug the "Silent Fail"
-    own_game = django_filters.BooleanFilter(method='filter_own_game')
-    missing_box = django_filters.BooleanFilter(method='filter_missing_box')
-    missing_manual = django_filters.BooleanFilter(method='filter_missing_manual')
+    # 5. BOOLEANS (Checkboxes Restored)
+    own_game = django_filters.BooleanFilter(method='filter_own_game', widget=forms.CheckboxInput)
 
-    has_playthrough = django_filters.BooleanFilter(method='filter_has_playthrough')
-    has_review = django_filters.BooleanFilter(method='filter_has_review')
-    has_unboxing = django_filters.BooleanFilter(method='filter_has_unboxing')
-    has_extras = django_filters.BooleanFilter(method='filter_has_extras')
+    missing_box = django_filters.BooleanFilter(method='filter_missing_box', widget=forms.CheckboxInput)
+    missing_manual = django_filters.BooleanFilter(method='filter_missing_manual', widget=forms.CheckboxInput)
+
+    has_playthrough = django_filters.BooleanFilter(method='filter_has_playthrough', widget=forms.CheckboxInput)
+    has_review = django_filters.BooleanFilter(method='filter_has_review', widget=forms.CheckboxInput)
+    has_unboxing = django_filters.BooleanFilter(method='filter_has_unboxing', widget=forms.CheckboxInput)
+    has_extras = django_filters.BooleanFilter(method='filter_has_extras', widget=forms.CheckboxInput)
 
     # 6. SORTING
     ordering = django_filters.OrderingFilter(
