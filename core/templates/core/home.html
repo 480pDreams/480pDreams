@@ -13,15 +13,8 @@
             {% for video in new_videos %}
                 <div class="video-card">
                     <div class="video-thumb-container">
-                        <a href="{{ video.url }}" target="_blank">
-                        {% if video.thumbnail %}
-                         <img src="{{ video.thumbnail.url }}" alt="{{ video.title }}" style="width: 100%; height: 100%; object-fit: cover;">
-                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3rem; color: #fff; text-shadow: 0 0 10px #000; opacity: 0.8;">▶</div>
-                        {% else %}
-                        {% video video.url '100% x 100%' %}
-                        {% endif %}
-                        </a>
-                </div>
+                         {% video video.url '100% x 100%' %}
+                    </div>
                     <div style="padding: 10px; font-size: 0.8rem; color: #fff;">
                         <span style="color: var(--primary); font-size: 0.7rem; display: block; margin-bottom: 4px;">
                             {{ video.get_channel_display }}
@@ -39,7 +32,7 @@
         <h2 class="retro-font shelf-title" style="color: var(--primary);">Recent Acquisitions</h2>
         <div class="shelf-grid">
             {% for item in recent_acquisitions %}
-                <div class="card">
+                <div class="card {% if not item.own_game and item.kind == 'game' %}ghost{% endif %}">
                     {% if item.kind == 'game' %}
                         <a href="{% url 'library:game_detail' item.slug %}">
                             {% if item.box_art %}
@@ -49,9 +42,17 @@
                             {% endif %}
                         </a>
                         <div class="card-title">{{ item.title }}</div>
-                        <div class="card-meta">Game</div>
+                        <div class="card-meta">
+                            <span>Game</span>
+                            {% if not item.own_game %}
+                                <span style="color: #666; float: right;">[GHOST]</span>
+                            {% else %}
+                                <span style="color: var(--secondary); float: right;">OWNED</span>
+                            {% endif %}
+                        </div>
                     {% else %}
-                        <a href="{% url 'hardware:hardware_detail' item.slug %}"> {% if item.image %}
+                        <a href="{% url 'hardware:hardware_detail' item.slug %}">
+                            {% if item.image %}
                                 <img src="{{ item.image.url }}" alt="{{ item.name }}">
                             {% else %}
                                 <div style="height: 250px; background: #222; display: flex; align-items: center; justify-content: center; color: #666;">No Image</div>
@@ -71,7 +72,7 @@
         <h2 class="retro-font shelf-title" style="color: #fff;">Recently Updated</h2>
         <div class="shelf-grid">
             {% for item in recently_updated %}
-                <div class="card">
+                <div class="card {% if not item.own_game and item.kind == 'game' %}ghost{% endif %}">
                      {% if item.kind == 'game' %}
                         <a href="{% url 'library:game_detail' item.slug %}">
                             {% if item.box_art %}
@@ -105,23 +106,4 @@
     </div>
 
 </div>
-
-<style>
-    /* Fix the video scanlines by forcing the video on top */
-    .video-thumb-container {
-        position: relative;
-        padding-bottom: 56.25%;
-        height: 0;
-        overflow: hidden;
-        z-index: 1000; /* <--- THIS REMOVES THE SCANLINES FROM THE VIDEO */
-    }
-    .video-thumb-container iframe {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-    }
-</style>
-
 {% endblock %}

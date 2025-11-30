@@ -1,8 +1,8 @@
 from django.db import models
-from django.contrib.auth.models import User  # <--- This was missing!
+from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from embed_video.fields import EmbedVideoField # Needed for your NetworkVideo model
+from embed_video.fields import EmbedVideoField
 
 # ==========================================
 # 1. USER PROFILE (For Themes)
