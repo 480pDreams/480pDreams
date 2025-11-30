@@ -15,7 +15,14 @@ class UserProfile(models.Model):
         ('pc98', 'PC-98 / Japanese'),
     ]
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+
+    # Preferences & Status
     theme = models.CharField(max_length=20, choices=THEME_CHOICES, default='retro')
+    is_patron = models.BooleanField(default=False, help_text="Is this user a paying supporter?")
+
+    # Identity Fields
+    avatar = models.ImageField(upload_to='avatars/', blank=True, help_text="Square images work best")
+    bio = models.TextField(max_length=500, blank=True, help_text="Tell the network about yourself")
 
     def __str__(self):
         return f"{self.user.username}'s Profile"

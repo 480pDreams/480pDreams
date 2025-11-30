@@ -8,6 +8,8 @@ import json
 from itertools import chain
 from operator import attrgetter
 from blog.models import Post
+from django.contrib import messages
+from .forms import UserUpdateForm, ProfileUpdateForm
 
 
 def home(request):
@@ -82,6 +84,32 @@ def update_theme(request):
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
 
     return JsonResponse({'status': 'error'}, status=400)
+
+
+@login_required
+def profile(request):
+    if request.method == 'POST':
+        u_form = UserUpdateForm(request.POST, instance=request.user)
+        p_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
+
+        if u_form.is_valid() and p_form.is_valid():
+            u_form.save()
+            p_form.save()
+            messages.success(request, f'Your account has been updated!')
+            return redirect('core:profile')  # Redirect prevents "Confirm Resubmission" on refresh
+
+    else:
+        u_form = UserUpdateForm(instance=request.user)
+        # Ensure profile exists (Self-Healing in case it's missing)
+        if not hasattr(request.user, 'profile'):
+            UserProfile.objects.create(user=request.user)
+        p_form = ProfileUpdateForm(instance=request.user.profile)
+
+    context = {
+        'u_form': u_form,
+        'p_form': p_form
+    }
+    return render(request, 'core/profile.html', context)
 
 
 @login_required
