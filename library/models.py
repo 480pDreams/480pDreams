@@ -27,6 +27,7 @@ def compress_image(image_field, max_width=800):
 class Platform(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True)
+    # Icon for the filter bar
     icon = models.ImageField(upload_to='platforms/icons/', blank=True)
     manufacturer = models.CharField(max_length=100)
     release_year = models.IntegerField(null=True, blank=True)
@@ -49,7 +50,22 @@ class Region(models.Model):
 
 
 class Series(models.Model):
-    name = models.CharField(max_length=200, help_text="e.g. Final Fantasy, Resident Evil")
+    name = models.CharField(max_length=200, help_text="e.g. Final Fantasy")
+    slug = models.SlugField(unique=True)
+
+    def __str__(self): return self.name
+
+
+# NEW: DEVELOPER & PUBLISHER MODELS
+class Developer(models.Model):
+    name = models.CharField(max_length=200)
+    slug = models.SlugField(unique=True)
+
+    def __str__(self): return self.name
+
+
+class Publisher(models.Model):
+    name = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
 
     def __str__(self): return self.name
@@ -66,35 +82,32 @@ class Game(models.Model):
 
     # --- META DATA ---
     title = models.CharField(max_length=200)
-    # Renamed per request
-    title_japanese = models.CharField(max_length=200, blank=True, verbose_name="Japanese Title",
-                                      help_text="Original Japanese title if applicable")
+    title_japanese = models.CharField(max_length=200, blank=True, verbose_name="Japanese Title")
     slug = models.SlugField(unique=True)
 
     # Relationships
     platform = models.ForeignKey('Platform', on_delete=models.CASCADE, related_name='games')
     series = models.ForeignKey('Series', on_delete=models.SET_NULL, null=True, blank=True, related_name='games')
-    other_versions = models.ManyToManyField('self', blank=True, symmetrical=True,
-                                            help_text="Link to other platform releases of this game")
+    other_versions = models.ManyToManyField('self', blank=True, symmetrical=True)
 
+    # Many-to-Many Fields (Multiple Selections)
     genres = models.ManyToManyField('Genre', blank=True)
     regions = models.ManyToManyField('Region', blank=True, related_name='games')
+    developers = models.ManyToManyField('Developer', blank=True)  # Replaces old text field
+    publishers = models.ManyToManyField('Publisher', blank=True)  # Replaces old text field
 
-    developer = models.CharField(max_length=200, blank=True)
-    publisher = models.CharField(max_length=200, blank=True)
     release_date = models.DateField(null=True, blank=True)
 
     # --- COLLECTION TRACKING ---
     game_format = models.CharField(max_length=20, choices=FORMAT_CHOICES, default='PHYSICAL')
 
-    # Physical Tracking
     own_game = models.BooleanField(default=False, verbose_name="Own Game/Disc")
     own_box = models.BooleanField(default=False, verbose_name="Own Box/Case")
     own_manual = models.BooleanField(default=False, verbose_name="Own Manual")
     condition_notes = models.CharField(max_length=200, blank=True)
 
-    # Condition Video (YouTube Short)
-    video_condition = EmbedVideoField(blank=True, help_text="YouTube Short URL showing item condition")
+    # Condition/Unboxing Video
+    video_condition = EmbedVideoField(blank=True, help_text="YouTube Short URL showing item condition/unboxing")
 
     # --- ART ASSETS ---
     box_art = models.ImageField(upload_to='games/covers/', blank=True)
@@ -109,7 +122,6 @@ class Game(models.Model):
     video_playthrough = EmbedVideoField(blank=True)
     video_review = EmbedVideoField(blank=True)
 
-    # --- STATUS ---
     is_favorite = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

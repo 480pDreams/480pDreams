@@ -9,69 +9,46 @@
         <div style="flex: 1; min-width: 250px; max-width: 300px; padding: 20px; border: 1px solid var(--primary); height: fit-content; background: #000;">
 
             <form method="get">
-                <div style="margin-bottom: 20px; border-bottom: 1px dashed #333; padding-bottom: 20px;">
-                    <label class="filter-label">SEARCH</label>
+
+                <div class="filter-section">
+                    <label class="filter-label">TITLE SEARCH</label>
                     {{ filter.form.title }}
+
+                    <label class="filter-label" style="margin-top: 10px;">PLATFORMS (Multi)</label>
+                    {{ filter.form.platform }}
+
+                    <label class="filter-label" style="margin-top: 10px;">RELEASE DATE</label>
+                    <div style="display: flex; gap: 5px;">
+                        {{ filter.form.release_date }}
+                    </div>
 
                     <label class="filter-label" style="margin-top: 10px;">SORT BY</label>
                     {{ filter.form.ordering }}
                 </div>
 
-                <div style="margin-bottom: 20px; border-bottom: 1px dashed #333; padding-bottom: 20px;">
-                    <label class="filter-label">PLATFORM</label>
-                    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-                        <button type="submit" name="platform" value="" class="platform-icon-btn" title="All Platforms">
-                            ALL
-                        </button>
-
-                        {% for plat in platforms %}
-                            <button type="submit" name="platform" value="{{ plat.id }}"
-                                    class="platform-icon-btn {% if request.GET.platform == plat.id|stringformat:'s' %}active{% endif %}">
-                                {% if plat.icon %}
-                                    <img src="{{ plat.icon.url }}" alt="{{ plat.name }}">
-                                {% else %}
-                                    {{ plat.name|slice:":3" }}
-                                {% endif %}
-                            </button>
-                        {% endfor %}
-                    </div>
-                </div>
-
-                <div style="margin-bottom: 15px;">
+                <div class="filter-section">
                     <label class="filter-label">DEVELOPER</label>
-                    {{ filter.form.developer }}
-                </div>
-                <div style="margin-bottom: 15px;">
-                    <label class="filter-label">PUBLISHER</label>
-                    {{ filter.form.publisher }}
+                    {{ filter.form.developers }}
+
+                    <label class="filter-label" style="margin-top: 10px;">PUBLISHER</label>
+                    {{ filter.form.publishers }}
+
+                    <label class="filter-label" style="margin-top: 10px;">REGION</label>
+                    {{ filter.form.regions }}
+
+                    <label class="filter-label" style="margin-top: 10px;">GENRE</label>
+                    {{ filter.form.genres }}
                 </div>
 
-                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                    <div style="flex: 1;">
-                        <label class="filter-label">YEAR (START)</label>
-                        {{ filter.form.release_year_min }}
-                    </div>
-                    <div style="flex: 1;">
-                        <label class="filter-label">YEAR (END)</label>
-                        {{ filter.form.release_year_max }}
-                    </div>
-                </div>
-
-                <div style="margin-bottom: 15px;">
-                    <label class="filter-label">REGION</label>
-                    {{ filter.form.region }}
-                </div>
-
-                <div style="margin-bottom: 20px; background: #111; padding: 10px; border: 1px solid #333;">
-                    <div class="checkbox-row">
-                        {{ filter.form.is_cib }} <label>Complete (CIB)</label>
-                    </div>
-                    <div class="checkbox-row">
-                        {{ filter.form.has_playthrough }} <label>Has Playthrough</label>
-                    </div>
-                    <div class="checkbox-row">
-                        {{ filter.form.has_review }} <label>Has Review</label>
-                    </div>
+                <div class="filter-section" style="background: #111; padding: 10px; border: 1px solid #333;">
+                    <div class="checkbox-row">{{ filter.form.own_game }} In Collection</div>
+                    <div class="checkbox-row">{{ filter.form.missing_box }} Missing Box</div>
+                    <div class="checkbox-row">{{ filter.form.missing_manual }} Missing Manual</div>
+                    <hr style="border: 0; border-top: 1px dashed #444; margin: 5px 0;">
+                    <div class="checkbox-row">{{ filter.form.has_playthrough }} Has Playthrough</div>
+                    <div class="checkbox-row">{{ filter.form.has_review }} Has Review</div>
+                    <div class="checkbox-row">{{ filter.form.has_unboxing }} Has Unboxing</div>
+                    <div class="checkbox-row">{{ filter.form.has_extras }} Has Member Content</div>
                 </div>
 
                 <button type="submit" style="width: 100%; padding: 12px; background: var(--secondary); color: #000; border: none; font-family: 'Press Start 2P'; cursor: pointer; font-size: 0.8rem;">
@@ -118,6 +95,13 @@
     </div>
 
     <style>
+        .filter-section {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #333;
+        }
+        .filter-section:last-child { border-bottom: none; }
+
         .filter-label {
             display: block;
             color: var(--primary);
@@ -126,7 +110,7 @@
             font-family: 'Press Start 2P';
         }
 
-        select, input[type="text"], input[type="number"] {
+        select, input[type="text"], input[type="number"], input[type="date"] {
             width: 100%;
             padding: 8px;
             background: #111;
@@ -136,37 +120,19 @@
             box-sizing: border-box;
         }
 
+        /* Checkbox Styling */
         .checkbox-row {
-            margin-bottom: 5px;
-            font-size: 0.8rem;
-            color: #ccc;
             display: flex;
             align-items: center;
             gap: 10px;
+            margin-bottom: 8px;
+            font-size: 0.8rem;
+            color: #ccc;
         }
-
-        /* Platform Icons */
-        .platform-icon-btn {
-            width: 40px;
-            height: 40px;
-            border: 1px solid #444;
-            background: #111;
-            cursor: pointer;
-            padding: 2px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.6rem;
-            color: #fff;
-        }
-        .platform-icon-btn img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-        .platform-icon-btn:hover, .platform-icon-btn.active {
-            border-color: var(--secondary);
-            box-shadow: 0 0 5px var(--secondary);
+        input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--secondary);
         }
     </style>
 

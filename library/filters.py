@@ -1,47 +1,61 @@
 import django_filters
 from django import forms
 from django.db.models import Q
-from .models import Game, Platform, Genre, Region
+from .models import Game, Platform, Genre, Region, Developer, Publisher
 
 
 class GameFilter(django_filters.FilterSet):
-    # 1. SEARCH
+    # 1. TOP SECTION
     title = django_filters.CharFilter(
         lookup_expr='icontains',
-        label='Title Search',
-        widget=forms.TextInput(attrs={'placeholder': 'Search games...'})
+        label='Search Title',
+        widget=forms.TextInput(attrs={'placeholder': 'Enter title...'})
     )
 
-    # 2. PLATFORM (We handle the Icons in the template, but this logic is needed backend)
     platform = django_filters.ModelMultipleChoiceFilter(
         queryset=Platform.objects.all(),
         label='Platform'
     )
 
-    # 3. METADATA FILTERS
-    developer = django_filters.CharFilter(lookup_expr='icontains', label='Developer')
-    publisher = django_filters.CharFilter(lookup_expr='icontains', label='Publisher')
+    # Date Range with Calendar Widget
+    release_date = django_filters.DateFromToRangeFilter(
+        field_name='release_date',
+        label='Release Date',
+        widget=django_filters.widgets.RangeWidget(attrs={'type': 'date'})
+    )
 
-    # Date Range (Year)
-    release_year_min = django_filters.NumberFilter(field_name='release_date', lookup_expr='year__gte',
-                                                   label='Year (From)')
-    release_year_max = django_filters.NumberFilter(field_name='release_date', lookup_expr='year__lte',
-                                                   label='Year (To)')
-
-    region = django_filters.ModelChoiceFilter(queryset=Region.objects.all(), label='Region')
+    # 2. MIDDLE SECTION (Multi-Selects)
+    developers = django_filters.ModelMultipleChoiceFilter(queryset=Developer.objects.all(), label='Developer')
+    publishers = django_filters.ModelMultipleChoiceFilter(queryset=Publisher.objects.all(), label='Publisher')
+    regions = django_filters.ModelMultipleChoiceFilter(queryset=Region.objects.all(), label='Region')
     genres = django_filters.ModelMultipleChoiceFilter(queryset=Genre.objects.all(), label='Genre')
 
-    # 4. CONTENT & STATUS
-    # "Has Review" checks if EITHER video OR written review exists
-    has_review = django_filters.BooleanFilter(method='filter_has_review', label='Has Review')
+    # 3. BOTTOM SECTION (Booleans)
+
+    # "In Collection" (Own Game)
+    own_game = django_filters.BooleanFilter(label='In Collection', widget=forms.CheckboxInput)
+
+    # "Missing Box" -> We check if own_box is False
+    missing_box = django_filters.BooleanFilter(method='filter_missing_box', label='Missing Box',
+                                               widget=forms.CheckboxInput)
+
+    # "Missing Manual" -> We check if own_manual is False
+    missing_manual = django_filters.BooleanFilter(method='filter_missing_manual', label='Missing Manual',
+                                                  widget=forms.CheckboxInput)
 
     has_playthrough = django_filters.BooleanFilter(field_name='video_playthrough', lookup_expr='isnull', exclude=True,
-                                                   label='Has Playthrough')
+                                                   label='Has Playthrough', widget=forms.CheckboxInput)
 
-    # "CIB" Check (Game + Box + Manual)
-    is_cib = django_filters.BooleanFilter(method='filter_is_cib', label='Complete (CIB)')
+    has_review = django_filters.BooleanFilter(method='filter_has_review', label='Has Review',
+                                              widget=forms.CheckboxInput)
 
-    # 5. SORTING
+    has_unboxing = django_filters.BooleanFilter(field_name='video_condition', lookup_expr='isnull', exclude=True,
+                                                label='Has Unboxing/Condition Video', widget=forms.CheckboxInput)
+
+    has_extras = django_filters.BooleanFilter(method='filter_has_extras', label='Has Member Content',
+                                              widget=forms.CheckboxInput)
+
+    # 4. SORTING
     ordering = django_filters.OrderingFilter(
         fields=(
             ('title', 'title'),
@@ -49,9 +63,9 @@ class GameFilter(django_filters.FilterSet):
             ('created_at', 'date_added'),
         ),
         field_labels={
-            'title': 'Alphabetical (A-Z)',
+            'title': 'Alphabetical',
             'release_date': 'Release Date',
-            'created_at': 'Date Added (Default)',
+            'created_at': 'Date Added',
         },
         label='Sort By'
     )
@@ -60,13 +74,15 @@ class GameFilter(django_filters.FilterSet):
         model = Game
         fields = []
 
-    # Custom Filter Logic
-    def filter_has_review(self, queryset, name, value):
-        if value:
-            return queryset.filter(Q(written_review__gt='') | Q(video_review__isnull=False))
-        return queryset
+    # Custom Logic
+    def filter_missing_box(self, queryset, name, value):
+        return queryset.filter(own_box=False) if value else queryset
 
-    def filter_is_cib(self, queryset, name, value):
-        if value:
-            return queryset.filter(own_game=True, own_box=True, own_manual=True)
-        return queryset
+    def filter_missing_manual(self, queryset, name, value):
+        return queryset.filter(own_manual=False) if value else queryset
+
+    def filter_has_review(self, queryset, name, value):
+        return queryset.filter(Q(written_review__gt='') | Q(video_review__isnull=False)) if value else queryset
+
+    def filter_has_extras(self, queryset, name, value):
+        return queryset.filter(extra_videos__is_patron_only=True).distinct() if value else queryset
