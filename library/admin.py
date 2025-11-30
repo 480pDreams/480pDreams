@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Platform, Genre, Game, GameVideo
+from .models import Platform, Genre, Game, GameVideo, GameComponent
 
 
 # This allows you to add multiple "Extra" videos directly on the Game Edit page
