@@ -5,57 +5,44 @@ from .models import Game, Platform, Genre, Region, Developer, Publisher
 
 
 class GameFilter(django_filters.FilterSet):
-    # 1. TOP SECTION
+    # 1. SEARCH
     title = django_filters.CharFilter(
         lookup_expr='icontains',
         label='Search Title',
-        widget=forms.TextInput(attrs={'placeholder': 'Enter title...'})
     )
 
+    # 2. PLATFORM (Icon Bar)
     platform = django_filters.ModelMultipleChoiceFilter(
         queryset=Platform.objects.all(),
         label='Platform'
     )
 
-    # Date Range with Calendar Widget
-    release_date = django_filters.DateFromToRangeFilter(
-        field_name='release_date',
-        label='Release Date',
-        widget=django_filters.widgets.RangeWidget(attrs={'type': 'date'})
-    )
+    # 3. METADATA FILTERS (Tom Selects)
+    # conjoined=True would mean "AND" logic (must have both devs).
+    # Default is "OR" (Dev A or Dev B), which is usually better.
+    developers = django_filters.ModelMultipleChoiceFilter(queryset=Developer.objects.all())
+    publishers = django_filters.ModelMultipleChoiceFilter(queryset=Publisher.objects.all())
+    regions = django_filters.ModelMultipleChoiceFilter(queryset=Region.objects.all())
+    genres = django_filters.ModelMultipleChoiceFilter(queryset=Genre.objects.all())
 
-    # 2. MIDDLE SECTION (Multi-Selects)
-    developers = django_filters.ModelMultipleChoiceFilter(queryset=Developer.objects.all(), label='Developer')
-    publishers = django_filters.ModelMultipleChoiceFilter(queryset=Publisher.objects.all(), label='Publisher')
-    regions = django_filters.ModelMultipleChoiceFilter(queryset=Region.objects.all(), label='Region')
-    genres = django_filters.ModelMultipleChoiceFilter(queryset=Genre.objects.all(), label='Genre')
+    # 4. DATE RANGE (Matches HTML inputs: release_year_min / release_year_max)
+    release_year_min = django_filters.NumberFilter(field_name='release_date', lookup_expr='year__gte')
+    release_year_max = django_filters.NumberFilter(field_name='release_date', lookup_expr='year__lte')
 
-    # 3. BOTTOM SECTION (Booleans)
+    # 5. CHECKBOXES
+    own_game = django_filters.BooleanFilter(widget=forms.CheckboxInput)
 
-    # "In Collection" (Own Game)
-    own_game = django_filters.BooleanFilter(label='In Collection', widget=forms.CheckboxInput)
-
-    # "Missing Box" -> We check if own_box is False
-    missing_box = django_filters.BooleanFilter(method='filter_missing_box', label='Missing Box',
-                                               widget=forms.CheckboxInput)
-
-    # "Missing Manual" -> We check if own_manual is False
-    missing_manual = django_filters.BooleanFilter(method='filter_missing_manual', label='Missing Manual',
-                                                  widget=forms.CheckboxInput)
-
+    # Custom methods for logic
+    missing_box = django_filters.BooleanFilter(method='filter_missing_box', widget=forms.CheckboxInput)
+    missing_manual = django_filters.BooleanFilter(method='filter_missing_manual', widget=forms.CheckboxInput)
     has_playthrough = django_filters.BooleanFilter(field_name='video_playthrough', lookup_expr='isnull', exclude=True,
-                                                   label='Has Playthrough', widget=forms.CheckboxInput)
-
-    has_review = django_filters.BooleanFilter(method='filter_has_review', label='Has Review',
-                                              widget=forms.CheckboxInput)
-
+                                                   widget=forms.CheckboxInput)
+    has_review = django_filters.BooleanFilter(method='filter_has_review', widget=forms.CheckboxInput)
     has_unboxing = django_filters.BooleanFilter(field_name='video_condition', lookup_expr='isnull', exclude=True,
-                                                label='Has Unboxing/Condition Video', widget=forms.CheckboxInput)
+                                                widget=forms.CheckboxInput)
+    has_extras = django_filters.BooleanFilter(method='filter_has_extras', widget=forms.CheckboxInput)
 
-    has_extras = django_filters.BooleanFilter(method='filter_has_extras', label='Has Member Content',
-                                              widget=forms.CheckboxInput)
-
-    # 4. SORTING
+    # 6. SORTING
     ordering = django_filters.OrderingFilter(
         fields=(
             ('title', 'title'),
@@ -67,14 +54,13 @@ class GameFilter(django_filters.FilterSet):
             'release_date': 'Release Date',
             'created_at': 'Date Added',
         },
-        label='Sort By'
     )
 
     class Meta:
         model = Game
         fields = []
 
-    # Custom Logic
+    # LOGIC
     def filter_missing_box(self, queryset, name, value):
         return queryset.filter(own_box=False) if value else queryset
 

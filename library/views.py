@@ -4,20 +4,23 @@ from .filters import GameFilter
 
 
 def game_list(request):
-    # 1. Get Base Queryset
     all_games = Game.objects.all().order_by('title')
-
-    # 2. Apply Filter
     my_filter = GameFilter(request.GET, queryset=all_games)
-    games = my_filter.qs
 
-    # 3. Get Platforms (For the icon bar)
+    # DEBUG: Check if filter is valid
+    if not my_filter.is_valid():
+        print("FILTER ERRORS:", my_filter.errors)
+        # If invalid, we show all games instead of hiding them
+        games = all_games
+    else:
+        games = my_filter.qs
+
     platforms = Platform.objects.all().order_by('name')
 
     context = {
         'games': games,
         'filter': my_filter,
-        'platforms': platforms,  # <--- Crucial: Pass this to the template!
+        'platforms': platforms,
     }
     return render(request, 'library/game_list.html', context)
 
