@@ -4,20 +4,21 @@ from .filters import GameFilter
 
 
 def game_list(request):
-    # 1. Get Base Queryset (All games)
     all_games = Game.objects.all().order_by('title')
 
-    # 2. Apply Filter
+    # DEBUG: Check Server Log
+    print(f"--- DEBUG: RAW GAME COUNT: {all_games.count()} ---")
+
     my_filter = GameFilter(request.GET, queryset=all_games)
 
-    # 3. Get Result
     if my_filter.is_valid():
         games = my_filter.qs
+        print(f"--- DEBUG: FILTERED GAME COUNT: {games.count()} ---")
     else:
-        # Fallback if URL params are garbage
+        print("--- DEBUG: FILTER INVALID ---")
+        print(my_filter.errors)
         games = all_games
 
-    # 4. Get Platforms (For the icon bar at top of sidebar)
     platforms = Platform.objects.all().order_by('name')
 
     context = {
