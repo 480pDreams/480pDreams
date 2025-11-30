@@ -406,3 +406,20 @@ nav a:hover {
 .faux-spine.ps2 { background: #000; border-top: 10px solid #000; }
 .faux-spine.gcn { background: #fff; border-top: 10px solid #000; color: #000; }
 .faux-spine.xbox { background: #333; border-top: 10px solid #5dc21e; }
+
+/* GHOST LOGIC (Unowned Games) */
+.card.ghost img {
+    filter: grayscale(100%);
+    opacity: 0.6;
+    transition: all 0.3s;
+}
+
+.card.ghost:hover img {
+    filter: grayscale(0%); /* Restore color on hover */
+    opacity: 1;
+}
+
+/* Optional: Add a visual marker */
+.card.ghost .card-title {
+    color: #888;
+}
