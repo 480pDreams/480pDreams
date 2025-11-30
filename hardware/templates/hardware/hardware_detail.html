@@ -1,29 +1,99 @@
 {% extends 'core/base.html' %}
-{% block title %}Hardware: {{ item.name }}{% endblock %}
+{% load embed_video_tags %}
+
+{% block title %}{{ item.name }}{% endblock %}
 
 {% block content %}
 <div style="margin-top: 20px;">
-    <a href="{% url 'hardware:hardware_list' %}" style="color: #888; text-decoration: none;">&larr; Back to Hardware</a>
+    <a href="{% url 'hardware:hardware_list' %}" style="color: #888; text-decoration: none;">&larr; Back to Vault</a>
 
     <div style="display: flex; gap: 40px; margin-top: 20px; flex-wrap: wrap;">
 
         <div style="flex: 1; min-width: 300px;">
-            <div style="border: 2px solid #333; padding: 10px; background: #000;">
-                {% if item.image %}
-                    <img src="{{ item.image.url }}" alt="{{ item.name }}" style="width: 100%; display: block;">
+            <div class="gallery-hero">
+                {% if item.image_front %}
+                    <img id="hero-img" src="{{ item.image_front.url }}" alt="Main">
                 {% else %}
-                    <div style="height: 400px; background: #222; display: flex; align-items: center; justify-content: center;">No Image</div>
+                    <div style="color: #666;">NO IMAGE</div>
                 {% endif %}
             </div>
+            <div class="thumb-strip">
+                {% if item.image_front %} <div class="thumb-btn active" onclick="swapImage(this, '{{ item.image_front.url }}')"><img src="{{ item.image_front.url }}"></div> {% endif %}
+                {% if item.image_back %} <div class="thumb-btn" onclick="swapImage(this, '{{ item.image_back.url }}')"><img src="{{ item.image_back.url }}"></div> {% endif %}
+                {% if item.image_top %} <div class="thumb-btn" onclick="swapImage(this, '{{ item.image_top.url }}')"><img src="{{ item.image_top.url }}"></div> {% endif %}
+                {% if item.image_bottom %} <div class="thumb-btn" onclick="swapImage(this, '{{ item.image_bottom.url }}')"><img src="{{ item.image_bottom.url }}"></div> {% endif %}
+                {% if item.image_side %} <div class="thumb-btn" onclick="swapImage(this, '{{ item.image_side.url }}')"><img src="{{ item.image_side.url }}"></div> {% endif %}
+            </div>
+
+            <script>
+                function swapImage(element, url) {
+                    document.getElementById('hero-img').src = url;
+                    document.querySelectorAll('.thumb-btn').forEach(t => t.classList.remove('active'));
+                    element.classList.add('active');
+                }
+            </script>
+
+            <table style="width: 100%; margin-top: 20px; border-collapse: collapse; font-size: 0.9rem;">
+                <tr style="border-bottom: 1px solid #333;"><td style="padding: 10px; color: #888;">Type</td><td style="padding: 10px; text-align: right;">{{ item.type.name }}</td></tr>
+                <tr style="border-bottom: 1px solid #333;"><td style="padding: 10px; color: #888;">Manufacturer</td><td style="padding: 10px; text-align: right;">{{ item.manufacturer }}</td></tr>
+                <tr style="border-bottom: 1px solid #333;"><td style="padding: 10px; color: #888;">Released</td><td style="padding: 10px; text-align: right;">{{ item.release_date|date:"Y" }}</td></tr>
+
+                <tr style="border-bottom: 1px solid #333;">
+                    <td style="padding: 10px; color: #888;">Models</td>
+                    <td style="padding: 10px; text-align: right; font-family: monospace; font-size: 0.8rem;">{{ item.model_numbers }}</td>
+                </tr>
+
+                <tr style="border-bottom: 1px solid #333;">
+                    <td colspan="2" style="padding: 0;">
+                        {% if item.video_condition %}
+                            <div style="position: relative; width: 100%; aspect-ratio: 9/16; background: #000;">
+                                <div class="video-wrapper" style="height: 100%; padding-bottom: 0;">{% video item.video_condition '100% x 100%' %}</div>
+                                <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.7); color: #fff; text-align: center; padding: 5px; font-size: 0.7rem;">CONDITION</div>
+                            </div>
+                        {% else %}
+                            <div style="padding: 15px; display: flex; gap: 5px; justify-content: center; font-size: 0.8rem;">
+                                <span style="color: {% if item.own_item %}var(--primary){% else %}#444{% endif %}; border: 1px solid #444; padding: 2px 5px;">UNIT</span>
+                                <span style="color: {% if item.own_box %}var(--primary){% else %}#444{% endif %}; border: 1px solid #444; padding: 2px 5px;">BOX</span>
+                                <span style="color: {% if item.own_accessories %}var(--primary){% else %}#444{% endif %}; border: 1px solid #444; padding: 2px 5px;">ACC</span>
+                            </div>
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
         </div>
 
         <div style="flex: 2; min-width: 300px;">
-            <h1 style="margin-top: 0; font-size: 2rem; color: var(--secondary);">{{ item.name }}</h1>
-            <h3 style="color: #888; margin-top: -10px;">{{ item.manufacturer }}</h3>
+            <h1 style="margin-top: 0; font-size: 2rem;">{{ item.name }}</h1>
+            <div style="margin-bottom: 20px; font-size: 1rem; color: #888; font-style: italic;">{{ item.description|linebreaks }}</div>
+            <hr style="border: 0; border-top: 1px dashed #333; margin: 30px 0;">
 
-            <div style="font-size: 1.1rem; line-height: 1.8; color: #ccc; margin-top: 20px;">
-                {{ item.description|linebreaks }}
+            <h2 class="retro-font" style="font-size: 1.2rem; color: var(--secondary);">480p Review</h2>
+            {% if item.video_review %}
+                <div class="video-wrapper">{% video item.video_review '100% x 100%' %}</div>
+            {% else %}
+                <div style="border: 2px dashed #333; padding: 20px; background: rgba(0,0,0,0.3); text-align: center; color: #666; font-family: monospace;">[ DATA MISSING ]</div>
+            {% endif %}
+
+            {% if item.other_variants.exists %}
+            <div style="margin-top: 40px;">
+                <h2 class="retro-font" style="font-size: 1.2rem; color: #fff;">Colors & Variants</h2>
+                <div class="grid" style="grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px;">
+                    {% for var in item.other_variants.all %}
+                    <div class="card {% if not var.own_item %}ghost{% endif %}">
+                        <a href="{% url 'hardware:hardware_detail' var.slug %}">
+                            {% if var.image_front %}
+                                <img src="{{ var.image_front.url }}" alt="{{ var.name }}">
+                            {% else %}
+                                <div style="height: 180px; background: #000; display: flex; align-items: center; justify-content: center; color: #555;">NO IMG</div>
+                            {% endif %}
+                        </a>
+                        <div class="card-title" style="font-size: 0.8rem;">{{ var.name }}</div>
+                        <div class="card-meta">{% if not var.own_item %}<span style="color: #666;">[GHOST]</span>{% endif %}</div>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
+            {% endif %}
         </div>
     </div>
 </div>
