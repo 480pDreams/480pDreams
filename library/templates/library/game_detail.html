@@ -100,27 +100,42 @@
                 {% endif %}
 
                 <tr style="border-bottom: 1px solid #333;">
-                    <td colspan="2" style="padding: 10px;">
-                        <div style="display: flex; gap: 5px; justify-content: center; font-size: 0.8rem;">
-                            <span style="color: {% if game.own_game %}var(--primary){% else %}#444{% endif %}; border: 1px solid #444; padding: 2px 5px;">
-                                GAME
-                            </span>
-                            <span style="color: {% if game.own_box %}var(--primary){% else %}#444{% endif %}; border: 1px solid #444; padding: 2px 5px;">
-                                BOX
-                            </span>
-                            <span style="color: {% if game.own_manual %}var(--primary){% else %}#444{% endif %}; border: 1px solid #444; padding: 2px 5px;">
-                                MAN
-                            </span>
-                        </div>
+                    <td colspan="2" style="padding: 0;">
 
-                        {% if game.components.exists %}
-                            <div style="margin-top: 10px; text-align: center; font-size: 0.7rem; color: #888;">
-                                {% for comp in game.components.all %}
-                                    <div>
-                                        {% if comp.is_owned %}✅{% else %}❌{% endif %} {{ comp.name }}
-                                    </div>
-                                {% endfor %}
+                        {% if game.game_format == 'DIGITAL' %}
+                            <div style="padding: 15px; text-align: center; background: #111;">
+                                <span style="color: var(--secondary); font-family: 'Press Start 2P'; font-size: 0.7rem;">DIGITAL COPY</span>
                             </div>
+
+                        {% else %}
+
+                            {% if game.video_condition %}
+                                <div style="position: relative; width: 100%; aspect-ratio: 9/16; background: #000;">
+                                    <div class="video-wrapper" style="height: 100%; padding-bottom: 0;">
+                                        {% video game.video_condition '100% x 100%' %}
+                                    </div>
+                                    <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.7); color: #fff; text-align: center; padding: 5px; font-size: 0.7rem;">
+                                        CONDITION REPORT
+                                    </div>
+                                </div>
+
+                            {% else %}
+                                <div style="padding: 15px;">
+                                    <div style="display: flex; gap: 5px; justify-content: center; font-size: 0.8rem;">
+                                        <span style="color: {% if game.own_game %}var(--primary){% else %}#444{% endif %}; border: 1px solid #444; padding: 2px 5px;">GAME</span>
+                                        <span style="color: {% if game.own_box %}var(--primary){% else %}#444{% endif %}; border: 1px solid #444; padding: 2px 5px;">BOX</span>
+                                        <span style="color: {% if game.own_manual %}var(--primary){% else %}#444{% endif %}; border: 1px solid #444; padding: 2px 5px;">MAN</span>
+                                    </div>
+                                    {% if game.components.exists %}
+                                        <div style="margin-top: 10px; text-align: center; font-size: 0.7rem; color: #888;">
+                                            {% for comp in game.components.all %}
+                                                <div>{% if comp.is_owned %}✅{% else %}❌{% endif %} {{ comp.name }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+
                         {% endif %}
                     </td>
                 </tr>
