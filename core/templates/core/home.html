@@ -13,8 +13,15 @@
             {% for video in new_videos %}
                 <div class="video-card">
                     <div class="video-thumb-container">
-                         {% video video.url '100% x 100%' %}
-                    </div>
+                        <a href="{{ video.url }}" target="_blank">
+                        {% if video.thumbnail %}
+                         <img src="{{ video.thumbnail.url }}" alt="{{ video.title }}" style="width: 100%; height: 100%; object-fit: cover;">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3rem; color: #fff; text-shadow: 0 0 10px #000; opacity: 0.8;">▶</div>
+                        {% else %}
+                        {% video video.url '100% x 100%' %}
+                        {% endif %}
+                        </a>
+                </div>
                     <div style="padding: 10px; font-size: 0.8rem; color: #fff;">
                         <span style="color: var(--primary); font-size: 0.7rem; display: block; margin-bottom: 4px;">
                             {{ video.get_channel_display }}
