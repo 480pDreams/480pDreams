@@ -27,6 +27,7 @@ def compress_image(image_field, max_width=800):
 class Platform(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True)
+    icon = models.ImageField(upload_to='platforms/icons/', blank=True)
     manufacturer = models.CharField(max_length=100)
     release_year = models.IntegerField(null=True, blank=True)
 

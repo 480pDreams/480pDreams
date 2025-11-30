@@ -1,39 +1,72 @@
 import django_filters
 from django import forms
-from .models import Game, Platform, Genre
+from django.db.models import Q
+from .models import Game, Platform, Genre, Region
 
 
 class GameFilter(django_filters.FilterSet):
-    # Search by Title (contains text)
+    # 1. SEARCH
     title = django_filters.CharFilter(
         lookup_expr='icontains',
-        label='Search Title',
-        widget=forms.TextInput(attrs={'placeholder': 'e.g. Silent Hill'})
+        label='Title Search',
+        widget=forms.TextInput(attrs={'placeholder': 'Search games...'})
     )
 
-    # Filter by Platform
-    platform = django_filters.ModelChoiceFilter(
+    # 2. PLATFORM (We handle the Icons in the template, but this logic is needed backend)
+    platform = django_filters.ModelMultipleChoiceFilter(
         queryset=Platform.objects.all(),
         label='Platform'
     )
 
-    # Filter by Genre
-    genres = django_filters.ModelMultipleChoiceFilter(
-        queryset=Genre.objects.all(),
-        label='Genre'
-    )
+    # 3. METADATA FILTERS
+    developer = django_filters.CharFilter(lookup_expr='icontains', label='Developer')
+    publisher = django_filters.CharFilter(lookup_expr='icontains', label='Publisher')
 
-    # The New "Owned" Toggle
-    # This looks at the 'own_game' boolean we just made
-    own_game = django_filters.BooleanFilter(
-        label='Owned (Disc/Cart)',
-        widget=forms.Select(choices=[
-            (None, 'Show All (Including Ghosts)'),
-            (True, 'Owned Only'),
-            (False, 'Wishlist / Ghosts Only')
-        ])
+    # Date Range (Year)
+    release_year_min = django_filters.NumberFilter(field_name='release_date', lookup_expr='year__gte',
+                                                   label='Year (From)')
+    release_year_max = django_filters.NumberFilter(field_name='release_date', lookup_expr='year__lte',
+                                                   label='Year (To)')
+
+    region = django_filters.ModelChoiceFilter(queryset=Region.objects.all(), label='Region')
+    genres = django_filters.ModelMultipleChoiceFilter(queryset=Genre.objects.all(), label='Genre')
+
+    # 4. CONTENT & STATUS
+    # "Has Review" checks if EITHER video OR written review exists
+    has_review = django_filters.BooleanFilter(method='filter_has_review', label='Has Review')
+
+    has_playthrough = django_filters.BooleanFilter(field_name='video_playthrough', lookup_expr='isnull', exclude=True,
+                                                   label='Has Playthrough')
+
+    # "CIB" Check (Game + Box + Manual)
+    is_cib = django_filters.BooleanFilter(method='filter_is_cib', label='Complete (CIB)')
+
+    # 5. SORTING
+    ordering = django_filters.OrderingFilter(
+        fields=(
+            ('title', 'title'),
+            ('release_date', 'release_date'),
+            ('created_at', 'date_added'),
+        ),
+        field_labels={
+            'title': 'Alphabetical (A-Z)',
+            'release_date': 'Release Date',
+            'created_at': 'Date Added (Default)',
+        },
+        label='Sort By'
     )
 
     class Meta:
         model = Game
-        fields = ['title', 'platform', 'genres', 'own_game']
+        fields = []
+
+    # Custom Filter Logic
+    def filter_has_review(self, queryset, name, value):
+        if value:
+            return queryset.filter(Q(written_review__gt='') | Q(video_review__isnull=False))
+        return queryset
+
+    def filter_is_cib(self, queryset, name, value):
+        if value:
+            return queryset.filter(own_game=True, own_box=True, own_manual=True)
+        return queryset
