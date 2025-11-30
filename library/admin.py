@@ -1,6 +1,9 @@
 from django.contrib import admin
-from .models import Platform, Genre, Game, GameVideo, GameComponent
+from .models import Platform, Genre, Game, Region, GameVideo, GameComponent
 
+@admin.register(Region)
+class RegionAdmin(admin.ModelAdmin):
+    prepopulated_fields = {'slug': ('name',)}
 
 # This allows you to add multiple "Extra" videos directly on the Game Edit page
 class GameVideoInline(admin.TabularInline):
