@@ -4,20 +4,20 @@ from .filters import GameFilter
 
 
 def game_list(request):
-    # 1. Get Base Queryset
+    # 1. Get Base Queryset (All games)
     all_games = Game.objects.all().order_by('title')
 
     # 2. Apply Filter
     my_filter = GameFilter(request.GET, queryset=all_games)
 
-    # 3. Use the Filtered Result (This was the fix!)
+    # 3. Get Result
     if my_filter.is_valid():
         games = my_filter.qs
     else:
-        # If inputs are weird (like ?year=abc), show all
+        # Fallback if URL params are garbage
         games = all_games
 
-    # 4. Get Platforms (For the icon bar)
+    # 4. Get Platforms (For the icon bar at top of sidebar)
     platforms = Platform.objects.all().order_by('name')
 
     context = {
@@ -28,7 +28,6 @@ def game_list(request):
     return render(request, 'library/game_list.html', context)
 
 
-# ... (Keep game_detail view as is) ...
 def game_detail(request, slug):
     game = get_object_or_404(Game, slug=slug)
     return render(request, 'library/game_detail.html', {'game': game})
