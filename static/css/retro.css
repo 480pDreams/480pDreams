@@ -85,6 +85,9 @@ body {
     padding: 0;
     line-height: 1.6;
     transition: background-color 0.3s, color 0.3s;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 h1, h2, h3, .retro-font {
@@ -109,6 +112,9 @@ h1, h2, h3, .retro-font {
     max-width: 95vw;
     margin: 0 auto;
     padding: 0 20px;
+    flex: 1;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* =========================================
