@@ -85,10 +85,6 @@
         <div style="flex: 3; min-width: 300px;">
             <div style="display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px;">
                 <h1 class="retro-font" style="margin: 0; font-size: 1.5rem;">Game Library</h1>
-                <div style="display: flex; gap: 10px;">
-                    <button onclick="setView('grid')" class="view-btn active" id="btn-grid">GRID</button>
-                    <button onclick="setView('shelf')" class="view-btn" id="btn-shelf">SHELF</button>
-                </div>
                 <span style="color: #666; font-family: monospace;">{{ games.count }} TITLES FOUND</span>
             </div>
 
@@ -119,32 +115,16 @@
                     </div>
                 {% endfor %}
             </div>
-
-            <div id="view-shelf" class="shelf-container" style="display: none;">
-                {% for game in games %}
-                    <a href="{% url 'library:game_detail' game.slug %}" class="spine-item" title="{{ game.title }}">
-                        {% if game.spine_art %}
-                            <img src="{{ game.spine_art.url }}" alt="{{ game.title }}">
-                        {% else %}
-                            <div class="faux-spine">
-                                {{ game.title|truncatechars:25 }}
-                            </div>
-                        {% endif %}
-                    </a>
-                {% endfor %}
-            </div>
-
         </div>
 
     </div>
 
     <script>
-        // Apply to all multi-select boxes
         document.querySelectorAll('select[multiple]').forEach((el) => {
             new TomSelect(el, {
-                plugins: ['remove_button'], // Adds the "x" to close chips
+                plugins: ['remove_button'],
                 maxItems: 10,
-                wrapperClass: 'ts-wrapper retro-chips', // Custom class for styling
+                wrapperClass: 'ts-wrapper retro-chips',
                 controlInput: '<input>',
                 render: {
                     item: function(data, escape) {
@@ -184,7 +164,6 @@
             box-sizing: border-box;
         }
 
-        /* Checkbox Styling */
         .checkbox-row {
             display: flex;
             align-items: center;
@@ -227,7 +206,6 @@
         }
 
         /* TOM SELECT (RETRO OVERRIDES) */
-        /* The Input Box */
         .ts-control {
             background-color: #000 !important;
             border: 1px solid #444 !important;
@@ -237,8 +215,6 @@
             padding: 5px !important;
             min-height: 36px;
         }
-
-        /* The Dropdown Menu */
         .ts-dropdown {
             background-color: #111 !important;
             border: 1px solid var(--secondary) !important;
@@ -246,8 +222,6 @@
             font-family: monospace;
             z-index: 9999;
         }
-
-        /* The Selected Item (Chip) */
         .ts-control .item {
             background-color: var(--secondary) !important;
             color: #000 !important;
@@ -257,71 +231,18 @@
             padding: 2px 6px !important;
             margin-right: 4px !important;
         }
-
-        /* The "X" remove button on Chip */
         .ts-control .item .remove {
             border-left: 1px solid #000 !important;
             color: #000 !important;
             padding-left: 5px !important;
             margin-left: 5px !important;
         }
-
-        /* Dropdown Options */
-        .ts-dropdown .option {
-            padding: 8px;
-            cursor: pointer;
-        }
-
-        /* Active/Hover states in dropdown */
+        .ts-dropdown .option { padding: 8px; cursor: pointer; }
         .ts-dropdown .active {
             background-color: var(--primary) !important;
             color: #000 !important;
         }
-
-        /* Input text area inside the box */
-        .ts-control input {
-            color: #fff !important;
-        }
+        .ts-control input { color: #fff !important; }
     </style>
-
-<script>
-    function setView(viewMode) {
-        const grid = document.querySelector('.grid');
-        const shelf = document.getElementById('view-shelf');
-        const btnGrid = document.getElementById('btn-grid');
-        const btnShelf = document.getElementById('btn-shelf');
-
-        if (viewMode === 'shelf') {
-            grid.style.display = 'none';
-            shelf.style.display = 'flex';
-            btnShelf.style.color = 'var(--secondary)';
-            btnGrid.style.color = '#666';
-        } else {
-            grid.style.display = 'grid';
-            shelf.style.display = 'none';
-            btnGrid.style.color = 'var(--secondary)';
-            btnShelf.style.color = '#666';
-        }
-
-        // Save preference
-        localStorage.setItem('library_view', viewMode);
-    }
-
-    // Load saved view
-    const savedView = localStorage.getItem('library_view');
-    if (savedView) setView(savedView);
-</script>
-
-<style>
-    .view-btn {
-        background: transparent;
-        border: none;
-        font-family: 'Press Start 2P';
-        font-size: 0.7rem;
-        cursor: pointer;
-        color: #666;
-    }
-    .view-btn:hover { color: #fff; }
-</style>
 
 {% endblock %}
