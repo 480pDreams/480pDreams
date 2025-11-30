@@ -84,6 +84,17 @@
 
         <div style="flex: 3; min-width: 300px;">
             <div style="display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px;">
+{% if debug_mode %}
+                <div style="background: red; color: white; padding: 10px; margin-bottom: 20px;">
+                    <strong>DEBUG MODE ACTIVE</strong><br>
+                    Total Games Found: {{ games.count }}<br>
+                    {% if filter.errors %}
+                        Filter Errors: {{ filter.errors }}
+                    {% else %}
+                        Filter is Valid.
+                    {% endif %}
+                </div>
+            {% endif %}
                 <h1 class="retro-font" style="margin: 0; font-size: 1.5rem;">Game Library</h1>
                 <span style="color: #666; font-family: monospace;">{{ games.count }} TITLES FOUND</span>
             </div>
