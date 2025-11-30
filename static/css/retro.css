@@ -283,34 +283,61 @@ nav a:hover {
     z-index: 999;
 }
 
-/* CAROUSEL CONTROLS */
-.carousel-controls {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #111;
-    border-top: 1px solid #333;
-    padding: 5px;
-}
-
-.carousel-btn {
+/* GALLERY / THUMBNAIL STRIP */
+.gallery-hero {
     background: #000;
-    color: var(--primary);
-    border: 1px solid #333;
-    font-family: 'Press Start 2P', monospace;
-    font-size: 1rem;
+    border: 2px solid #333;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 4/3; /* Keeps the TV shape */
+    overflow: hidden;
+}
+
+.gallery-hero img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Ensures full image is visible */
+    display: block;
+}
+
+.thumb-strip {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto; /* scroll if too many images */
+    padding-bottom: 5px;
+}
+
+.thumb-btn {
+    width: 60px;
+    height: 60px;
+    border: 2px solid #333;
+    background: #000;
     cursor: pointer;
-    padding: 5px 10px;
-    user-select: none;
+    padding: 0;
+    flex-shrink: 0;
+    transition: all 0.2s;
 }
 
-.carousel-btn:hover {
-    background: var(--primary);
-    color: #000;
+.thumb-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: brightness(0.7);
 }
 
-.carousel-label {
-    font-size: 0.7rem;
-    color: #fff;
-    text-transform: uppercase;
+.thumb-btn:hover {
+    border-color: #fff;
+}
+
+/* Active State (Selected) */
+.thumb-btn.active {
+    border-color: var(--primary);
+    box-shadow: 0 0 8px var(--primary);
+}
+
+.thumb-btn.active img {
+    filter: brightness(1);
 }

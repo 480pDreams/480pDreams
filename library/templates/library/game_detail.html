@@ -11,61 +11,59 @@
 
         <div style="flex: 1; min-width: 300px;">
 
-            <div style="border: 2px solid #333; background: #000;">
-                <div style="position: relative; aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center; overflow: hidden;">
-                    <img id="carousel-img" src="" alt="{{ game.title }}" style="width: 100%; height: 100%; object-fit: contain; display: none;">
-                    <div id="no-art-placeholder" style="color: #666; display: none;">NO ART</div>
-                </div>
+            <div class="gallery-hero">
+                {% if game.box_art %}
+                    <img id="hero-img" src="{{ game.box_art.url }}" alt="Main Display">
+                {% else %}
+                    <div style="color: #666;">NO ART</div>
+                {% endif %}
+            </div>
 
-                <div class="carousel-controls">
-                    <button class="carousel-btn" onclick="prevImage()">&lt;</button>
-                    <span id="carousel-label" class="carousel-label">LOADING...</span>
-                    <button class="carousel-btn" onclick="nextImage()">&gt;</button>
+            <div class="thumb-strip">
+                {% if game.box_art %}
+                <div class="thumb-btn active" onclick="swapImage(this, '{{ game.box_art.url }}')">
+                    <img src="{{ game.box_art.url }}" alt="Front">
                 </div>
+                {% endif %}
+
+                {% if game.back_art %}
+                <div class="thumb-btn" onclick="swapImage(this, '{{ game.back_art.url }}')">
+                    <img src="{{ game.back_art.url }}" alt="Back">
+                </div>
+                {% endif %}
+
+                {% if game.media_art %}
+                <div class="thumb-btn" onclick="swapImage(this, '{{ game.media_art.url }}')">
+                    <img src="{{ game.media_art.url }}" alt="Disc">
+                </div>
+                {% endif %}
+
+                {% if game.spine_art %}
+                <div class="thumb-btn" onclick="swapImage(this, '{{ game.spine_art.url }}')">
+                    <img src="{{ game.spine_art.url }}" alt="Spine">
+                </div>
+                {% endif %}
+
+                {% if game.screenshot %}
+                <div class="thumb-btn" onclick="swapImage(this, '{{ game.screenshot.url }}')">
+                    <img src="{{ game.screenshot.url }}" alt="Screenshot">
+                </div>
+                {% endif %}
             </div>
 
             <script>
-                const gallery = [];
-                // Build playlist from available images
-                {% if game.box_art %} gallery.push({ src: "{{ game.box_art.url }}", label: "Front Cover" }); {% endif %}
-                {% if game.back_art %} gallery.push({ src: "{{ game.back_art.url }}", label: "Back Cover" }); {% endif %}
-                {% if game.media_art %} gallery.push({ src: "{{ game.media_art.url }}", label: "Media / Disc" }); {% endif %}
-                {% if game.spine_art %} gallery.push({ src: "{{ game.spine_art.url }}", label: "Spine" }); {% endif %}
-                {% if game.screenshot %} gallery.push({ src: "{{ game.screenshot.url }}", label: "Screenshot" }); {% endif %}
+                function swapImage(element, url) {
+                    // 1. Change the Hero Image
+                    const hero = document.getElementById('hero-img');
+                    if (hero) hero.src = url;
 
-                let currentIndex = 0;
-                const imgElement = document.getElementById('carousel-img');
-                const labelElement = document.getElementById('carousel-label');
-                const placeholder = document.getElementById('no-art-placeholder');
+                    // 2. Update Active Class
+                    const thumbs = document.querySelectorAll('.thumb-btn');
+                    thumbs.forEach(t => t.classList.remove('active'));
 
-                function updateDisplay() {
-                    if (gallery.length > 0) {
-                        imgElement.style.display = 'block';
-                        placeholder.style.display = 'none';
-                        const item = gallery[currentIndex];
-                        imgElement.src = item.src;
-                        labelElement.innerText = item.label + ` (${currentIndex + 1}/${gallery.length})`;
-                    } else {
-                        imgElement.style.display = 'none';
-                        placeholder.style.display = 'block';
-                        labelElement.innerText = "NO DATA";
-                    }
+                    // Add 'active' to the clicked one
+                    element.classList.add('active');
                 }
-
-                function nextImage() {
-                    if (gallery.length === 0) return;
-                    currentIndex++;
-                    if (currentIndex >= gallery.length) currentIndex = 0;
-                    updateDisplay();
-                }
-
-                function prevImage() {
-                    if (gallery.length === 0) return;
-                    currentIndex--;
-                    if (currentIndex < 0) currentIndex = gallery.length - 1;
-                    updateDisplay();
-                }
-                updateDisplay();
             </script>
 
             <table style="width: 100%; margin-top: 20px; border-collapse: collapse; font-size: 0.9rem;">
