@@ -288,23 +288,23 @@ nav a:hover {
     background: #000;
     border: 2px solid #333;
     margin-bottom: 10px;
-    display: block;
-    width: 100%;
-    height: auto;
-    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
 }
 
 .gallery-hero img {
-    width: 100%;
+    width: auto;
     height: auto;
+    max-width: 100%;
+    max-height: 70vh;
     display: block;
-    object-fit: cover;
 }
 
 .thumb-strip {
     display: flex;
     gap: 10px;
-    overflow-x: auto; /* scroll if too many images */
+    overflow-x: auto;
     padding-bottom: 5px;
 }
 
