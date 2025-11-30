@@ -1,4 +1,5 @@
 {% extends 'core/base.html' %}
+{% load static %}
 
 {% block title %}Library{% endblock %}
 
@@ -8,22 +9,32 @@
 
         <div style="flex: 1; min-width: 250px; max-width: 300px; padding: 20px; border: 1px solid var(--primary); height: fit-content; background: #000;">
 
+            <h3 class="retro-font" style="font-size: 1rem; margin-top: 0; color: var(--secondary); border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 20px;">
+                DATABASE FILTER
+            </h3>
+
             <form method="get">
 
                 <div class="filter-section">
                     <label class="filter-label">TITLE SEARCH</label>
                     {{ filter.form.title }}
 
-                    <label class="filter-label" style="margin-top: 10px;">PLATFORMS (Multi)</label>
-                    {{ filter.form.platform }}
+                    <label class="filter-label" style="margin-top: 15px;">PLATFORM</label>
+                    <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
+                        <button type="submit" name="platform" value="" class="platform-icon-btn" title="All Platforms">ALL</button>
 
-                    <label class="filter-label" style="margin-top: 10px;">RELEASE DATE</label>
-                    <div style="display: flex; gap: 5px;">
-                        {{ filter.form.release_date }}
+                        {% for plat in platforms %}
+                            <button type="submit" name="platform" value="{{ plat.id }}"
+                                    class="platform-icon-btn {% if request.GET.platform == plat.id|stringformat:'s' %}active{% endif %}"
+                                    title="{{ plat.name }}">
+                                {% if plat.icon %}
+                                    <img src="{{ plat.icon.url }}" alt="{{ plat.name }}">
+                                {% else %}
+                                    {{ plat.name|slice:":3" }}
+                                {% endif %}
+                            </button>
+                        {% endfor %}
                     </div>
-
-                    <label class="filter-label" style="margin-top: 10px;">SORT BY</label>
-                    {{ filter.form.ordering }}
                 </div>
 
                 <div class="filter-section">
@@ -40,6 +51,18 @@
                     {{ filter.form.genres }}
                 </div>
 
+                <div class="filter-section">
+                    <label class="filter-label">RELEASE YEAR RANGE</label>
+                    <div style="display: flex; gap: 5px;">
+                        <input type="number" name="release_year_min" placeholder="1990" value="{{ request.GET.release_year_min }}">
+                        <span style="color:#666; align-self: center;">-</span>
+                        <input type="number" name="release_year_max" placeholder="2005" value="{{ request.GET.release_year_max }}">
+                    </div>
+
+                    <label class="filter-label" style="margin-top: 10px;">SORT BY</label>
+                    {{ filter.form.ordering }}
+                </div>
+
                 <div class="filter-section" style="background: #111; padding: 10px; border: 1px solid #333;">
                     <div class="checkbox-row">{{ filter.form.own_game }} In Collection</div>
                     <div class="checkbox-row">{{ filter.form.missing_box }} Missing Box</div>
@@ -51,18 +74,18 @@
                     <div class="checkbox-row">{{ filter.form.has_extras }} Has Member Content</div>
                 </div>
 
-                <button type="submit" style="width: 100%; padding: 12px; background: var(--secondary); color: #000; border: none; font-family: 'Press Start 2P'; cursor: pointer; font-size: 0.8rem;">
+                <button type="submit" style="width: 100%; padding: 12px; background: var(--secondary); color: #000; border: none; font-family: 'Press Start 2P'; cursor: pointer; font-size: 0.8rem; margin-top: 10px;">
                     APPLY FILTERS
                 </button>
 
-                <a href="{% url 'library:game_list' %}" style="display: block; text-align: center; margin-top: 15px; color: #666; font-size: 0.7rem;">RESET ALL</a>
+                <a href="{% url 'library:game_list' %}" style="display: block; text-align: center; margin-top: 15px; color: #666; font-size: 0.7rem; text-decoration: none;">RESET ALL</a>
             </form>
         </div>
 
         <div style="flex: 3; min-width: 300px;">
             <div style="display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px;">
                 <h1 class="retro-font" style="margin: 0; font-size: 1.5rem;">Game Library</h1>
-                <span style="color: #666;">{{ games.count }} TITLES FOUND</span>
+                <span style="color: #666; font-family: monospace;">{{ games.count }} TITLES FOUND</span>
             </div>
 
             <div class="grid">
@@ -87,12 +110,34 @@
                         </div>
                     </div>
                 {% empty %}
-                    <p style="padding: 20px; color: #666;">No games match your criteria.</p>
+                    <div style="width: 100%; padding: 40px; text-align: center; color: #666; border: 2px dashed #333;">
+                        NO GAMES FOUND MATCHING CRITERIA.
+                    </div>
                 {% endfor %}
             </div>
         </div>
 
     </div>
+
+    <script>
+        // Apply to all multi-select boxes
+        document.querySelectorAll('select[multiple]').forEach((el) => {
+            new TomSelect(el, {
+                plugins: ['remove_button'], // Adds the "x" to close chips
+                maxItems: 10,
+                wrapperClass: 'ts-wrapper retro-chips', // Custom class for styling
+                controlInput: '<input>',
+                render: {
+                    item: function(data, escape) {
+                        return '<div>' + escape(data.text) + '</div>';
+                    },
+                    option: function(data, escape) {
+                        return '<div>' + escape(data.text) + '</div>';
+                    }
+                }
+            });
+        });
+    </script>
 
     <style>
         .filter-section {
@@ -133,6 +178,90 @@
             width: 16px;
             height: 16px;
             accent-color: var(--secondary);
+            cursor: pointer;
+        }
+
+        /* Platform Icons */
+        .platform-icon-btn {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #444;
+            background: #111;
+            cursor: pointer;
+            padding: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6rem;
+            color: #fff;
+            transition: all 0.2s;
+        }
+        .platform-icon-btn img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .platform-icon-btn:hover, .platform-icon-btn.active {
+            border-color: var(--secondary);
+            box-shadow: 0 0 5px var(--secondary);
+            background: #222;
+        }
+
+        /* TOM SELECT (RETRO OVERRIDES) */
+        /* The Input Box */
+        .ts-control {
+            background-color: #000 !important;
+            border: 1px solid #444 !important;
+            color: #fff !important;
+            font-family: monospace;
+            border-radius: 0 !important;
+            padding: 5px !important;
+            min-height: 36px;
+        }
+
+        /* The Dropdown Menu */
+        .ts-dropdown {
+            background-color: #111 !important;
+            border: 1px solid var(--secondary) !important;
+            color: #fff !important;
+            font-family: monospace;
+            z-index: 9999;
+        }
+
+        /* The Selected Item (Chip) */
+        .ts-control .item {
+            background-color: var(--secondary) !important;
+            color: #000 !important;
+            border-radius: 0 !important;
+            font-weight: bold;
+            border: 1px solid #fff;
+            padding: 2px 6px !important;
+            margin-right: 4px !important;
+        }
+
+        /* The "X" remove button on Chip */
+        .ts-control .item .remove {
+            border-left: 1px solid #000 !important;
+            color: #000 !important;
+            padding-left: 5px !important;
+            margin-left: 5px !important;
+        }
+
+        /* Dropdown Options */
+        .ts-dropdown .option {
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        /* Active/Hover states in dropdown */
+        .ts-dropdown .active {
+            background-color: var(--primary) !important;
+            color: #000 !important;
+        }
+
+        /* Input text area inside the box */
+        .ts-control input {
+            color: #fff !important;
         }
     </style>
 
