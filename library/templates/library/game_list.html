@@ -13,7 +13,11 @@
                 DATABASE FILTER
             </h3>
 
-            <form method="get">
+            <form method="get"
+                  hx-get="{% url 'library:game_list' %}"
+                  hx-target="#game-results-area"
+                  hx-push-url="true"
+                  id="filter-form">
 
                 <div class="filter-section">
                     <label class="filter-label">TITLE SEARCH</label>
@@ -22,7 +26,6 @@
                     <label class="filter-label" style="margin-top: 15px;">PLATFORM</label>
                     <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
                         <button type="submit" name="platform" value="" class="platform-icon-btn" title="All Platforms">ALL</button>
-
                         {% for plat in platforms %}
                             <button type="submit" name="platform" value="{{ plat.id }}"
                                     class="platform-icon-btn {% if request.GET.platform == plat.id|stringformat:'s' %}active{% endif %}"
@@ -40,13 +43,10 @@
                 <div class="filter-section">
                     <label class="filter-label">DEVELOPER</label>
                     {{ filter.form.developers }}
-
                     <label class="filter-label" style="margin-top: 10px;">PUBLISHER</label>
                     {{ filter.form.publishers }}
-
                     <label class="filter-label" style="margin-top: 10px;">REGION</label>
                     {{ filter.form.regions }}
-
                     <label class="filter-label" style="margin-top: 10px;">GENRE</label>
                     {{ filter.form.genres }}
                 </div>
@@ -58,7 +58,6 @@
                         <span style="color:#666; align-self: center;">-</span>
                         <input type="number" name="release_year_max" placeholder="2005" value="{{ request.GET.release_year_max }}">
                     </div>
-
                     <label class="filter-label" style="margin-top: 10px;">SORT BY</label>
                     {{ filter.form.ordering }}
                 </div>
@@ -83,38 +82,7 @@
         </div>
 
         <div style="flex: 3; min-width: 300px;">
-            <div style="display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px;">
-                <h1 class="retro-font" style="margin: 0; font-size: 1.5rem;">Game Library</h1>
-                <span style="color: #666; font-family: monospace;">{{ games.count }} TITLES FOUND</span>
-            </div>
-
-            <div class="grid">
-                {% for game in games %}
-                    <div class="card {% if not game.own_game %}ghost{% endif %}">
-                        <a href="{% url 'library:game_detail' game.slug %}">
-                            {% if game.box_art %}
-                                <img src="{{ game.box_art.url }}" alt="{{ game.title }}">
-                            {% else %}
-                                <div style="height: 200px; background: #000; display: flex; align-items: center; justify-content: center; color: #555;">NO ART</div>
-                            {% endif %}
-                        </a>
-
-                        <div class="card-title">{{ game.title }}</div>
-                        <div class="card-meta">
-                            <span>{{ game.platform.name }}</span>
-                            {% if not game.own_game %}
-                                <span style="color: #666; float: right;">[GHOST]</span>
-                            {% else %}
-                                <span style="color: var(--secondary); float: right;">OWNED</span>
-                            {% endif %}
-                        </div>
-                    </div>
-                {% empty %}
-                    <div style="width: 100%; padding: 40px; text-align: center; color: #666; border: 2px dashed #333;">
-                        NO GAMES FOUND MATCHING CRITERIA.
-                    </div>
-                {% endfor %}
-            </div>
+            {% include 'library/partials/game_grid.html' %}
         </div>
 
     </div>
@@ -127,121 +95,38 @@
                 wrapperClass: 'ts-wrapper retro-chips',
                 controlInput: '<input>',
                 render: {
-                    item: function(data, escape) {
-                        return '<div>' + escape(data.text) + '</div>';
-                    },
-                    option: function(data, escape) {
-                        return '<div>' + escape(data.text) + '</div>';
-                    }
+                    item: function(data, escape) { return '<div>' + escape(data.text) + '</div>'; },
+                    option: function(data, escape) { return '<div>' + escape(data.text) + '</div>'; }
                 }
             });
         });
     </script>
 
     <style>
-        .filter-section {
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 1px dashed #333;
+        /* Loading Indicator (Shown during HTMX request) */
+        .htmx-request .grid {
+            opacity: 0.5;
+            transition: opacity 0.2s;
         }
+
+        /* (Keep existing CSS for Filter Section, Labels, Inputs, Chips, etc.) */
+        .filter-section { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px dashed #333; }
         .filter-section:last-child { border-bottom: none; }
+        .filter-label { display: block; color: var(--primary); font-size: 0.7rem; margin-bottom: 5px; font-family: 'Press Start 2P'; }
+        select, input[type="text"], input[type="number"], input[type="date"] { width: 100%; padding: 8px; background: #111; color: #fff; border: 1px solid #444; font-family: monospace; box-sizing: border-box; }
+        .checkbox-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 0.8rem; color: #ccc; }
+        input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--secondary); cursor: pointer; }
+        .platform-icon-btn { width: 40px; height: 40px; border: 1px solid #444; background: #111; cursor: pointer; padding: 2px; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; color: #fff; transition: all 0.2s; }
+        .platform-icon-btn img { width: 100%; height: 100%; object-fit: contain; }
+        .platform-icon-btn:hover, .platform-icon-btn.active { border-color: var(--secondary); box-shadow: 0 0 5px var(--secondary); background: #222; }
 
-        .filter-label {
-            display: block;
-            color: var(--primary);
-            font-size: 0.7rem;
-            margin-bottom: 5px;
-            font-family: 'Press Start 2P';
-        }
-
-        select, input[type="text"], input[type="number"], input[type="date"] {
-            width: 100%;
-            padding: 8px;
-            background: #111;
-            color: #fff;
-            border: 1px solid #444;
-            font-family: monospace;
-            box-sizing: border-box;
-        }
-
-        .checkbox-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 8px;
-            font-size: 0.8rem;
-            color: #ccc;
-        }
-        input[type="checkbox"] {
-            width: 16px;
-            height: 16px;
-            accent-color: var(--secondary);
-            cursor: pointer;
-        }
-
-        /* Platform Icons */
-        .platform-icon-btn {
-            width: 40px;
-            height: 40px;
-            border: 1px solid #444;
-            background: #111;
-            cursor: pointer;
-            padding: 2px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.6rem;
-            color: #fff;
-            transition: all 0.2s;
-        }
-        .platform-icon-btn img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-        .platform-icon-btn:hover, .platform-icon-btn.active {
-            border-color: var(--secondary);
-            box-shadow: 0 0 5px var(--secondary);
-            background: #222;
-        }
-
-        /* TOM SELECT (RETRO OVERRIDES) */
-        .ts-control {
-            background-color: #000 !important;
-            border: 1px solid #444 !important;
-            color: #fff !important;
-            font-family: monospace;
-            border-radius: 0 !important;
-            padding: 5px !important;
-            min-height: 36px;
-        }
-        .ts-dropdown {
-            background-color: #111 !important;
-            border: 1px solid var(--secondary) !important;
-            color: #fff !important;
-            font-family: monospace;
-            z-index: 9999;
-        }
-        .ts-control .item {
-            background-color: var(--secondary) !important;
-            color: #000 !important;
-            border-radius: 0 !important;
-            font-weight: bold;
-            border: 1px solid #fff;
-            padding: 2px 6px !important;
-            margin-right: 4px !important;
-        }
-        .ts-control .item .remove {
-            border-left: 1px solid #000 !important;
-            color: #000 !important;
-            padding-left: 5px !important;
-            margin-left: 5px !important;
-        }
+        /* Tom Select Styling */
+        .ts-control { background-color: #000 !important; border: 1px solid #444 !important; color: #fff !important; font-family: monospace; border-radius: 0 !important; padding: 5px !important; min-height: 36px; }
+        .ts-dropdown { background-color: #111 !important; border: 1px solid var(--secondary) !important; color: #fff !important; font-family: monospace; z-index: 9999; }
+        .ts-control .item { background-color: var(--secondary) !important; color: #000 !important; border-radius: 0 !important; font-weight: bold; border: 1px solid #fff; padding: 2px 6px !important; margin-right: 4px !important; }
+        .ts-control .item .remove { border-left: 1px solid #000 !important; color: #000 !important; padding-left: 5px !important; margin-left: 5px !important; }
         .ts-dropdown .option { padding: 8px; cursor: pointer; }
-        .ts-dropdown .active {
-            background-color: var(--primary) !important;
-            color: #000 !important;
-        }
+        .ts-dropdown .active { background-color: var(--primary) !important; color: #000 !important; }
         .ts-control input { color: #fff !important; }
     </style>
 
