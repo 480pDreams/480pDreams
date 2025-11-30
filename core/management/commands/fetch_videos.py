@@ -35,21 +35,17 @@ class Command(BaseCommand):
 
             feed = feedparser.parse(url)
 
-            for entry in feed.entries[:5]:  # Check top 5
+            for entry in reversed(feed.entries[:10]):
                 video_id = entry.yt_videoid
                 video_url = f"https://www.youtube.com/watch?v={video_id}"
                 title = entry.title
 
-                # Check if exists
                 if not NetworkVideo.objects.filter(url=video_url).exists():
                     NetworkVideo.objects.create(
                         title=title,
                         channel=channel['type'],
                         url=video_url,
-                        # We can't grab the high-res thumb easily via RSS,
-                        # but embed_video handles fetching it on save usually,
-                        # or we can manually construct it:
-                        # thumbnail = f"https://img.youtube.com/vi/{video_id}/maxresdefault.jpg"
+                        thumbnail = f"https://img.youtube.com/vi/{video_id}/maxresdefault.jpg"
                     )
                     self.stdout.write(self.style.SUCCESS(f"  + Added: {title}"))
                 else:
