@@ -53,15 +53,11 @@
 
             <script>
                 function swapImage(element, url) {
-                    // 1. Change the Hero Image
                     const hero = document.getElementById('hero-img');
                     if (hero) hero.src = url;
 
-                    // 2. Update Active Class
                     const thumbs = document.querySelectorAll('.thumb-btn');
                     thumbs.forEach(t => t.classList.remove('active'));
-
-                    // Add 'active' to the clicked one
                     element.classList.add('active');
                 }
             </script>
@@ -93,6 +89,15 @@
                         {% endfor %}
                     </td>
                 </tr>
+
+                {% if game.condition_notes %}
+                <tr style="border-bottom: 1px solid #333;">
+                    <td style="padding: 10px; color: #888;">Notes</td>
+                    <td style="padding: 10px; text-align: right; color: var(--accent); font-style: italic;">
+                        {{ game.condition_notes }}
+                    </td>
+                </tr>
+                {% endif %}
 
                 <tr style="border-bottom: 1px solid #333;">
                     <td colspan="2" style="padding: 10px;">
