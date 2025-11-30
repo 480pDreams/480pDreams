@@ -10,13 +10,63 @@
     <div style="display: flex; gap: 40px; margin-top: 20px; flex-wrap: wrap;">
 
         <div style="flex: 1; min-width: 300px;">
-            <div style="border: 2px solid #333; padding: 10px; background: #000;">
-                {% if game.box_art %}
-                    <img src="{{ game.box_art.url }}" alt="{{ game.title }}" style="width: 100%; display: block;">
-                {% else %}
-                    <div style="height: 400px; background: #222; display: flex; align-items: center; justify-content: center;">No Art</div>
-                {% endif %}
+
+            <div style="border: 2px solid #333; background: #000;">
+                <div style="position: relative; aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                    <img id="carousel-img" src="" alt="{{ game.title }}" style="width: 100%; height: 100%; object-fit: contain; display: none;">
+                    <div id="no-art-placeholder" style="color: #666; display: none;">NO ART</div>
+                </div>
+
+                <div class="carousel-controls">
+                    <button class="carousel-btn" onclick="prevImage()">&lt;</button>
+                    <span id="carousel-label" class="carousel-label">LOADING...</span>
+                    <button class="carousel-btn" onclick="nextImage()">&gt;</button>
+                </div>
             </div>
+
+            <script>
+                const gallery = [];
+                // Build playlist from available images
+                {% if game.box_art %} gallery.push({ src: "{{ game.box_art.url }}", label: "Front Cover" }); {% endif %}
+                {% if game.back_art %} gallery.push({ src: "{{ game.back_art.url }}", label: "Back Cover" }); {% endif %}
+                {% if game.media_art %} gallery.push({ src: "{{ game.media_art.url }}", label: "Media / Disc" }); {% endif %}
+                {% if game.spine_art %} gallery.push({ src: "{{ game.spine_art.url }}", label: "Spine" }); {% endif %}
+                {% if game.screenshot %} gallery.push({ src: "{{ game.screenshot.url }}", label: "Screenshot" }); {% endif %}
+
+                let currentIndex = 0;
+                const imgElement = document.getElementById('carousel-img');
+                const labelElement = document.getElementById('carousel-label');
+                const placeholder = document.getElementById('no-art-placeholder');
+
+                function updateDisplay() {
+                    if (gallery.length > 0) {
+                        imgElement.style.display = 'block';
+                        placeholder.style.display = 'none';
+                        const item = gallery[currentIndex];
+                        imgElement.src = item.src;
+                        labelElement.innerText = item.label + ` (${currentIndex + 1}/${gallery.length})`;
+                    } else {
+                        imgElement.style.display = 'none';
+                        placeholder.style.display = 'block';
+                        labelElement.innerText = "NO DATA";
+                    }
+                }
+
+                function nextImage() {
+                    if (gallery.length === 0) return;
+                    currentIndex++;
+                    if (currentIndex >= gallery.length) currentIndex = 0;
+                    updateDisplay();
+                }
+
+                function prevImage() {
+                    if (gallery.length === 0) return;
+                    currentIndex--;
+                    if (currentIndex < 0) currentIndex = gallery.length - 1;
+                    updateDisplay();
+                }
+                updateDisplay();
+            </script>
 
             <table style="width: 100%; margin-top: 20px; border-collapse: collapse; font-size: 0.9rem;">
                 <tr style="border-bottom: 1px solid #333;">
@@ -29,14 +79,12 @@
                 </tr>
                 <tr style="border-bottom: 1px solid #333;">
                     <td style="padding: 10px; color: #888;">Released</td>
-                    <td style="padding: 10px; text-align: right;">{{ game.release_date|date:"Y-m-d" }}</td>
+                    <td style="padding: 10px; text-align: right;">{{ game.release_date|date:"F j, Y"|default:"-" }}</td>
                 </tr>
-
                 <tr style="border-bottom: 1px solid #333;">
                     <td style="padding: 10px; color: #888;">Platform</td>
                     <td style="padding: 10px; text-align: right;">{{ game.platform.name }}</td>
                 </tr>
-
                 <tr style="border-bottom: 1px solid #333;">
                     <td style="padding: 10px; color: #888;">Region</td>
                     <td style="padding: 10px; text-align: right;">
@@ -49,19 +97,36 @@
                 </tr>
 
                 <tr style="border-bottom: 1px solid #333;">
-                    <td style="padding: 10px; color: #888;">Condition</td>
-                    <td style="padding: 10px; text-align: right; color: var(--secondary);">{{ game.get_condition_display }}</td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px; color: #888;">Status</td>
-                    <td style="padding: 10px; text-align: right;">{{ game.get_ownership_status_display }}</td>
+                    <td colspan="2" style="padding: 10px;">
+                        <div style="display: flex; gap: 5px; justify-content: center; font-size: 0.8rem;">
+                            <span style="color: {% if game.own_game %}var(--primary){% else %}#444{% endif %}; border: 1px solid #444; padding: 2px 5px;">
+                                GAME
+                            </span>
+                            <span style="color: {% if game.own_box %}var(--primary){% else %}#444{% endif %}; border: 1px solid #444; padding: 2px 5px;">
+                                BOX
+                            </span>
+                            <span style="color: {% if game.own_manual %}var(--primary){% else %}#444{% endif %}; border: 1px solid #444; padding: 2px 5px;">
+                                MAN
+                            </span>
+                        </div>
+
+                        {% if game.components.exists %}
+                            <div style="margin-top: 10px; text-align: center; font-size: 0.7rem; color: #888;">
+                                {% for comp in game.components.all %}
+                                    <div>
+                                        {% if comp.is_owned %}✅{% else %}❌{% endif %} {{ comp.name }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </td>
                 </tr>
             </table>
         </div>
 
         <div style="flex: 2; min-width: 300px;">
-            <h1 style="margin-top: 0; font-size: 2rem;">{{ game.title }}</h1>
 
+            <h1 style="margin-top: 0; font-size: 2rem;">{{ game.title }}</h1>
             <div style="margin-bottom: 20px;">
                 {% for genre in game.genres.all %}
                     <span style="background: var(--primary); color: #000; padding: 2px 8px; font-size: 0.7rem; font-weight: bold; margin-right: 5px;">{{ genre.name }}</span>
