@@ -28,61 +28,51 @@
         </div>
     </div>
 
-    {% if latest_news %}
-    <div class="shelf-section">
-        <h2 class="retro-font shelf-title" style="color: #fff;">Latest Articles</h2>
-        <div class="shelf-grid">
-            {% for post in latest_news %}
-                <div class="card">
-                    <a href="{% url 'blog:post_detail' post.slug %}">
-                        {% if post.image %}
-                            <img src="{{ post.image.url }}" alt="{{ post.title }}" style="aspect-ratio: 16/9; object-fit: cover;">
-                        {% else %}
-                            <div style="height: 140px; background: #222; display: flex; align-items: center; justify-content: center; color: #666;">NEWS</div>
-                        {% endif %}
-                    </a>
-                    <div class="card-title" style="font-size: 0.9rem;">{{ post.title }}</div>
-                    <div class="card-meta">{{ post.published_date|date:"M d" }}</div>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-    {% endif %}
-
     <div class="shelf-section">
         <h2 class="retro-font shelf-title" style="color: var(--primary);">Recent Acquisitions</h2>
         <div class="shelf-grid">
             {% for item in recent_acquisitions %}
-                <div class="card {% if not item.own_game and item.kind == 'game' %}ghost{% endif %}">
-                    {% if item.kind == 'game' %}
-                        <a href="{% url 'library:game_detail' item.slug %}">
-                            {% if item.box_art %}
-                                <img src="{{ item.box_art.url }}" alt="{{ item.title }}">
-                            {% else %}
-                                <div style="height: 250px; background: #222; display: flex; align-items: center; justify-content: center; color: #666;">No Art</div>
-                            {% endif %}
-                        </a>
-                        <div class="card-title">{{ item.title }}</div>
-                        <div class="card-meta">
-                            <span>Game</span>
-                            {% if not item.own_game %}
-                                <span style="color: #666; float: right;">[GHOST]</span>
-                            {% else %}
-                                <span style="color: var(--secondary); float: right;">OWNED</span>
-                            {% endif %}
-                        </div>
-                    {% else %}
-                        <a href="{% url 'hardware:hardware_detail' item.slug %}">
-                            {% if item.image %}
-                                <img src="{{ item.image.url }}" alt="{{ item.name }}">
-                            {% else %}
-                                <div style="height: 250px; background: #222; display: flex; align-items: center; justify-content: center; color: #666;">No Image</div>
-                            {% endif %}
-                        </a>
-                        <div class="card-title">{{ item.name }}</div>
-                        <div class="card-meta">Hardware</div>
-                    {% endif %}
+
+                {% if item.kind == 'game' %}
+                <div class="card {% if not item.own_game %}ghost{% endif %}">
+                    <a href="{% url 'library:game_detail' item.slug %}">
+                        {% if item.box_art %}
+                            <img src="{{ item.box_art.url }}" alt="{{ item.title }}">
+                        {% else %}
+                            <div style="height: 250px; background: #222; display: flex; align-items: center; justify-content: center; color: #666;">No Art</div>
+                        {% endif %}
+                    </a>
+                    <div class="card-title">{{ item.title }}</div>
+                    <div class="card-meta">
+                        <span>Game</span>
+                        {% if not item.own_game %}
+                            <span style="color: #666; float: right;">[GHOST]</span>
+                        {% else %}
+                            <span style="color: var(--secondary); float: right;">OWNED</span>
+                        {% endif %}
+                    </div>
                 </div>
+
+                {% else %}
+                <div class="card {% if not item.own_item %}ghost{% endif %}">
+                    <a href="{% url 'hardware:hardware_detail' item.slug %}">
+                        {% if item.image_front %} <img src="{{ item.image_front.url }}" alt="{{ item.name }}">
+                        {% else %}
+                            <div style="height: 250px; background: #222; display: flex; align-items: center; justify-content: center; color: #666;">No Image</div>
+                        {% endif %}
+                    </a>
+                    <div class="card-title">{{ item.name }}</div>
+                    <div class="card-meta">
+                        <span>Hardware</span>
+                        {% if not item.own_item %}
+                            <span style="color: #666; float: right;">[GHOST]</span>
+                        {% else %}
+                            <span style="color: var(--secondary); float: right;">OWNED</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
             {% empty %}
                 <p>The collection is empty.</p>
             {% endfor %}
@@ -93,33 +83,37 @@
         <h2 class="retro-font shelf-title" style="color: #fff;">Recently Updated</h2>
         <div class="shelf-grid">
             {% for item in recently_updated %}
-                <div class="card {% if not item.own_game and item.kind == 'game' %}ghost{% endif %}">
-                     {% if item.kind == 'game' %}
-                        <a href="{% url 'library:game_detail' item.slug %}">
-                            {% if item.box_art %}
-                                <img src="{{ item.box_art.url }}" alt="{{ item.title }}">
-                            {% else %}
-                                <div style="height: 250px; background: #222; display: flex; align-items: center; justify-content: center; color: #666;">No Art</div>
-                            {% endif %}
-                        </a>
-                        <div class="card-title">
-                            <span style="color: var(--secondary); font-size: 0.7rem; display: block;">UPDATED</span>
-                            {{ item.title }}
-                        </div>
-                    {% else %}
-                        <a href="{% url 'hardware:hardware_detail' item.slug %}">
-                            {% if item.image %}
-                                <img src="{{ item.image.url }}" alt="{{ item.name }}">
-                            {% else %}
-                                <div style="height: 250px; background: #222; display: flex; align-items: center; justify-content: center; color: #666;">No Image</div>
-                            {% endif %}
-                        </a>
-                        <div class="card-title">
-                            <span style="color: var(--secondary); font-size: 0.7rem; display: block;">UPDATED</span>
-                            {{ item.name }}
-                        </div>
-                    {% endif %}
+
+                {% if item.kind == 'game' %}
+                <div class="card {% if not item.own_game %}ghost{% endif %}">
+                    <a href="{% url 'library:game_detail' item.slug %}">
+                        {% if item.box_art %}
+                            <img src="{{ item.box_art.url }}" alt="{{ item.title }}">
+                        {% else %}
+                            <div style="height: 250px; background: #222; display: flex; align-items: center; justify-content: center; color: #666;">No Art</div>
+                        {% endif %}
+                    </a>
+                    <div class="card-title">
+                        <span style="color: var(--secondary); font-size: 0.7rem; display: block;">UPDATED</span>
+                        {{ item.title }}
+                    </div>
                 </div>
+
+                {% else %}
+                <div class="card {% if not item.own_item %}ghost{% endif %}">
+                    <a href="{% url 'hardware:hardware_detail' item.slug %}">
+                        {% if item.image_front %} <img src="{{ item.image_front.url }}" alt="{{ item.name }}">
+                        {% else %}
+                            <div style="height: 250px; background: #222; display: flex; align-items: center; justify-content: center; color: #666;">No Image</div>
+                        {% endif %}
+                    </a>
+                    <div class="card-title">
+                        <span style="color: var(--secondary); font-size: 0.7rem; display: block;">UPDATED</span>
+                        {{ item.name }}
+                    </div>
+                </div>
+                {% endif %}
+
             {% empty %}
                 <p>No updates found.</p>
             {% endfor %}
