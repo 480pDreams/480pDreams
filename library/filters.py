@@ -34,8 +34,16 @@ class GameFilter(django_filters.FilterSet):
     )
 
     # 4. DATE RANGE
-    release_year_min = django_filters.NumberFilter(field_name='release_date', lookup_expr='year__gte')
-    release_year_max = django_filters.NumberFilter(field_name='release_date', lookup_expr='year__lte')
+    release_date_min = django_filters.DateFilter(
+        field_name='release_date',
+        lookup_expr='gte',
+        widget=forms.DateInput(attrs={'type': 'date'})
+    )
+    release_date_max = django_filters.DateFilter(
+        field_name='release_date',
+        lookup_expr='lte',
+        widget=forms.DateInput(attrs={'type': 'date'})
+    )
 
     # 5. BOOLEANS (Checkboxes Restored)
     own_game = django_filters.BooleanFilter(method='filter_own_game', widget=forms.CheckboxInput)
