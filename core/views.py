@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from library.models import Game
 from hardware.models import Hardware
 from .models import NetworkVideo, UserProfile
