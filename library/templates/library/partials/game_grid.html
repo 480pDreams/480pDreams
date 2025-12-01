@@ -8,16 +8,19 @@
 
     <div class="grid">
         {% for game in games %}
-        {% get_localized_data game user as local_game %}
+            {% get_localized_data game user as local_game %}
+
             <div class="card {% if not game.own_game %}ghost{% endif %}">
                 <a href="{% url 'library:game_detail' game.slug %}">
                     {% if local_game.box_art %}
                         <img src="{{ local_game.box_art.url }}" alt="{{ local_game.title }}">
                     {% else %}
-                        <div style="height: 200px; background: #000; ...">NO ART</div>
+                        <div style="height: 200px; background: #000; display: flex; align-items: center; justify-content: center; color: #555;">NO ART</div>
                     {% endif %}
                 </a>
+
                 <div class="card-title">{{ local_game.title }}</div>
+
                 <div class="card-meta">
                     <span>{{ game.platform.name }}</span>
                     {% if not game.own_game %}

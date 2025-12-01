@@ -1,10 +1,10 @@
 {% extends 'core/base.html' %}
 {% load embed_video_tags %}
-{% load library_extras %}  {% get_localized_data game user as local_game %}
-
-{% block title %}{{ local_game.title }}{% endblock %}
+{% load library_extras %} {% block title %}{{ game.title }}{% endblock %}
 
 {% block content %}
+    {% get_localized_data game user as local_game %}
+
 <div style="margin-top: 20px;">
     <a href="{% url 'library:game_list' %}" style="color: #888; text-decoration: none;">&larr; Back to Library</a>
 
@@ -16,7 +16,7 @@
                 {% if local_game.box_art %}
                     <img id="hero-img" src="{{ local_game.box_art.url }}" alt="Main Display">
                 {% else %}
-                    <div style="color: #666;">NO ART</div>
+                    <div style="color: #666; height: 300px; display: flex; align-items: center; justify-content: center;">NO ART</div>
                 {% endif %}
             </div>
 
@@ -96,16 +96,6 @@
                     </td>
                 </tr>
 
-                {% if game.estimated_value %}
-                <tr style="border-bottom: 1px solid #333;">
-                    <td style="padding: 10px; color: #888;">Market Value</td>
-                    <td style="padding: 10px; text-align: right; color: #55ff55; font-family: monospace;">
-                        ${{ game.estimated_value }}
-                        <div style="font-size: 0.6rem; color: #666;">{{ game.last_price_update|date:"M d" }}</div>
-                    </td>
-                </tr>
-                {% endif %}
-
                 {% if game.condition_notes %}
                 <tr style="border-bottom: 1px solid #333;">
                     <td style="padding: 10px; color: #888;">Notes</td>
@@ -172,6 +162,7 @@
             <h2 class="retro-font" style="font-size: 1.2rem; color: var(--secondary);">480p Content</h2>
 
             <div style="display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 40px;">
+
                 <div style="flex: 1; min-width: 300px;">
                     <h3 class="retro-font" style="font-size: 0.8rem; margin-bottom: 10px;">480p Game Review Video</h3>
                     {% if game.video_review %}
@@ -211,32 +202,6 @@
                     <p style="color: #666; font-family: monospace; margin: 0;">
                         [ DATA MISSING ]<br>This title has not been reviewed yet.
                     </p>
-                </div>
-            {% endif %}
-
-            {% if game.extra_videos.exists %}
-                <div style="margin-top: 50px; border-top: 4px solid var(--primary); padding-top: 20px;">
-                    <h2 class="retro-font" style="font-size: 1.2rem; color: var(--primary);">Bonus Tapes</h2>
-                    <div class="grid" style="gap: 20px;">
-                        {% for extra in game.extra_videos.all %}
-                            {% if not extra.is_patron_only or user.profile.is_patron %}
-                                <div style="background: #000; border: 1px solid #333; padding: 10px;">
-                                    <h4 style="margin: 0 0 10px 0; color: #fff; font-size: 0.9rem;">
-                                        {% if extra.is_patron_only %}<span style="color: var(--primary);">[LOCKED]</span>{% endif %}
-                                        {{ extra.title }}
-                                    </h4>
-                                    <div class="video-wrapper">{% video extra.url '100% x 100%' %}</div>
-                                </div>
-                            {% else %}
-                                <div style="background: #111; border: 1px dashed #444; padding: 20px; text-align: center; display: flex; flex-direction: column; justify-content: center; height: 100%;">
-                                    <div style="font-size: 2rem;">🔒</div>
-                                    <div style="color: #666; margin-top: 10px;">{{ extra.title }}</div>
-                                    <div style="color: var(--primary); font-size: 0.7rem; margin-top: 5px;">PATRONS ONLY</div>
-                                    <div style="margin-top: 10px; color: #fff; font-size: 0.8rem;">(Join to Unlock)</div>
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
                 </div>
             {% endif %}
 
