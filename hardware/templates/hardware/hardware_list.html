@@ -25,22 +25,43 @@
                 <div class="filter-section">
                     <label class="filter-label">TYPE</label>
                     {{ filter.form.type }}
+
                     <label class="filter-label" style="margin-top: 10px;">PLATFORM</label>
                     {{ filter.form.platform }}
+
                     <label class="filter-label" style="margin-top: 10px;">REGION</label>
                     {{ filter.form.regions }}
+                </div>
+
+                <div class="filter-section">
+                    <label class="filter-label">RELEASE DATE RANGE</label>
+                    <div style="display: flex; gap: 5px; flex-direction: column;">
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <span style="font-size: 0.6rem; color: #666; width: 30px;">FROM</span>
+                            <input type="date" name="release_date_min" value="{{ request.GET.release_date_min }}">
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <span style="font-size: 0.6rem; color: #666; width: 30px;">TO</span>
+                            <input type="date" name="release_date_max" value="{{ request.GET.release_date_max }}">
+                        </div>
+                    </div>
+
+                    <label class="filter-label" style="margin-top: 15px;">SORT BY</label>
+                    {{ filter.form.ordering }}
                 </div>
 
                 <div class="filter-section" style="background: #111; padding: 10px; border: 1px solid #333;">
                     <div class="checkbox-row">{{ filter.form.own_item }} In Collection</div>
                     <div class="checkbox-row">{{ filter.form.missing_box }} Missing Box</div>
+                    <hr style="border: 0; border-top: 1px dashed #444; margin: 5px 0;">
                     <div class="checkbox-row">{{ filter.form.has_review }} Has Review</div>
+                    <div class="checkbox-row">{{ filter.form.has_unboxing }} Has Condition Video</div>
                 </div>
 
-                <button type="submit" style="width: 100%; padding: 12px; background: var(--secondary); color: #000; border: none; font-family: 'Press Start 2P'; cursor: pointer; font-size: 0.8rem;">
-                    APPLY
+                <button type="submit" style="width: 100%; padding: 12px; background: var(--secondary); color: #000; border: none; font-family: 'Press Start 2P'; cursor: pointer; font-size: 0.8rem; margin-top: 10px;">
+                    APPLY FILTERS
                 </button>
-                <a href="{% url 'hardware:hardware_list' %}" style="display: block; text-align: center; margin-top: 15px; color: #666; font-size: 0.7rem;">RESET</a>
+                <a href="{% url 'hardware:hardware_list' %}" style="display: block; text-align: center; margin-top: 15px; color: #666; font-size: 0.7rem; text-decoration: none;">RESET ALL</a>
             </form>
         </div>
 
@@ -51,16 +72,34 @@
 
     <script>
         document.querySelectorAll('select[multiple]').forEach((el) => {
-            new TomSelect(el, { plugins: ['remove_button'], maxItems: 10, wrapperClass: 'ts-wrapper retro-chips' });
+            new TomSelect(el, {
+                plugins: ['remove_button'],
+                maxItems: 10,
+                wrapperClass: 'ts-wrapper retro-chips',
+                controlInput: '<input>',
+                render: {
+                    item: function(data, escape) { return '<div>' + escape(data.text) + '</div>'; },
+                    option: function(data, escape) { return '<div>' + escape(data.text) + '</div>'; }
+                }
+            });
         });
     </script>
 
     <style>
-       /* Copy the CSS form styles from library/game_list.html or move them to retro.css to avoid duplication! */
-       /* For now, just ensuring basics: */
-       .filter-section { margin-bottom: 25px; border-bottom: 1px dashed #333; padding-bottom: 15px; }
-       .filter-label { display: block; color: var(--primary); font-size: 0.7rem; margin-bottom: 5px; font-family: 'Press Start 2P'; }
-       input[type="text"] { width: 100%; padding: 8px; background: #111; color: #fff; border: 1px solid #444; }
-       .checkbox-row { color: #ccc; font-size: 0.8rem; margin-bottom: 5px; display: flex; align-items: center; gap: 10px; }
+        .filter-section { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px dashed #333; }
+        .filter-section:last-child { border-bottom: none; }
+        .filter-label { display: block; color: var(--primary); font-size: 0.7rem; margin-bottom: 5px; font-family: 'Press Start 2P'; }
+        select, input[type="text"], input[type="number"], input[type="date"] { width: 100%; padding: 8px; background: #111; color: #fff; border: 1px solid #444; font-family: monospace; box-sizing: border-box; }
+        .checkbox-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 0.8rem; color: #ccc; }
+        input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--secondary); cursor: pointer; }
+
+        /* Tom Select Overrides */
+        .ts-control { background-color: #000 !important; border: 1px solid #444 !important; color: #fff !important; font-family: monospace; border-radius: 0 !important; padding: 5px !important; min-height: 36px; }
+        .ts-dropdown { background-color: #111 !important; border: 1px solid var(--secondary) !important; color: #fff !important; font-family: monospace; z-index: 9999; }
+        .ts-control .item { background-color: var(--secondary) !important; color: #000 !important; border-radius: 0 !important; font-weight: bold; border: 1px solid #fff; padding: 2px 6px !important; margin-right: 4px !important; }
+        .ts-control .item .remove { border-left: 1px solid #000 !important; color: #000 !important; padding-left: 5px !important; margin-left: 5px !important; }
+        .ts-dropdown .option { padding: 8px; cursor: pointer; }
+        .ts-dropdown .active { background-color: var(--primary) !important; color: #000 !important; }
+        .ts-control input { color: #fff !important; }
     </style>
 {% endblock %}

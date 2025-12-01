@@ -5,11 +5,12 @@
 
 {% block content %}
 <div style="margin-top: 20px;">
-    <a href="{% url 'hardware:hardware_list' %}" style="color: #888; text-decoration: none;">&larr; Back to Vault</a>
+    <a href="{% url 'hardware:hardware_list' %}" style="color: #888; text-decoration: none;">&larr; Back to Hardware</a>
 
     <div style="display: flex; gap: 40px; margin-top: 20px; flex-wrap: wrap;">
 
         <div style="flex: 1; min-width: 300px;">
+
             <div class="gallery-hero">
                 {% if item.image_front %}
                     <img id="hero-img" src="{{ item.image_front.url }}" alt="Main">
@@ -17,18 +18,45 @@
                     <div style="color: #666;">NO IMAGE</div>
                 {% endif %}
             </div>
+
             <div class="thumb-strip">
-                {% if item.image_front %} <div class="thumb-btn active" onclick="swapImage(this, '{{ item.image_front.url }}')"><img src="{{ item.image_front.url }}"></div> {% endif %}
-                {% if item.image_back %} <div class="thumb-btn" onclick="swapImage(this, '{{ item.image_back.url }}')"><img src="{{ item.image_back.url }}"></div> {% endif %}
-                {% if item.image_top %} <div class="thumb-btn" onclick="swapImage(this, '{{ item.image_top.url }}')"><img src="{{ item.image_top.url }}"></div> {% endif %}
-                {% if item.image_bottom %} <div class="thumb-btn" onclick="swapImage(this, '{{ item.image_bottom.url }}')"><img src="{{ item.image_bottom.url }}"></div> {% endif %}
-                {% if item.image_side %} <div class="thumb-btn" onclick="swapImage(this, '{{ item.image_side.url }}')"><img src="{{ item.image_side.url }}"></div> {% endif %}
+                {% if item.image_front %}
+                <div class="thumb-btn active" onclick="swapImage(this, '{{ item.image_front.url }}')">
+                    <img src="{{ item.image_front.url }}">
+                </div>
+                {% endif %}
+
+                {% if item.image_back %}
+                <div class="thumb-btn" onclick="swapImage(this, '{{ item.image_back.url }}')">
+                    <img src="{{ item.image_back.url }}">
+                </div>
+                {% endif %}
+
+                {% if item.image_top %}
+                <div class="thumb-btn" onclick="swapImage(this, '{{ item.image_top.url }}')">
+                    <img src="{{ item.image_top.url }}">
+                </div>
+                {% endif %}
+
+                {% if item.image_bottom %}
+                <div class="thumb-btn" onclick="swapImage(this, '{{ item.image_bottom.url }}')">
+                    <img src="{{ item.image_bottom.url }}">
+                </div>
+                {% endif %}
+
+                {% if item.image_side %}
+                <div class="thumb-btn" onclick="swapImage(this, '{{ item.image_side.url }}')">
+                    <img src="{{ item.image_side.url }}">
+                </div>
+                {% endif %}
             </div>
 
             <script>
                 function swapImage(element, url) {
-                    document.getElementById('hero-img').src = url;
-                    document.querySelectorAll('.thumb-btn').forEach(t => t.classList.remove('active'));
+                    const hero = document.getElementById('hero-img');
+                    if (hero) hero.src = url;
+                    const thumbs = document.querySelectorAll('.thumb-btn');
+                    thumbs.forEach(t => t.classList.remove('active'));
                     element.classList.add('active');
                 }
             </script>
@@ -36,19 +64,37 @@
             <table style="width: 100%; margin-top: 20px; border-collapse: collapse; font-size: 0.9rem;">
                 <tr style="border-bottom: 1px solid #333;"><td style="padding: 10px; color: #888;">Type</td><td style="padding: 10px; text-align: right;">{{ item.type.name }}</td></tr>
                 <tr style="border-bottom: 1px solid #333;"><td style="padding: 10px; color: #888;">Manufacturer</td><td style="padding: 10px; text-align: right;">{{ item.manufacturer }}</td></tr>
-                <tr style="border-bottom: 1px solid #333;"><td style="padding: 10px; color: #888;">Released</td><td style="padding: 10px; text-align: right;">{{ item.release_date|date:"Y" }}</td></tr>
+                <tr style="border-bottom: 1px solid #333;"><td style="padding: 10px; color: #888;">Released</td><td style="padding: 10px; text-align: right;">{{ item.release_date|date:"F j, Y"|default:"-" }}</td></tr>
 
                 <tr style="border-bottom: 1px solid #333;">
                     <td style="padding: 10px; color: #888;">Models</td>
-                    <td style="padding: 10px; text-align: right; font-family: monospace; font-size: 0.8rem;">{{ item.model_numbers }}</td>
+                    <td style="padding: 10px; text-align: right; font-family: monospace; font-size: 0.8rem;">{{ item.model_numbers|default:"-" }}</td>
                 </tr>
+
+                <tr style="border-bottom: 1px solid #333;">
+                    <td style="padding: 10px; color: #888;">Platform</td>
+                    <td style="padding: 10px; text-align: right;">{{ item.platform.name|default:"-" }}</td>
+                </tr>
+
+                {% if item.condition_notes %}
+                <tr style="border-bottom: 1px solid #333;">
+                    <td style="padding: 10px; color: #888;">Notes</td>
+                    <td style="padding: 10px; text-align: right; color: var(--accent); font-style: italic;">
+                        {{ item.condition_notes }}
+                    </td>
+                </tr>
+                {% endif %}
 
                 <tr style="border-bottom: 1px solid #333;">
                     <td colspan="2" style="padding: 0;">
                         {% if item.video_condition %}
                             <div style="position: relative; width: 100%; aspect-ratio: 9/16; background: #000;">
-                                <div class="video-wrapper" style="height: 100%; padding-bottom: 0;">{% video item.video_condition '100% x 100%' %}</div>
-                                <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.7); color: #fff; text-align: center; padding: 5px; font-size: 0.7rem;">CONDITION</div>
+                                <div class="video-wrapper" style="height: 100%; padding-bottom: 0;">
+                                    {% video item.video_condition '100% x 100%' %}
+                                </div>
+                                <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.7); color: #fff; text-align: center; padding: 5px; font-size: 0.7rem;">
+                                    CONDITION REPORT
+                                </div>
                             </div>
                         {% else %}
                             <div style="padding: 15px; display: flex; gap: 5px; justify-content: center; font-size: 0.8rem;">
@@ -64,15 +110,34 @@
 
         <div style="flex: 2; min-width: 300px;">
             <h1 style="margin-top: 0; font-size: 2rem;">{{ item.name }}</h1>
-            <div style="margin-bottom: 20px; font-size: 1rem; color: #888; font-style: italic;">{{ item.description|linebreaks }}</div>
+
+            <div style="margin-bottom: 20px;">
+                {% for reg in item.regions.all %}
+                    <span style="background: var(--primary); color: #000; padding: 2px 8px; font-size: 0.7rem; font-weight: bold; margin-right: 5px;">{{ reg.name }}</span>
+                {% endfor %}
+            </div>
+
+            <div style="margin-bottom: 20px; font-size: 1rem; color: #888; font-style: italic;">
+                {{ item.description|linebreaks }}
+            </div>
+
             <hr style="border: 0; border-top: 1px dashed #333; margin: 30px 0;">
 
-            <h2 class="retro-font" style="font-size: 1.2rem; color: var(--secondary);">480p Review</h2>
-            {% if item.video_review %}
-                <div class="video-wrapper">{% video item.video_review '100% x 100%' %}</div>
-            {% else %}
-                <div style="border: 2px dashed #333; padding: 20px; background: rgba(0,0,0,0.3); text-align: center; color: #666; font-family: monospace;">[ DATA MISSING ]</div>
-            {% endif %}
+            <h2 class="retro-font" style="font-size: 1.2rem; color: var(--secondary);">480p Content</h2>
+
+            <div style="margin-bottom: 40px;">
+                <h3 class="retro-font" style="font-size: 0.8rem; margin-bottom: 10px;">480p Hardware Review</h3>
+                {% if item.video_review %}
+                    <div class="video-wrapper">{% video item.video_review '100% x 100%' %}</div>
+                {% else %}
+                    <div style="width: 100%; padding-bottom: 56.25%; background: #000; border: 1px solid #333; position: relative;">
+                        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+                            <div style="font-size: 2rem; opacity: 0.3;">📺</div>
+                            <div style="color: #444; font-size: 0.8rem; margin-top: 10px; font-family: monospace;">NOT REVIEWED YET</div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
 
             {% if item.other_variants.exists %}
             <div style="margin-top: 40px;">
@@ -88,7 +153,13 @@
                             {% endif %}
                         </a>
                         <div class="card-title" style="font-size: 0.8rem;">{{ var.name }}</div>
-                        <div class="card-meta">{% if not var.own_item %}<span style="color: #666;">[GHOST]</span>{% endif %}</div>
+                        <div class="card-meta">
+                            {% if not var.own_item %}
+                                <span style="color: #666; float: right;">[GHOST]</span>
+                            {% else %}
+                                <span style="color: var(--secondary); float: right;">OWNED</span>
+                            {% endif %}
+                        </div>
                     </div>
                     {% endfor %}
                 </div>
