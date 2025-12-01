@@ -11,7 +11,9 @@ class HardwareFilter(django_filters.FilterSet):
         label='Search Name'
     )
 
-    # 2. DROPDOWNS (Set conjoined=False to handle empty/OR logic correctly)
+    # 2. DROPDOWNS (Multi-Select)
+    # conjoined=False ensures OR logic (Type A OR Type B)
+    # If empty, it returns all.
     type = django_filters.ModelMultipleChoiceFilter(
         queryset=HardwareType.objects.all(),
         conjoined=False
@@ -30,11 +32,11 @@ class HardwareFilter(django_filters.FilterSet):
     release_date_max = django_filters.DateFilter(field_name='release_date', lookup_expr='lte')
 
     # 4. BOOLEANS
+    # Using custom methods to ensure "False" or "None" doesn't filter out everything
     own_item = django_filters.BooleanFilter(method='filter_own_item', widget=forms.CheckboxInput)
     missing_box = django_filters.BooleanFilter(method='filter_missing_box', widget=forms.CheckboxInput)
     has_review = django_filters.BooleanFilter(method='filter_has_review', widget=forms.CheckboxInput)
-    has_unboxing = django_filters.BooleanFilter(field_name='video_condition', lookup_expr='isnull', exclude=True,
-                                                widget=forms.CheckboxInput)
+    has_unboxing = django_filters.BooleanFilter(method='filter_has_unboxing', widget=forms.CheckboxInput)
 
     # 5. SORTING
     ordering = django_filters.OrderingFilter(
@@ -56,6 +58,8 @@ class HardwareFilter(django_filters.FilterSet):
 
     # LOGIC
     def filter_own_item(self, queryset, name, value):
+        # If Checked (True), show ONLY owned.
+        # If Unchecked (False), show ALL (ignore this filter).
         return queryset.filter(own_item=True) if value else queryset
 
     def filter_missing_box(self, queryset, name, value):
@@ -63,3 +67,6 @@ class HardwareFilter(django_filters.FilterSet):
 
     def filter_has_review(self, queryset, name, value):
         return queryset.filter(video_review__gt='') if value else queryset
+
+    def filter_has_unboxing(self, queryset, name, value):
+        return queryset.filter(video_condition__gt='') if value else queryset
