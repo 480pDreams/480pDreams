@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Platform, Genre, Region, Series, Developer, Publisher, Game, GameVideo, GameComponent
+from .models import Platform, Genre, Region, Series, Developer, Publisher, Game, GameVideo, GameComponent, RegionalRelease
 
 
 @admin.register(Series)
@@ -44,6 +44,11 @@ class GameComponentInline(admin.TabularInline):
     model = GameComponent
     extra = 1
 
+class RegionalReleaseInline(admin.StackedInline):
+    model = RegionalRelease
+    extra = 0
+    verbose_name = "Regional Alternative (Art/Title)"
+
 
 @admin.register(Game)
 class GameAdmin(admin.ModelAdmin):
@@ -72,4 +77,4 @@ class GameAdmin(admin.ModelAdmin):
         }),
     )
 
-    inlines = [GameComponentInline, GameVideoInline]
+    inlines = [RegionalReleaseInline, GameComponentInline, GameVideoInline]

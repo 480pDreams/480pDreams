@@ -14,6 +14,13 @@ class UserProfile(models.Model):
         ('win98', 'Windows 98'),
         ('pc98', 'PC-98 / Japanese'),
     ]
+
+    REGION_PREF_CHOICES = [
+        ('NTSC-U', 'NTSC-U (America)'),
+        ('NTSC-J', 'NTSC-J (Japan)'),
+        ('PAL', 'PAL (Europe)'),
+    ]
+
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
 
     # Preferences & Status
@@ -22,6 +29,7 @@ class UserProfile(models.Model):
 
     # Identity Fields
     avatar = models.ImageField(upload_to='avatars/', blank=True, help_text="Square images work best")
+    preferred_region = models.CharField(max_length=10, choices=REGION_PREF_CHOICES, default='NTSC-U', help_text="Which artwork/title do you want to see by default?")
     bio = models.TextField(max_length=500, blank=True, help_text="Tell the network about yourself")
 
     def __str__(self):

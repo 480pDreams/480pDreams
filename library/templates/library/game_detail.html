@@ -11,9 +11,12 @@
 
         <div style="flex: 1; min-width: 300px;">
 
+            {% load library_extras %} {% block content %}
+            {% get_localized_data game user as local_game %}
+
             <div class="gallery-hero">
-                {% if game.box_art %}
-                    <img id="hero-img" src="{{ game.box_art.url }}" alt="Main Display">
+                {% if local_game.box_art %}
+                    <img id="hero-img" src="{{ local_game.box_art.url }}" alt="Main Display">
                 {% else %}
                     <div style="color: #666;">NO ART</div>
                 {% endif %}
@@ -21,13 +24,13 @@
 
             <div class="thumb-strip">
                 {% if game.box_art %}
-                <div class="thumb-btn active" onclick="swapImage(this, '{{ game.box_art.url }}')">
-                    <img src="{{ game.box_art.url }}" alt="Front">
+                <div class="thumb-btn active" onclick="swapImage(this, '{{ local_game.box_art.url }}')">
+                    <img src="{{ local_game.box_art.url }}" alt="Front">
                 </div>
                 {% endif %}
-                {% if game.back_art %}
-                <div class="thumb-btn" onclick="swapImage(this, '{{ game.back_art.url }}')">
-                    <img src="{{ game.back_art.url }}" alt="Back">
+                {% if local_game.back_art %}
+                <div class="thumb-btn" onclick="swapImage(this, '{{ local_game.back_art.url }}')">
+                    <img src="{{ local_game.back_art.url }}" alt="Back">
                 </div>
                 {% endif %}
                 {% if game.media_art %}
@@ -35,9 +38,9 @@
                     <img src="{{ game.media_art.url }}" alt="Disc">
                 </div>
                 {% endif %}
-                {% if game.spine_art %}
-                <div class="thumb-btn" onclick="swapImage(this, '{{ game.spine_art.url }}')">
-                    <img src="{{ game.spine_art.url }}" alt="Spine">
+                {% if local_game.spine_art %}
+                <div class="thumb-btn" onclick="swapImage(this, '{{ local_game.spine_art.url }}')">
+                    <img src="{{ local_game.spine_art.url }}" alt="Spine">
                 </div>
                 {% endif %}
                 {% if game.screenshot %}
@@ -46,7 +49,7 @@
                 </div>
                 {% endif %}
             </div>
-
+            <h1 style="margin-top: 0; font-size: 2rem;">{{ local_game.title }}</h1>
             <script>
                 function swapImage(element, url) {
                     const hero = document.getElementById('hero-img');

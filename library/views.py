@@ -4,7 +4,7 @@ from .filters import GameFilter
 
 
 def game_list(request):
-    all_games = Game.objects.all().order_by('title')
+    all_games = Game.objects.prefetch_related('regional_releases').all().order_by('title')
     my_filter = GameFilter(request.GET, queryset=all_games)
 
     if my_filter.is_valid():
@@ -26,5 +26,5 @@ def game_list(request):
 
 
 def game_detail(request, slug):
-    game = get_object_or_404(Game, slug=slug)
+    game = get_object_or_404(Game.objects.prefetch_related('regional_releases'), slug=slug)
     return render(request, 'library/game_detail.html', {'game': game})

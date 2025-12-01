@@ -155,3 +155,34 @@ class GameVideo(models.Model):
     is_patron_only = models.BooleanField(default=False)
 
     def __str__(self): return self.title
+
+class RegionalRelease(models.Model):
+
+    REGION_CHOICES = [
+        ('NTSC-U', 'NTSC-U'),
+        ('NTSC-J', 'NTSC-J'),
+        ('PAL', 'PAL'),
+    ]
+
+    game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='regional_releases')
+    region_code = models.CharField(max_length=10, choices=REGION_CHOICES)
+
+    # Overrides
+    title = models.CharField(max_length=200, blank=True, help_text="Localized Title (e.g. Biohazard)")
+
+    # Regional Art
+    box_art = models.ImageField(upload_to='games/covers/regional/', blank=True)
+    back_art = models.ImageField(upload_to='games/covers/regional/', blank=True)
+    spine_art = models.ImageField(upload_to='games/spines/regional/', blank=True)
+
+    def __str__(self):
+        return f"{self.game.title} - {self.region_code}"
+
+    def save(self, *args, **kwargs):
+        if self.box_art:
+            try:
+                new_image = compress_image(self.box_art, max_width=800)
+                if new_image: self.box_art.save(self.box_art.name, new_image, save=False)
+            except:
+                pass
+        super().save(*args, **kwargs)
