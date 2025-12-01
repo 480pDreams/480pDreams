@@ -18,11 +18,12 @@
                 {% endif %}
             </div>
 
-            <h2 style="margin: 10px 0;">{{ user.username }}</h2>
+            <h2 style="margin: 10px 0; font-size: 1.5rem;">{{ user.username }}</h2>
             <p style="color: #888; font-size: 0.8rem;">{{ user.email }}</p>
 
-            {% if user.profile.is_patron %}
-                <div style="color: var(--secondary); font-weight: bold; margin-bottom: 10px;">
+            <div style="margin-top: 20px; border-top: 1px solid #333; padding-top: 15px;">
+                {% if user.profile.is_patron %}
+                    <div style="color: var(--secondary); font-weight: bold; margin-bottom: 10px;">
                         ✓ ACTIVE MEMBER
                     </div>
                     <a href="{% url 'membership:select' %}" style="color: #fff; font-size: 0.7rem; text-decoration: underline;">
@@ -35,7 +36,14 @@
                     <a href="{% url 'membership:select' %}" style="display: inline-block; padding: 8px 15px; background: var(--primary); color: #000; text-decoration: none; font-size: 0.7rem; font-weight: bold;">
                         UPGRADE TO MEMBER
                     </a>
-            {% endif %}
+                {% endif %}
+            </div>
+
+            <div style="margin-top: 30px;">
+                <a href="{% url 'account_logout' %}" style="color: #f00; font-family: 'Press Start 2P'; font-size: 0.7rem; text-decoration: none; border: 1px solid #f00; padding: 10px 20px;">
+                    TERMINATE SESSION
+                </a>
+            </div>
         </div>
     </div>
 
