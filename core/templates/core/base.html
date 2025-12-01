@@ -49,7 +49,7 @@
                 {% if user.is_authenticated %}
                     <li style="border-left: 1px solid #444; padding-left: 20px; margin-left: 10px;">
                         <a href="{% url 'core:profile' %}" style="text-decoration: none; display: flex; align-items: center; gap: 8px;">
-                            <span style="color: var(--primary); font-size: 0.9rem; font-weight: bold; font-family: 'Press Start 2P';">
+                            <span style="color: var(--primary); font-size: 0.9rem; font-weight: bold; font-family: var(--font-header);">
                                 {{ user.username|upper }}
                             </span>
                         </a>
@@ -138,20 +138,5 @@
             }
         }
     </script>
-
-    <style>
-        .theme-option {
-            color: #fff;
-            padding: 8px;
-            cursor: pointer;
-            font-family: 'Press Start 2P';
-            font-size: 0.7rem;
-        }
-        .theme-option:hover {
-            background: var(--secondary);
-            color: #000;
-        }
-    </style>
-
 </body>
 </html>

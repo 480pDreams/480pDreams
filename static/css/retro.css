@@ -1,15 +1,13 @@
-/* 480pDreams Theme Engine */
-/* RETRO FONTS */
+/* 480pDreams Global Stylesheet */
+/* IMPORTS */
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
-
-/* MODERN FONTS (Noto Ecosystem) */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans:wght@400;500;700&display=swap');
 
 /* =========================================
-   THEME ENGINE (CSS VARIABLES)
+   1. THEME ENGINE (VARIABLES)
    ========================================= */
 
-/* === 1. DEFAULT: "MODERN" (Clean / Dark) === */
+/* DEFAULT: "MODERN" */
 :root {
     --bg-color: #121212;
     --text-color: #f3f4f6;
@@ -18,69 +16,68 @@
     --accent: #f59e0b;         /* Amber */
     --card-bg: #1e1e1e;
     --nav-bg: #1f2937;
-    --scanline-display: none;  /* OFF */
-
-    /* NEW FONTS */
+    --scanline-display: none;
     --font-header: 'Montserrat', 'Noto Sans JP', sans-serif;
     --font-body: 'Noto Sans', 'Noto Sans JP', sans-serif;
-
     --border-style: 1px solid #374151;
     --shadow-style: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
     --radius: 8px;
 }
 
-/* 2. MODERN (Slick Dark Mode) */
-[data-theme="modern"] {
-    --bg-color: #121212;
-    --text-color: #f3f4f6;
-    --primary: #3b82f6;        /* Modern Blue */
-    --secondary: #10b981;      /* Emerald Green */
-    --accent: #f59e0b;         /* Amber */
-    --card-bg: #1e1e1e;
-    --nav-bg: #1f2937;
-    --scanline-display: none;  /* Scanlines OFF */
-    --font-header: 'Roboto', sans-serif;
+/* THEME: "RETRO" */
+[data-theme="retro"] {
+    --bg-color: #0b0c15;
+    --text-color: #e0e0e0;
+    --primary: #ff00ff;
+    --secondary: #00ffff;
+    --accent: #f9d71c;
+    --card-bg: #1a1a24;
+    --nav-bg: #111;
+    --scanline-display: block;
+    --font-header: 'Press Start 2P', cursive;
     --font-body: 'Roboto', sans-serif;
-    --border-style: 1px solid #374151;
-    --shadow-style: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+    --border-style: 2px solid #333;
+    --shadow-style: none;
+    --radius: 0px;
 }
 
-/* 3. WINDOWS 98 (Brutalist Desktop) */
+/* THEME: WINDOWS 98 */
 [data-theme="win98"] {
-    --bg-color: #008080;       /* Classic Teal */
-    --text-color: #000000;     /* Black Text */
-    --primary: #000080;        /* Title Bar Blue */
-    --secondary: #808080;      /* Gray */
-    --accent: #c0c0c0;         /* Window Gray */
-    --card-bg: #c0c0c0;        /* Gray Windows */
+    --bg-color: #008080;
+    --text-color: #000000;
+    --primary: #000080;
+    --secondary: #808080;
+    --accent: #c0c0c0;
+    --card-bg: #c0c0c0;
     --nav-bg: #c0c0c0;
-    --scanline-display: none;  /* Scanlines OFF */
+    --scanline-display: none;
     --font-header: 'Arial', sans-serif;
     --font-body: 'Arial', sans-serif;
-    --border-style: 2px outset #fff; /* 3D Bevel Look */
+    --border-style: 2px outset #fff;
     --shadow-style: 4px 4px 0px #000;
+    --radius: 0px;
 }
 
-/* 4. PC-98 (Retro Japanese Computer) */
+/* THEME: PC-98 */
 [data-theme="pc98"] {
-    --bg-color: #000022;       /* Deep NEC Blue */
+    --bg-color: #000022;
     --text-color: #e6e6e6;
-    --primary: #55ff55;        /* Phosphor Green */
-    --secondary: #ff5555;      /* Alert Red */
-    --accent: #55ffff;         /* Cyan */
+    --primary: #55ff55;
+    --secondary: #ff5555;
+    --accent: #55ffff;
     --card-bg: #000033;
     --nav-bg: #000044;
-    --scanline-display: block; /* Scanlines ON */
+    --scanline-display: block;
     --font-header: 'VT323', monospace;
     --font-body: 'Noto Sans JP', sans-serif;
     --border-style: 2px solid #fff;
     --shadow-style: none;
+    --radius: 0px;
 }
 
 /* =========================================
-   GLOBAL LAYOUT
+   2. GLOBAL RESET & LAYOUT
    ========================================= */
-
 body {
     background-color: var(--bg-color);
     color: var(--text-color);
@@ -94,24 +91,6 @@ body {
     flex-direction: column;
 }
 
-h1, h2, h3, .retro-font {
-    font-family: var(--font-header);
-    text-transform: uppercase;
-    color: var(--primary); /* Defaults to primary color */
-}
-
-/* Specific Win98 Override for Headers inside cards */
-[data-theme="win98"] .card h1,
-[data-theme="win98"] .card h2,
-[data-theme="win98"] .card-title {
-    background: var(--primary);
-    color: #fff; /* White text on Blue background */
-    padding: 2px 5px;
-    font-size: 0.9rem;
-    font-weight: bold;
-}
-
-/* Layout Container */
 .container {
     max-width: 95vw;
     margin: 0 auto;
@@ -121,61 +100,58 @@ h1, h2, h3, .retro-font {
     box-sizing: border-box;
 }
 
+h1, h2, h3, .retro-font, .card-title {
+    font-family: var(--font-header);
+    text-transform: uppercase;
+    color: var(--primary);
+}
+
+a { text-decoration: none; color: inherit; transition: 0.2s; }
+a:hover { color: var(--secondary); }
+
 /* =========================================
-   NAVIGATION
+   3. NAVIGATION
    ========================================= */
 nav {
     background: var(--nav-bg);
     border-bottom: 3px solid var(--primary);
     padding: 15px 0;
 }
+/* Win98 Nav Override */
+[data-theme="win98"] nav { border-top: 2px outset #fff; border-bottom: 2px outset #fff; }
 
-/* Win98 Nav Tweak */
-[data-theme="win98"] nav {
-    border-bottom: 2px outset #fff;
-    border-top: 2px outset #fff;
-}
-
-nav .nav-flex {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-nav ul {
-    list-style: none;
-    padding: 0;
-    display: flex;
-    gap: 30px;
-    margin: 0;
-}
-
-nav a {
-    color: var(--text-color); /* Adapts to theme text color */
-    text-decoration: none;
-    font-family: var(--font-header);
-    font-size: 0.8rem;
-    transition: color 0.2s;
-}
-
-/* Ensure links are visible on dark navs */
-nav a { color: #fff; }
+nav .nav-flex { display: flex; justify-content: space-between; align-items: center; }
+nav ul { list-style: none; padding: 0; display: flex; gap: 30px; margin: 0; align-items: center; }
+nav a { font-family: var(--font-header); font-size: 0.8rem; color: #fff; }
 [data-theme="win98"] nav a { color: #000; font-weight: bold; }
 
-nav a:hover {
-    color: var(--secondary);
-    text-shadow: 0 0 10px var(--secondary);
+.nav-logo { font-family: var(--font-header); font-size: 1.2rem; color: var(--primary); }
+.nav-logo img { height: 30px; width: auto; margin-right: 10px; }
+
+.user-badge {
+    color: var(--primary);
+    font-size: 0.9rem;
+    font-weight: bold;
+    font-family: var(--font-header);
 }
 
-.nav-logo {
-    font-family: var(--font-header);
-    font-size: 1.2rem;
-    color: var(--primary);
-    text-decoration: none;
+/* Theme Menu */
+#theme-menu {
+    display: none;
+    position: absolute;
+    top: 30px;
+    right: 0;
+    background: var(--nav-bg);
+    border: var(--border-style);
+    padding: 10px;
+    z-index: 1000;
+    min-width: 150px;
 }
+.theme-option { color: var(--text-color); padding: 8px; cursor: pointer; font-family: var(--font-header); font-size: 0.7rem; }
+.theme-option:hover { background: var(--secondary); color: #000; }
 
 /* =========================================
-   CARDS & GRIDS
+   4. COMPONENTS: CARDS, GRIDS, FORMS
    ========================================= */
 .grid, .shelf-grid {
     display: grid;
@@ -183,247 +159,183 @@ nav a:hover {
     gap: 20px;
 }
 
-.shelf-section {
-    margin-bottom: 50px;
-}
-
-.shelf-title {
-    font-size: 1.2rem;
-    color: var(--secondary);
-    border-bottom: var(--border-style);
-    padding-bottom: 10px;
-    margin-bottom: 20px;
-}
-
-.card {
+.card, .video-card {
     background: var(--card-bg);
     border: var(--border-style);
     padding: 10px;
     box-shadow: var(--shadow-style);
     transition: transform 0.2s;
-    /* Stacking Context for Video Z-Index fix */
     position: relative;
     z-index: 1002;
+    border-radius: var(--radius);
 }
 
-.card:hover {
+.card:hover, .video-card:hover {
     transform: translateY(-5px);
     border-color: var(--primary);
     z-index: 1003;
 }
 
+/* Image Handling */
 .card img {
     width: 100%;
     aspect-ratio: 4/3;
     object-fit: contain;
     object-position: center;
+    background-color: #000;
     border: 1px solid #333;
     display: block;
-    background-color: #000
+    border-radius: calc(var(--radius) - 2px);
 }
 
-.card-title {
-    font-weight: bold;
-    margin-top: 10px;
-    color: var(--text-color);
-}
-
-.card-meta {
-    font-size: 0.8rem;
-    color: #888;
-    margin-top: 5px;
-}
-
-/* Win98 Card Meta Tweak */
-[data-theme="win98"] .card-meta { color: #000; }
-
-/* =========================================
-   VIDEO CONTAINERS (Homepage)
-   ========================================= */
-.video-card {
-    background: #000;
-    border: var(--border-style);
-    transition: transform 0.2s;
-    position: relative;
-    z-index: 1002;
-}
-
-.video-card:hover {
-    transform: scale(1.02);
-    border-color: var(--primary);
-    z-index: 1003;
-}
-
-/* Force Videos above Scanlines */
+/* Video Containers */
 .video-thumb-container, .video-wrapper {
     position: relative;
     z-index: 1000 !important;
     background: #000;
-    padding-bottom: 56.25%; /* 16:9 */
+    padding-bottom: 56.25%;
     height: 0;
     overflow: hidden;
+    border-radius: calc(var(--radius) - 2px);
 }
-
 .video-thumb-container iframe, .video-wrapper iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     z-index: 1001 !important;
 }
 
-/* =========================================
-   CRT SCANLINE OVERLAY
-   ========================================= */
+/* Scanlines */
 .scanlines {
-    display: var(--scanline-display); /* Toggles based on theme */
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: linear-gradient(
-        to bottom,
-        var(--scanline-color) 50%,
-        rgba(0, 0, 0, 0) 50%
-    );
-    background-size: 100% 4px;
-    pointer-events: none;
-    z-index: 999;
+    display: var(--scanline-display);
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: linear-gradient(to bottom, rgba(18, 16, 16, 0.3) 50%, rgba(0, 0, 0, 0) 50%);
+    background-size: 100% 4px; pointer-events: none; z-index: 999;
 }
 
-/* GALLERY / THUMBNAIL STRIP */
-.gallery-hero {
-    background: #000;
-    border: 2px solid #333;
-    margin-bottom: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-}
+/* Ghost Logic */
+.card.ghost img { filter: grayscale(100%); opacity: 0.6; transition: all 0.3s; }
+.card.ghost:hover img { filter: grayscale(0%); opacity: 1; }
+.card.ghost .card-title { color: #888; }
 
-.gallery-hero img {
-    width: auto;
-    height: auto;
-    max-width: 100%;
-    max-height: 70vh;
-    display: block;
+/* Forms (Inputs) */
+input[type="text"], input[type="email"], input[type="number"], input[type="date"], textarea, select {
+    width: 100%;
+    padding: 10px;
+    background: var(--nav-bg);
+    border: var(--border-style);
+    color: var(--text-color);
+    font-family: var(--font-body);
+    box-sizing: border-box;
+    border-radius: var(--radius);
 }
+input:focus, textarea:focus, select:focus { outline: none; border-color: var(--secondary); }
 
-.thumb-strip {
-    display: flex;
-    gap: 10px;
-    overflow-x: auto;
-    padding-bottom: 5px;
-}
-
-.thumb-btn {
-    width: 60px;
-    height: 60px;
-    border: 2px solid #333;
-    background: #000;
+/* Buttons */
+button, .btn, .select-btn {
+    padding: 10px 20px;
+    background: var(--primary);
+    color: #000;
+    border: none;
     cursor: pointer;
-    padding: 0;
-    flex-shrink: 0;
+    font-family: var(--font-header);
+    font-size: 0.8rem;
+    border-radius: var(--radius);
     transition: all 0.2s;
 }
+button:hover, .btn:hover { background: #fff; transform: translate(0, -2px); }
 
-.thumb-btn img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    filter: brightness(0.7);
+/* =========================================
+   5. FILTER SIDEBAR & TOM SELECT
+   ========================================= */
+.filter-sidebar {
+    flex: 1; min-width: 250px; max-width: 300px;
+    padding: 20px;
+    border: var(--border-style);
+    height: fit-content;
+    background: var(--nav-bg);
+    border-radius: var(--radius);
 }
 
-.thumb-btn:hover {
-    border-color: #fff;
+.filter-section { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px dashed #333; }
+.filter-label { display: block; color: var(--primary); font-size: 0.7rem; margin-bottom: 5px; font-family: var(--font-header); }
+.checkbox-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 0.8rem; color: var(--text-color); }
+input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--secondary); cursor: pointer; }
+
+/* Tom Select Overrides */
+.ts-control {
+    background-color: var(--nav-bg) !important;
+    border: var(--border-style) !important;
+    color: var(--text-color) !important;
+    font-family: var(--font-body) !important;
+    border-radius: var(--radius) !important;
+    padding: 5px !important; min-height: 36px;
+}
+.ts-dropdown {
+    background-color: var(--nav-bg) !important;
+    border: 1px solid var(--secondary) !important;
+    color: var(--text-color) !important;
+    font-family: var(--font-body) !important;
+    z-index: 9999;
+}
+.ts-control .item {
+    background-color: var(--secondary) !important;
+    color: #000 !important;
+    border-radius: var(--radius) !important;
+    font-weight: bold;
+    padding: 2px 6px !important; margin-right: 4px !important;
+}
+.ts-dropdown .active { background-color: var(--primary) !important; color: #000 !important; }
+.ts-control input { color: var(--text-color) !important; }
+
+/* =========================================
+   6. PROFILE & MEMBERSHIP
+   ========================================= */
+.profile-card {
+    flex: 1; min-width: 250px;
+    border: 2px solid var(--primary);
+    padding: 20px;
+    background: var(--card-bg);
+    text-align: center;
+    border-radius: var(--radius);
 }
 
-/* Active State (Selected) */
-.thumb-btn.active {
-    border-color: var(--primary);
-    box-shadow: 0 0 8px var(--primary);
+.profile-form-container {
+    flex: 2; min-width: 300px;
+    border: var(--border-style);
+    padding: 30px;
+    background: var(--card-bg);
+    border-radius: var(--radius);
 }
 
-.thumb-btn.active img {
-    filter: brightness(1);
-}
+.form-group { margin-bottom: 15px; }
+.form-group label { display: block; color: #888; font-size: 0.7rem; margin-bottom: 5px; font-family: var(--font-header); }
 
-/* VIRTUAL BOOKSHELF MODE */
-.shelf-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0; /* Spines touch each other */
-    padding: 40px 20px;
-    background-color: #3e2723; /* Dark Wood */
-    background-image: repeating-linear-gradient(45deg, #3e2723 0, #3e2723 10px, #4e342e 10px, #4e342e 20px); /* Wood texture */
-    border: 4px solid #1a100e;
-    box-shadow: inset 0 0 20px #000;
-    align-items: flex-end; /* Align bottoms */
-    min-height: 250px;
-    overflow-x: auto;
+/* Pricing Cards */
+.price-card {
+    flex: 1; min-width: 200px; padding: 30px;
+    border: var(--border-style); background: var(--card-bg);
+    transition: transform 0.2s; border-radius: var(--radius);
+    text-align: center;
 }
+.price-card:hover { transform: translateY(-5px); border-color: var(--text-color); }
+.price-card.featured { border: 2px solid var(--primary); transform: scale(1.05); }
 
-.spine-item {
-    width: 40px; /* Standard Spine Width */
-    height: 200px; /* Standard Spine Height */
-    transition: transform 0.2s, z-index 0.2s;
-    position: relative;
-    cursor: pointer;
-    box-shadow: -2px 0 5px rgba(0,0,0,0.5); /* Shadow for depth */
+/* =========================================
+   7. DETAIL PAGE GALLERY
+   ========================================= */
+.gallery-hero {
+    background: #000; border: var(--border-style); margin-bottom: 10px;
+    display: flex; justify-content: center; align-items: flex-start;
+    border-radius: var(--radius);
 }
-
-.spine-item:hover {
-    transform: scale(1.1) translateY(-10px);
-    z-index: 100;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.8);
+.gallery-hero img {
+    width: auto; height: auto; max-width: 100%; max-height: 70vh; display: block;
 }
-
-.spine-item img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+.thumb-strip { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; }
+.thumb-btn {
+    width: 60px; height: 60px; border: var(--border-style); background: #000;
+    cursor: pointer; padding: 0; flex-shrink: 0; transition: all 0.2s;
+    border-radius: var(--radius);
 }
-
-/* FAUX SPINE (Auto-generated if image missing) */
-.faux-spine {
-    width: 100%;
-    height: 100%;
-    background: #222;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid #555;
-    writing-mode: vertical-rl; /* Vertical Text */
-    text-orientation: mixed;
-    font-family: sans-serif;
-    font-size: 0.7rem;
-    padding: 5px 0;
-    overflow: hidden;
-    white-space: nowrap;
-}
-
-/* Platform Colors for Faux Spines */
-.faux-spine.ps2 { background: #000; border-top: 10px solid #000; }
-.faux-spine.gcn { background: #fff; border-top: 10px solid #000; color: #000; }
-.faux-spine.xbox { background: #333; border-top: 10px solid #5dc21e; }
-
-/* GHOST LOGIC (Unowned Games) */
-.card.ghost img {
-    filter: grayscale(100%);
-    opacity: 0.6;
-    transition: all 0.3s;
-}
-
-.card.ghost:hover img {
-    filter: grayscale(0%); /* Restore color on hover */
-    opacity: 1;
-}
-
-/* Optional: Add a visual marker */
-.card.ghost .card-title {
-    color: #888;
-}
+.thumb-btn img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7); }
+.thumb-btn.active { border-color: var(--primary); box-shadow: 0 0 8px var(--primary); }
+.thumb-btn.active img { filter: brightness(1); }
