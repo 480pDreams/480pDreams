@@ -23,7 +23,7 @@ class HardwareAdmin(admin.ModelAdmin):
             'fields': ('other_variants',)
         }),
         ('Collection Status', {
-            'fields': ('own_item', 'own_box', 'own_accessories', 'video_condition', 'condition_notes')
+            'fields': ('own_item', 'date_acquired', 'own_box', 'own_accessories', 'video_condition', 'condition_notes')
         }),
         ('Gallery', {
             'fields': ('image_front', 'image_back', 'image_top', 'image_bottom', 'image_side')

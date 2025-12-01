@@ -16,9 +16,7 @@ def hardware_list(request):
 
     if my_filter.is_valid():
         items = my_filter.qs
-        print(f"DEBUG: Hardware Count (Filtered): {items.count()}")
     else:
-        print("DEBUG: Filter Invalid", my_filter.errors)
         items = all_items
 
     # 3. Context

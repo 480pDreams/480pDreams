@@ -1,48 +1,57 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.contrib import messages
+from django.utils import timezone
+from datetime import timedelta
+from operator import attrgetter
+import json
+
+# Model Imports
 from library.models import Game
 from hardware.models import Hardware
 from .models import NetworkVideo, UserProfile
-from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
-import json
-from itertools import chain
-from operator import attrgetter
 from blog.models import Post
-from django.contrib import messages
 from .forms import UserUpdateForm, ProfileUpdateForm
 
 
 def home(request):
-    # ROW 1: New Videos
+    # 1. New Videos (Top Row)
     new_videos = NetworkVideo.objects.order_by('-created_at')[:8]
 
-    # --- FETCH DATA ---
-    # 1. Games (Only show OWNED games, hide wishlist/ghosts)
-    recent_games = list(Game.objects.filter(own_game=True).order_by('-created_at')[:10])
-    updated_games = list(Game.objects.filter(own_game=True).order_by('-updated_at')[:10])
-
-    # 2. Hardware (Fetch all)
-    # <--- THESE LINES WERE MISSING/BROKEN --->
-    recent_hardware = list(Hardware.objects.order_by('-created_at')[:10])
-    updated_hardware = list(Hardware.objects.order_by('-updated_at')[:10])
+    # 2. Latest Articles (Newsstand)
     latest_news = Post.objects.filter(is_published=True)[:3]
 
-    # --- TAG DATA ---
+    # 3. Recent Acquisitions (Strict 30 Day Window)
+    # Only show items acquired in the last 30 days
+    cutoff_date = timezone.now().date() - timedelta(days=30)
+
+    # Games: Must own game AND be acquired recently
+    recent_games = list(
+        Game.objects.filter(own_game=True, date_acquired__gte=cutoff_date).order_by('-date_acquired')[:8])
+    # Hardware: Must own item AND be acquired recently
+    recent_hardware = list(
+        Hardware.objects.filter(own_item=True, date_acquired__gte=cutoff_date).order_by('-date_acquired')[:8])
+
+    # Tag them so template knows which card style to use
     for g in recent_games: g.kind = 'game'
     for h in recent_hardware: h.kind = 'hardware'
+
+    # Merge and sort by ACQUISITION date
+    recent_acquisitions = sorted(
+        recent_games + recent_hardware,
+        key=attrgetter('date_acquired'),
+        reverse=True
+    )[:8]
+
+    # 4. Recently Updated (Any edits to database)
+    # Filter out ghosts (unowned items) so we only see collection updates
+    updated_games = list(Game.objects.filter(own_game=True).order_by('-updated_at')[:8])
+    updated_hardware = list(Hardware.objects.filter(own_item=True).order_by('-updated_at')[:8])
 
     for g in updated_games: g.kind = 'game'
     for h in updated_hardware: h.kind = 'hardware'
 
-    # --- MERGE & SORT ---
-    # Recent Acquisitions
-    recent_acquisitions = sorted(
-        recent_games + recent_hardware,
-        key=attrgetter('created_at'),
-        reverse=True
-    )[:8]
-
-    # Recently Updated
     recently_updated = sorted(
         updated_games + updated_hardware,
         key=attrgetter('updated_at'),
@@ -51,9 +60,9 @@ def home(request):
 
     context = {
         'new_videos': new_videos,
+        'latest_news': latest_news,
         'recent_acquisitions': recent_acquisitions,
         'recently_updated': recently_updated,
-        'latest_news': latest_news,
     }
     return render(request, 'core/home.html', context)
 
@@ -62,9 +71,30 @@ def about(request):
     return render(request, 'core/about.html')
 
 
-def hardware(request):
-    # This is a placeholder if you haven't linked the main hardware url yet
-    return render(request, 'core/hardware.html')
+@login_required
+def profile(request):
+    if request.method == 'POST':
+        u_form = UserUpdateForm(request.POST, instance=request.user)
+        p_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
+
+        if u_form.is_valid() and p_form.is_valid():
+            u_form.save()
+            p_form.save()
+            messages.success(request, f'Your account has been updated!')
+            return redirect('core:profile')
+
+    else:
+        u_form = UserUpdateForm(instance=request.user)
+        # Ensure profile exists (Self-Healing)
+        if not hasattr(request.user, 'profile'):
+            UserProfile.objects.create(user=request.user)
+        p_form = ProfileUpdateForm(instance=request.user.profile)
+
+    context = {
+        'u_form': u_form,
+        'p_form': p_form
+    }
+    return render(request, 'core/profile.html', context)
 
 
 @login_required
@@ -84,32 +114,6 @@ def update_theme(request):
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
 
     return JsonResponse({'status': 'error'}, status=400)
-
-
-@login_required
-def profile(request):
-    if request.method == 'POST':
-        u_form = UserUpdateForm(request.POST, instance=request.user)
-        p_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
-
-        if u_form.is_valid() and p_form.is_valid():
-            u_form.save()
-            p_form.save()
-            messages.success(request, f'Your account has been updated!')
-            return redirect('core:profile')  # Redirect prevents "Confirm Resubmission" on refresh
-
-    else:
-        u_form = UserUpdateForm(instance=request.user)
-        # Ensure profile exists (Self-Healing in case it's missing)
-        if not hasattr(request.user, 'profile'):
-            UserProfile.objects.create(user=request.user)
-        p_form = ProfileUpdateForm(instance=request.user.profile)
-
-    context = {
-        'u_form': u_form,
-        'p_form': p_form
-    }
-    return render(request, 'core/profile.html', context)
 
 
 @login_required

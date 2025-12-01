@@ -71,7 +71,7 @@ class GameAdmin(admin.ModelAdmin):
                        'developers', 'publishers', 'release_date')
         }),
         ('Collection Status', {
-            'fields': ('game_format', 'own_game', 'own_box', 'own_manual', 'video_condition', 'condition_notes')
+            'fields': ('game_format', 'own_game', 'own_box', 'date_acquired', 'own_manual', 'video_condition', 'condition_notes')
         }),
         ('Art', {
             'fields': ('box_art', 'back_art', 'spine_art', 'media_art', 'screenshot')
