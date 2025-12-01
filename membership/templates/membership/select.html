@@ -1,0 +1,82 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Membership{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 40px auto; text-align: center;">
+
+    <h1 class="retro-font" style="color: var(--primary); margin-bottom: 20px;">480pDreams Membership</h1>
+    <p style="color: #ccc; margin-bottom: 40px;">
+        Join the 480pDreams network to unlock exclusive content and provide direct support.
+    </p>
+
+    <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+
+        <div class="card" style="flex: 1; min-width: 200px; padding: 20px; border: 1px solid #444;">
+            <h2 class="retro-font" style="font-size: 1.2rem; color: #fff;">BRONZE</h2>
+            <div style="font-size: 2rem; color: var(--secondary); margin: 10px 0;">$3<span style="font-size: 1rem;">/mo</span></div>
+            <button onclick="checkout('price_1SZNsQRLsa26Ee8wmsGx8yRR')" style="width: 100%; padding: 10px; background: #333; color: #fff; border: 1px solid #fff; cursor: pointer; font-family: 'Press Start 2P'; font-size: 0.7rem;">SELECT</button>
+        </div>
+
+        <div class="card" style="flex: 1; min-width: 200px; padding: 20px; border: 2px solid var(--primary);">
+            <h2 class="retro-font" style="font-size: 1.2rem; color: var(--primary);">SILVER</h2>
+            <div style="font-size: 2rem; color: var(--primary); margin: 10px 0;">$5<span style="font-size: 1rem;">/mo</span></div>
+            <button onclick="checkout('price_1SZNt2RLsa26Ee8wRtHJQVIW')" style="width: 100%; padding: 10px; background: var(--primary); color: #000; border: none; cursor: pointer; font-family: 'Press Start 2P'; font-size: 0.7rem;">SELECT</button>
+        </div>
+
+        <div class="card" style="flex: 1; min-width: 200px; padding: 20px; border: 1px solid #444;">
+            <h2 class="retro-font" style="font-size: 1.2rem; color: #fff;">GOLD</h2>
+            <div style="font-size: 2rem; color: var(--accent); margin: 10px 0;">$10<span style="font-size: 1rem;">/mo</span></div>
+            <button onclick="checkout('price_1SZNsQRLsa26Ee8wmsGx8yRR)" style="width: 100%; padding: 10px; background: #333; color: #fff; border: 1px solid #fff; cursor: pointer; font-family: 'Press Start 2P'; font-size: 0.7rem;">SELECT</button>
+        </div>
+    </div>
+
+    <div style="margin-top: 40px; padding: 20px; border: 1px dashed #444;">
+        <h3 class="retro-font" style="font-size: 1rem; color: #888;">CUSTOM AMOUNT</h3>
+        <div style="display: flex; justify-content: center; gap: 10px; align-items: center; margin-top: 10px;">
+            <span style="font-size: 1.5rem;">$</span>
+            <input type="number" id="custom-amount" placeholder="5.00" style="background: #000; color: #fff; border: 1px solid #fff; padding: 10px; font-family: monospace; font-size: 1.2rem; width: 100px;">
+            <button onclick="checkoutCustom()" style="padding: 10px 20px; background: #fff; color: #000; border: none; cursor: pointer; font-family: 'Press Start 2P'; font-size: 0.7rem;">GO</button>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+    // This key is injected from the View, which got it from Settings, which got it from Env
+    const stripe = Stripe('{{ publishable_key }}');
+
+    function checkout(priceId) {
+        fetch("{% url 'membership:create_checkout' %}", {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}'},
+            body: JSON.stringify({price_id: priceId})
+        })
+        .then(r => r.json())
+        .then(data => {
+            if(data.error) alert(data.error);
+            else stripe.redirectToCheckout({ sessionId: data.sessionId });
+        });
+    }
+
+    function checkoutCustom() {
+        const amount = document.getElementById('custom-amount').value;
+        if(!amount || amount < 3) { alert("Minimum $3.00 required"); return; }
+
+        // Convert to cents
+        const cents = Math.round(parseFloat(amount) * 100);
+
+        fetch("{% url 'membership:create_checkout' %}", {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}'},
+            body: JSON.stringify({custom_amount: cents})
+        })
+        .then(r => r.json())
+        .then(data => {
+            if(data.error) alert(data.error);
+            else stripe.redirectToCheckout({ sessionId: data.sessionId });
+        });
+    }
+</script>
+{% endblock %}

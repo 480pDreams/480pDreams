@@ -35,7 +35,6 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'allauth.socialaccount.providers.patreon',
 
     #Site Apps
     'core',
@@ -43,6 +42,7 @@ INSTALLED_APPS = [
     'library',
     'embed_video',
     'hardware',
+    'membership',
 ]
 
 MIDDLEWARE = [
@@ -152,12 +152,6 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # --- SOCIAL ACCOUNT SETTINGS ---
-SOCIALACCOUNT_PROVIDERS = {
-    'patreon': {
-        'SCOPE': ['identity', 'campaigns', 'campaigns.members'],
-        'VERSION': 'v2',
-    }
-}
 SOCIALACCOUNT_LOGIN_ON_GET = True
 
 SITE_ID = 1
@@ -223,3 +217,7 @@ if os.environ.get('DJANGO_ENV') == 'production':
     # E. Static Paths
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+STRIPE_PUBLIC_KEY = os.environ.get('STRIPE_PUBLIC_KEY')
+STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
+STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET')

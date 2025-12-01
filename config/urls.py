@@ -8,4 +8,5 @@ urlpatterns = [
     path('library/', include('library.urls')),
     path('hardware/', include('hardware.urls')),
     path('blog/', include('blog.urls')),
+    path('membership/', include('membership.urls')),
 ]
