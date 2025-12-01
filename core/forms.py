@@ -12,7 +12,7 @@ class UserUpdateForm(forms.ModelForm):
 class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = UserProfile
-        fields = ['avatar', 'bio', 'theme']
+        fields = ['avatar', 'bio', 'theme', 'preferred_region']
         widgets = {
             'bio': forms.Textarea(attrs={'rows': 3}),
         }
