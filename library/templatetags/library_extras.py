@@ -6,10 +6,9 @@ register = template.Library()
 @register.simple_tag
 def get_localized_data(game, user):
     """
-    Returns localized title/art.
-    FALLBACK STRATEGY: Always return default game data if logic fails.
+    Returns localized title/art with smart fallbacks.
     """
-    # 1. Start with Defaults (The "Safe" Data)
+    # 1. Start with Defaults
     data = {
         'title': game.title,
         'box_art': game.box_art,
@@ -18,33 +17,32 @@ def get_localized_data(game, user):
     }
 
     # 2. Determine Preference
-    target_region = 'NTSC-U'  # System Default
-
-    # robustly check for profile
+    target_region = 'NTSC-U'
     if user.is_authenticated:
         try:
-            # Use getattr to avoid crash if profile is missing
             profile = getattr(user, 'profile', None)
             if profile:
                 target_region = profile.preferred_region
         except Exception:
-            pass  # Keep default if user DB is weird
+            pass
 
-    # 3. Look for Overrides
-    # (Only if the preference is different from the game's main region)
-    # But for now, we just check all regional releases attached to this game
+    # 3. LOGIC A: Simple Title Swap (The "Quick" way)
+    # If user wants Japan AND we have a Japanese title field, use it immediately.
+    if target_region == 'NTSC-J' and game.title_japanese:
+        data['title'] = game.title_japanese
 
-    # We loop through the pre-fetched releases
+    # 4. LOGIC B: Regional Release Override (The "Full" way)
+    # Check if there is a specific entry for this region (e.g. for specific Art)
     found_release = None
     for r in game.regional_releases.all():
         if r.region_code == target_region:
             found_release = r
             break
 
-    # 4. Apply Overrides (Only if they exist)
+    # Apply Overrides if found
     if found_release:
         if found_release.title:
-            data['title'] = found_release.title
+            data['title'] = found_release.title  # This beats the simple swap if populated
         if found_release.box_art:
             data['box_art'] = found_release.box_art
         if found_release.back_art:

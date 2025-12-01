@@ -1,7 +1,9 @@
 from django.contrib import admin
-from .models import Platform, Genre, Region, Series, Developer, Publisher, Game, GameVideo, GameComponent, RegionalRelease
+from .models import Platform, Genre, Region, Series, Developer, Publisher, Game, GameVideo, GameComponent, \
+    RegionalRelease
 
 
+# --- STANDARD ADMINS ---
 @admin.register(Series)
 class SeriesAdmin(admin.ModelAdmin):
     search_fields = ['name']
@@ -35,6 +37,7 @@ class RegionAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
 
 
+# --- INLINES ---
 class GameVideoInline(admin.TabularInline):
     model = GameVideo
     extra = 1
@@ -43,22 +46,23 @@ class GameVideoInline(admin.TabularInline):
 class GameComponentInline(admin.TabularInline):
     model = GameComponent
     extra = 1
+    verbose_name = "Extra Component"
 
+
+# NEW: The Missing Piece for Regional Art
 class RegionalReleaseInline(admin.StackedInline):
     model = RegionalRelease
     extra = 0
-    verbose_name = "Regional Alternative (Art/Title)"
+    verbose_name = "Regional Alternative (Art/Title Override)"
 
 
+# --- MAIN GAME ADMIN ---
 @admin.register(Game)
 class GameAdmin(admin.ModelAdmin):
     list_display = ('title', 'platform', 'game_format', 'own_game')
     list_filter = ('platform', 'game_format')
     search_fields = ['title', 'series__name', 'developers__name', 'publishers__name']
-
-    # Use autocomplete for the big lists
     autocomplete_fields = ['series', 'other_versions', 'developers', 'publishers']
-
     prepopulated_fields = {'slug': ('title',)}
 
     fieldsets = (
@@ -77,4 +81,5 @@ class GameAdmin(admin.ModelAdmin):
         }),
     )
 
+    # Add the Regional Inline here
     inlines = [RegionalReleaseInline, GameComponentInline, GameVideoInline]
