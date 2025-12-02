@@ -307,7 +307,24 @@ button:hover, .btn:hover { background: #fff; transform: translate(0, -2px); }
 
 .filter-section { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px dashed #333; }
 .filter-label { display: block; color: var(--primary); font-size: 0.7rem; margin-bottom: 5px; font-family: var(--font-header); }
-.checkbox-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 0.8rem; color: var(--text-color); }
+
+.checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    font-size: 0.8rem;
+    color: var(--text-color); /* Ensure text is visible */
+    line-height: 1.2; /* Prevent vertical squishing */
+}
+
+.checkbox-row label {
+    cursor: pointer;
+    margin: 0; /* Remove default margins */
+    font-family: var(--font-body); /* Ensure font matches theme */
+}
+
+
 
 /* Tom Select */
 .ts-control { background-color: var(--nav-bg) !important; border: var(--border-style) !important; color: var(--text-color) !important; font-family: var(--font-body) !important; border-radius: var(--radius) !important; padding: 5px !important; min-height: 36px; }
