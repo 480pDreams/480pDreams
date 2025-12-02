@@ -1,6 +1,6 @@
 import django_filters
 from django import forms
-from .models import Hardware, HardwareType
+from .models import Hardware, HardwareType, Company
 from library.models import Platform, Region
 
 
@@ -25,6 +25,11 @@ class HardwareFilter(django_filters.FilterSet):
     regions = django_filters.ModelMultipleChoiceFilter(
         queryset=Region.objects.all(),
         conjoined=False
+    )
+    company = django_filters.ModelMultipleChoiceFilter(
+        queryset=Company.objects.all(),
+        conjoined=False,
+        label='Company'
     )
 
     # 3. DATE RANGE
