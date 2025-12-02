@@ -8,7 +8,7 @@ from operator import attrgetter
 import json
 
 # Model Imports
-from library.models import Game
+from library.models import Game, Platform
 from hardware.models import Hardware
 from .models import NetworkVideo, UserProfile
 from blog.models import Post
