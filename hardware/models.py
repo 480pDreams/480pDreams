@@ -8,15 +8,18 @@ from django.core.exceptions import ValidationError  # <--- NEW
 class HardwareType(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True)
+    def __str__(self): return self.name
 
+class Company(models.Model):
+    name = models.CharField(max_length=200)
+    slug = models.SlugField(unique=True)
     def __str__(self): return self.name
 
 
 class Hardware(models.Model):
     name = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
-    manufacturer = models.CharField(max_length=200, blank=True)
-
+    company = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True, blank=True, related_name='hardware')
     type = models.ForeignKey(HardwareType, on_delete=models.SET_NULL, null=True, related_name='hardware')
     platform = models.ForeignKey(Platform, on_delete=models.SET_NULL, null=True, blank=True, related_name='hardware')
     regions = models.ManyToManyField(Region, blank=True)
