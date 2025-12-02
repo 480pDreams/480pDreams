@@ -1,4 +1,5 @@
 /* 480pDreams Global Stylesheet */
+/* IMPORTS */
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans:wght@400;500;700&display=swap');
 
@@ -78,7 +79,7 @@
    2. GLOBAL RESET & LAYOUT
    ========================================= */
 html, body {
-    height: 100%;
+    height: 100%; /* Critical: Ensures flex container can grow */
     margin: 0;
     padding: 0;
 }
@@ -89,6 +90,8 @@ body {
     font-family: var(--font-body);
     line-height: 1.6;
     transition: background-color 0.3s, color 0.3s;
+
+    /* Flexbox Layout Engine */
     display: flex;
     flex-direction: column;
 }
@@ -97,22 +100,28 @@ body {
     max-width: 95vw;
     margin: 0 auto;
     padding: 0 20px;
+
+    /* This tells the container to eat all available space */
     flex: 1 0 auto;
+
     width: 100%;
     box-sizing: border-box;
-    margin-bottom: 60px;
 }
 
 footer {
+    /* Prevent footer from shrinking */
     flex-shrink: 0;
-    margin-top: auto;
-    padding: 40px 0;
+
+    /* Styling */
+    margin-top: 80px;
+    padding: 40px;
     text-align: center;
     color: #666;
     font-size: 0.8rem;
     border-top: 1px solid #222;
     background: #000;
     width: 100%;
+    box-sizing: border-box; /* Prevents horizontal scrollbar */
 }
 
 h1, h2, h3, .retro-font, .card-title {
@@ -132,6 +141,7 @@ nav {
     border-bottom: 3px solid var(--primary);
     padding: 15px 0;
 }
+/* Win98 Nav Override */
 [data-theme="win98"] nav { border-top: 2px outset #fff; border-bottom: 2px outset #fff; }
 
 nav .nav-flex { display: flex; justify-content: space-between; align-items: center; }
@@ -149,23 +159,23 @@ nav a { font-family: var(--font-header); font-size: 0.8rem; color: #fff; }
     font-family: var(--font-header);
 }
 
+/* Theme Menu */
 #theme-menu {
     display: none;
     position: absolute;
-    top: 40px;
+    top: 30px;
     right: 0;
     background: var(--nav-bg);
     border: var(--border-style);
     padding: 10px;
     z-index: 9999 !important;
     min-width: 150px;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
 }
-.theme-option { color: var(--text-color); padding: 10px; cursor: pointer; font-family: var(--font-header); font-size: 0.8rem; }
+.theme-option { color: var(--text-color); padding: 8px; cursor: pointer; font-family: var(--font-header); font-size: 0.7rem; }
 .theme-option:hover { background: var(--secondary); color: #000; }
 
 /* =========================================
-   4. COMPONENTS
+   4. COMPONENTS: CARDS, GRIDS, FORMS
    ========================================= */
 .grid, .shelf-grid {
     display: grid;
@@ -180,16 +190,17 @@ nav a { font-family: var(--font-header); font-size: 0.8rem; color: #fff; }
     box-shadow: var(--shadow-style);
     transition: transform 0.2s;
     position: relative;
-    z-index: 10;
+    z-index: 1002;
     border-radius: var(--radius);
 }
 
 .card:hover, .video-card:hover {
     transform: translateY(-5px);
     border-color: var(--primary);
-    z-index: 20;
+    z-index: 1003;
 }
 
+/* Image Handling */
 .card img {
     width: 100%;
     aspect-ratio: 4/3;
@@ -201,9 +212,10 @@ nav a { font-family: var(--font-header); font-size: 0.8rem; color: #fff; }
     border-radius: calc(var(--radius) - 2px);
 }
 
+/* Video Containers */
 .video-thumb-container, .video-wrapper {
     position: relative;
-    z-index: 15;
+    z-index: 1000 !important;
     background: #000;
     padding-bottom: 56.25%;
     height: 0;
@@ -212,9 +224,10 @@ nav a { font-family: var(--font-header); font-size: 0.8rem; color: #fff; }
 }
 .video-thumb-container iframe, .video-wrapper iframe {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    z-index: 16;
+    z-index: 1001 !important;
 }
 
+/* Scanlines */
 .scanlines {
     display: var(--scanline-display);
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -222,12 +235,15 @@ nav a { font-family: var(--font-header); font-size: 0.8rem; color: #fff; }
     background-size: 100% 4px; pointer-events: none; z-index: 999;
 }
 
+/* Ghost Logic */
 .card.ghost img { filter: grayscale(100%); opacity: 0.6; transition: all 0.3s; }
 .card.ghost:hover img { filter: grayscale(0%); opacity: 1; }
 .card.ghost .card-title { color: #888; }
 
-input, textarea, select {
-    width: 100%; padding: 10px;
+/* Forms (Inputs) */
+input[type="text"], input[type="email"], input[type="number"], input[type="date"], textarea, select {
+    width: 100%;
+    padding: 10px;
     background: var(--nav-bg);
     border: var(--border-style);
     color: var(--text-color);
@@ -237,6 +253,7 @@ input, textarea, select {
 }
 input:focus, textarea:focus, select:focus { outline: none; border-color: var(--secondary); }
 
+/* Buttons */
 button, .btn, .select-btn {
     padding: 10px 20px;
     background: var(--primary);
@@ -247,42 +264,81 @@ button, .btn, .select-btn {
     font-size: 0.8rem;
     border-radius: var(--radius);
     transition: all 0.2s;
-    font-weight: bold;
+    font-family: var(--font-header);
 }
 button:hover, .btn:hover { background: #fff; transform: translate(0, -2px); }
 
 /* =========================================
-   5. FILTER SIDEBAR (RESTORED)
+   5. FILTER SIDEBAR & TOM SELECT
    ========================================= */
 .filter-sidebar {
     flex: 1; min-width: 250px; max-width: 300px;
-    padding: 20px; border: var(--border-style);
-    height: fit-content; background: var(--nav-bg);
+    padding: 20px;
+    border: var(--border-style);
+    height: fit-content;
+    background: var(--nav-bg);
     border-radius: var(--radius);
 }
 
 .filter-section { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px dashed #333; }
 .filter-label { display: block; color: var(--primary); font-size: 0.7rem; margin-bottom: 5px; font-family: var(--font-header); }
 .checkbox-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 0.8rem; color: var(--text-color); }
+input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--secondary); cursor: pointer; }
 
-/* Platform Icons (RESTORED) */
+/* Platform Icons (Sidebar) */
 .platform-icon-btn {
-    width: 40px; height: 40px;
-    border: 1px solid #444; background: var(--nav-bg);
-    cursor: pointer; padding: 2px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.6rem; color: var(--text-color);
-    transition: all 0.2s; flex-shrink: 0;
-}
-.platform-icon-btn img { width: 100%; height: 100%; object-fit: contain; display: block; }
-.platform-icon-btn:hover, .platform-icon-btn.active {
-    border-color: var(--secondary); box-shadow: 0 0 5px var(--secondary); background: #222;
+    width: 40px;       /* Fixed width */
+    height: 40px;      /* Fixed height */
+    border: 1px solid #444;
+    background: var(--nav-bg);
+    cursor: pointer;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6rem;
+    color: var(--text-color);
+    transition: all 0.2s;
+    flex-shrink: 0;    /* Prevent squishing */
 }
 
-/* Tom Select */
-.ts-control { background-color: var(--nav-bg) !important; border: var(--border-style) !important; color: var(--text-color) !important; font-family: var(--font-body) !important; border-radius: var(--radius) !important; padding: 5px !important; min-height: 36px; }
-.ts-dropdown { background-color: var(--nav-bg) !important; border: 1px solid var(--secondary) !important; color: var(--text-color) !important; font-family: var(--font-body) !important; z-index: 9999; }
-.ts-control .item { background-color: var(--secondary) !important; color: #000 !important; border-radius: var(--radius) !important; font-weight: bold; padding: 2px 6px !important; margin-right: 4px !important; }
+.platform-icon-btn img {
+    width: 100%;       /* Fill the button */
+    height: 100%;      /* Fill the button */
+    object-fit: contain; /* Keep aspect ratio */
+    display: block;
+}
+
+.platform-icon-btn:hover, .platform-icon-btn.active {
+    border-color: var(--secondary);
+    box-shadow: 0 0 5px var(--secondary);
+    background: #222;
+}
+
+
+/* Tom Select Overrides */
+.ts-control {
+    background-color: var(--nav-bg) !important;
+    border: var(--border-style) !important;
+    color: var(--text-color) !important;
+    font-family: var(--font-body) !important;
+    border-radius: var(--radius) !important;
+    padding: 5px !important; min-height: 36px;
+}
+.ts-dropdown {
+    background-color: var(--nav-bg) !important;
+    border: 1px solid var(--secondary) !important;
+    color: var(--text-color) !important;
+    font-family: var(--font-body) !important;
+    z-index: 9999;
+}
+.ts-control .item {
+    background-color: var(--secondary) !important;
+    color: #000 !important;
+    border-radius: var(--radius) !important;
+    font-weight: bold;
+    padding: 2px 6px !important; margin-right: 4px !important;
+}
 .ts-dropdown .active { background-color: var(--primary) !important; color: #000 !important; }
 .ts-control input { color: var(--text-color) !important; }
 
@@ -309,6 +365,7 @@ button:hover, .btn:hover { background: #fff; transform: translate(0, -2px); }
 .form-group { margin-bottom: 15px; }
 .form-group label { display: block; color: #888; font-size: 0.7rem; margin-bottom: 5px; font-family: var(--font-header); }
 
+/* Pricing Cards */
 .price-card {
     flex: 1; min-width: 200px; padding: 30px;
     border: var(--border-style); background: var(--card-bg);
