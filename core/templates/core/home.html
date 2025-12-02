@@ -1,7 +1,6 @@
 {% extends 'core/base.html' %}
 {% load embed_video_tags %}
-
-{% block title %}Network Hub{% endblock %}
+{% load library_extras %} {% block title %}Network Hub{% endblock %}
 
 {% block content %}
 
@@ -12,9 +11,16 @@
         <div class="shelf-grid">
             {% for video in new_videos %}
                 <div class="video-card">
-                    <div class="video-thumb-container">
-                         {% video video.url '100% x 100%' %}
-                    </div>
+                    <a href="{{ video.url }}" target="_blank">
+                        <div class="video-thumb-container" style="position: relative;">
+                            {% if video.thumbnail %}
+                                <img src="{{ video.thumbnail.url }}" alt="{{ video.title }}" style="width: 100%; height: 100%; object-fit: cover;">
+                            {% else %}
+                                <div style="width: 100%; height: 100%; background: #222; display: flex; align-items: center; justify-content: center; color: #666;">NO THUMB</div>
+                            {% endif %}
+                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3rem; color: #fff; text-shadow: 0 0 10px #000; opacity: 0.8;">▶</div>
+                        </div>
+                    </a>
                     <div style="padding: 10px; font-size: 0.8rem; color: #fff;">
                         <span style="color: var(--primary); font-size: 0.7rem; display: block; margin-bottom: 4px;">
                             {{ video.get_channel_display }}
@@ -28,25 +34,51 @@
         </div>
     </div>
 
+    {% if latest_news %}
+    <div class="shelf-section">
+        <h2 class="retro-font shelf-title" style="color: #fff;">Latest Articles</h2>
+        <div class="shelf-grid">
+            {% for post in latest_news %}
+                <div class="card">
+                    <a href="{% url 'blog:post_detail' post.slug %}">
+                        {% if post.image %}
+                            <img src="{{ post.image.url }}" alt="{{ post.title }}" style="aspect-ratio: 16/9; object-fit: cover;">
+                        {% else %}
+                            <div style="height: 140px; background: #222; display: flex; align-items: center; justify-content: center; color: #666;">NEWS</div>
+                        {% endif %}
+                    </a>
+                    <div class="card-title" style="font-size: 0.9rem;">{{ post.title }}</div>
+                    <div class="card-meta">{{ post.published_date|date:"M d" }}</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
     <div class="shelf-section">
         <h2 class="retro-font shelf-title" style="color: var(--primary);">Recent Acquisitions</h2>
         <div class="shelf-grid">
             {% for item in recent_acquisitions %}
 
                 {% if item.kind == 'game' %}
+
+                {% get_localized_data item user as local_item %}
+
                 <div class="card {% if not item.own_game %}ghost{% endif %}">
                     <a href="{% url 'library:game_detail' item.slug %}">
-                        {% if item.box_art %}
-                            <img src="{{ item.box_art.url }}" alt="{{ item.title }}">
+                        {% if local_item.box_art %}
+                            <img src="{{ local_item.box_art.url }}" alt="{{ local_item.title }}">
                         {% else %}
                             <div style="height: 250px; background: #222; display: flex; align-items: center; justify-content: center; color: #666;">No Art</div>
                         {% endif %}
                     </a>
-                    <div class="card-title">{{ item.title }}</div>
+                    <div class="card-title">{{ local_item.title }}</div>
                     <div class="card-meta">
                         <span>Game</span>
                         {% if not item.own_game %}
                             <span style="color: #666; float: right;">[GHOST]</span>
+                        {% else %}
+                            <span style="color: var(--secondary); float: right;">OWNED</span>
                         {% endif %}
                     </div>
                 </div>
@@ -54,7 +86,8 @@
                 {% else %}
                 <div class="card {% if not item.own_item %}ghost{% endif %}">
                     <a href="{% url 'hardware:hardware_detail' item.slug %}">
-                        {% if item.image_front %} <img src="{{ item.image_front.url }}" alt="{{ item.name }}">
+                        {% if item.image_front %}
+                            <img src="{{ item.image_front.url }}" alt="{{ item.name }}">
                         {% else %}
                             <div style="height: 250px; background: #222; display: flex; align-items: center; justify-content: center; color: #666;">No Image</div>
                         {% endif %}
@@ -64,6 +97,8 @@
                         <span>Hardware</span>
                         {% if not item.own_item %}
                             <span style="color: #666; float: right;">[GHOST]</span>
+                        {% else %}
+                            <span style="color: var(--secondary); float: right;">OWNED</span>
                         {% endif %}
                     </div>
                 </div>
@@ -81,24 +116,28 @@
             {% for item in recently_updated %}
 
                 {% if item.kind == 'game' %}
+
+                {% get_localized_data item user as local_item %}
+
                 <div class="card {% if not item.own_game %}ghost{% endif %}">
                     <a href="{% url 'library:game_detail' item.slug %}">
-                        {% if item.box_art %}
-                            <img src="{{ item.box_art.url }}" alt="{{ item.title }}">
+                        {% if local_item.box_art %}
+                            <img src="{{ local_item.box_art.url }}" alt="{{ local_item.title }}">
                         {% else %}
                             <div style="height: 250px; background: #222; display: flex; align-items: center; justify-content: center; color: #666;">No Art</div>
                         {% endif %}
                     </a>
                     <div class="card-title">
                         <span style="color: var(--secondary); font-size: 0.7rem; display: block;">UPDATED</span>
-                        {{ item.title }}
+                        {{ local_item.title }}
                     </div>
                 </div>
 
                 {% else %}
                 <div class="card {% if not item.own_item %}ghost{% endif %}">
                     <a href="{% url 'hardware:hardware_detail' item.slug %}">
-                        {% if item.image_front %} <img src="{{ item.image_front.url }}" alt="{{ item.name }}">
+                        {% if item.image_front %}
+                            <img src="{{ item.image_front.url }}" alt="{{ item.name }}">
                         {% else %}
                             <div style="height: 250px; background: #222; display: flex; align-items: center; justify-content: center; color: #666;">No Image</div>
                         {% endif %}
@@ -109,7 +148,6 @@
                     </div>
                 </div>
                 {% endif %}
-
             {% empty %}
                 <p>No updates found.</p>
             {% endfor %}

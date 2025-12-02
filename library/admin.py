@@ -24,19 +24,17 @@ class PublisherAdmin(admin.ModelAdmin):
 
 @admin.register(Platform)
 class PlatformAdmin(admin.ModelAdmin):
-    search_fields = ['name']  # <--- THIS FIXED THE ERROR
+    search_fields = ['name']
     prepopulated_fields = {'slug': ('name',)}
 
 
 @admin.register(Genre)
 class GenreAdmin(admin.ModelAdmin):
-    search_fields = ['name']
     prepopulated_fields = {'slug': ('name',)}
 
 
 @admin.register(Region)
 class RegionAdmin(admin.ModelAdmin):
-    search_fields = ['name']
     prepopulated_fields = {'slug': ('name',)}
 
 
