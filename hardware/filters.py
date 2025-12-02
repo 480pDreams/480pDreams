@@ -11,6 +11,12 @@ class HardwareFilter(django_filters.FilterSet):
         label='Search Name'
     )
 
+    model = django_filters.CharFilter(
+        field_name='model_numbers',
+        lookup_expr='icontains',
+        label='Search Model #'
+    )
+
     # 2. DROPDOWNS (Multi-Select)
     # conjoined=False ensures OR logic (Type A OR Type B)
     # If empty, it returns all.
