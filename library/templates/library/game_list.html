@@ -1,6 +1,5 @@
 {% extends 'core/base.html' %}
 {% load static %}
-{% load library_extras %}
 
 {% block title %}Library{% endblock %}
 
@@ -9,9 +8,8 @@
     <div style="display: flex; gap: 30px; margin-top: 30px; flex-wrap: wrap;">
 
         <div class="filter-sidebar">
-
             <h3 class="retro-font" style="font-size: 1rem; margin-top: 0; color: var(--secondary); border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 20px;">
-                LIBRARY FILTER
+                DATABASE FILTER
             </h3>
 
             <form method="get"
@@ -21,10 +19,10 @@
                   id="filter-form">
 
                 <div class="filter-section">
-                    <label class="filter-label">SEARCH</label>
+                    <label class="filter-label">TITLE SEARCH</label>
                     {{ filter.form.title }}
 
-                    <label class="filter-label" style="margin-top: 15px;">HARDWARE PLATFORM</label>
+                    <label class="filter-label" style="margin-top: 15px;">PLATFORM</label>
                     <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
                         <button type="submit" name="platform" value="" class="platform-icon-btn" title="All Platforms">ALL</button>
                         {% for plat in platforms %}
@@ -64,20 +62,47 @@
                             <input type="date" name="release_date_max" value="{{ request.GET.release_date_max }}">
                         </div>
                     </div>
-
                     <label class="filter-label" style="margin-top: 10px;">SORT BY</label>
                     {{ filter.form.ordering }}
                 </div>
 
                 <div class="filter-section" style="background: var(--card-bg); padding: 10px; border: var(--border-style);">
-                    <div class="checkbox-row">{{ filter.form.own_game }} In Collection</div>
-                    <div class="checkbox-row">{{ filter.form.missing_box }} Missing Box</div>
-                    <div class="checkbox-row">{{ filter.form.missing_manual }} Missing Manual</div>
+                    <div class="checkbox-row">
+                        <label style="display: flex; align-items: center; width: 100%; cursor: pointer;">
+                            {{ filter.form.own_game }} <span style="margin-left: 8px;">In Collection</span>
+                        </label>
+                    </div>
+                    <div class="checkbox-row">
+                        <label style="display: flex; align-items: center; width: 100%; cursor: pointer;">
+                            {{ filter.form.missing_box }} <span style="margin-left: 8px;">Missing Box</span>
+                        </label>
+                    </div>
+                    <div class="checkbox-row">
+                        <label style="display: flex; align-items: center; width: 100%; cursor: pointer;">
+                            {{ filter.form.missing_manual }} <span style="margin-left: 8px;">Missing Manual</span>
+                        </label>
+                    </div>
                     <hr style="border: 0; border-top: 1px dashed #444; margin: 5px 0;">
-                    <div class="checkbox-row">{{ filter.form.has_playthrough }} Has Playthrough</div>
-                    <div class="checkbox-row">{{ filter.form.has_review }} Has Review</div>
-                    <div class="checkbox-row">{{ filter.form.has_unboxing }} Has Unboxing</div>
-                    <div class="checkbox-row">{{ filter.form.has_extras }} Has Member Content</div>
+                    <div class="checkbox-row">
+                        <label style="display: flex; align-items: center; width: 100%; cursor: pointer;">
+                            {{ filter.form.has_playthrough }} <span style="margin-left: 8px;">Has Playthrough</span>
+                        </label>
+                    </div>
+                    <div class="checkbox-row">
+                        <label style="display: flex; align-items: center; width: 100%; cursor: pointer;">
+                            {{ filter.form.has_review }} <span style="margin-left: 8px;">Has Review</span>
+                        </label>
+                    </div>
+                    <div class="checkbox-row">
+                        <label style="display: flex; align-items: center; width: 100%; cursor: pointer;">
+                            {{ filter.form.has_unboxing }} <span style="margin-left: 8px;">Has Unboxing</span>
+                        </label>
+                    </div>
+                    <div class="checkbox-row">
+                        <label style="display: flex; align-items: center; width: 100%; cursor: pointer;">
+                            {{ filter.form.has_extras }} <span style="margin-left: 8px;">Has Member Content</span>
+                        </label>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn" style="width: 100%; margin-top: 10px;">
@@ -88,13 +113,14 @@
             </form>
         </div>
 
-        <div style="flex: 3; min-width: 300px;">
+        <div style="flex: 3; min-width: 300px;" id="view-root">
             {% include 'library/partials/game_grid.html' %}
         </div>
 
     </div>
 
     <script>
+        // 1. Tom Select
         document.querySelectorAll('select[multiple]').forEach((el) => {
             new TomSelect(el, {
                 plugins: ['remove_button'],
@@ -106,6 +132,38 @@
                     option: function(data, escape) { return '<div>' + escape(data.text) + '</div>'; }
                 }
             });
+        });
+
+        // 2. View Switcher Logic
+        function setView(mode) {
+            const root = document.getElementById('view-root');
+            const btnGrid = document.getElementById('btn-grid');
+            const btnList = document.getElementById('btn-list');
+
+            if (!root) return;
+
+            if (mode === 'list') {
+                root.classList.add('view-mode-list');
+                if(btnList) btnList.classList.add('active');
+                if(btnGrid) btnGrid.classList.remove('active');
+            } else {
+                root.classList.remove('view-mode-list');
+                if(btnGrid) btnGrid.classList.add('active');
+                if(btnList) btnList.classList.remove('active');
+            }
+            localStorage.setItem('library_view_mode', mode);
+        }
+
+        // Load saved preference
+        document.addEventListener("DOMContentLoaded", function() {
+            const savedMode = localStorage.getItem('library_view_mode') || 'grid';
+            setView(savedMode);
+        });
+
+        // Re-apply after HTMX update
+        document.body.addEventListener('htmx:afterSwap', function(evt) {
+            const savedMode = localStorage.getItem('library_view_mode') || 'grid';
+            setView(savedMode);
         });
     </script>
 

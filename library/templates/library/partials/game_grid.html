@@ -1,9 +1,17 @@
 {% load library_extras %}
 
 <div id="game-results-area">
-    <div style="display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px;">
-        <h1 class="retro-font" style="margin: 0; font-size: 1.5rem;">480p Game Library</h1>
-        <span style="color: #666; font-family: monospace;">{{ games.count }} TITLES FOUND</span>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px;">
+        <div style="display: flex; align-items: center;">
+            <h1 class="retro-font" style="margin: 0; font-size: 1.5rem;">Game Library</h1>
+            <span style="color: #666; font-family: monospace; margin-left: 15px; font-size: 0.8rem;">{{ games.count }} TITLES</span>
+        </div>
+
+        <div class="view-toggle">
+            <button class="view-btn active" id="btn-grid" onclick="setView('grid')">GRID</button>
+            <button class="view-btn" id="btn-list" onclick="setView('list')">LIST</button>
+        </div>
     </div>
 
     <div class="grid">
@@ -25,6 +33,8 @@
                     <span>{{ game.platform.name }}</span>
                     {% if not game.own_game %}
                         <span style="color: #666; float: right;">[GHOST]</span>
+                    {% else %}
+                        <span style="color: var(--secondary); float: right;">OWNED</span>
                     {% endif %}
                 </div>
             </div>
@@ -34,4 +44,60 @@
             </div>
         {% endfor %}
     </div>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th style="width: 50px;">ART</th>
+                <th>TITLE</th>
+                <th>PLATFORM</th>
+                <th>REGION</th>
+                <th>DEVELOPER</th>
+                <th>YEAR</th>
+                <th>STATUS</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for game in games %}
+            {% get_localized_data game user as local_game %}
+            <tr class="{% if not game.own_game %}ghost{% endif %}">
+                <td>
+                    <a href="{% url 'library:game_detail' game.slug %}">
+                        {% if local_game.box_art %}
+                            <img src="{{ local_game.box_art.url }}" class="table-thumb">
+                        {% else %}
+                            <div class="table-thumb"></div>
+                        {% endif %}
+                    </a>
+                </td>
+                <td>
+                    <a href="{% url 'library:game_detail' game.slug %}" style="font-weight: bold; color: var(--text-color);">
+                        {{ local_game.title }}
+                    </a>
+                    {% if not game.own_game %}<span style="font-size: 0.7rem; color: #666; display: block;">[WISHLIST]</span>{% endif %}
+                </td>
+                <td>{{ game.platform.name }}</td>
+                <td>
+                    {% for reg in game.regions.all %}
+                        {{ reg.name }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </td>
+                <td>
+                    {% for dev in game.developers.all|slice:":1" %}
+                        {{ dev.name }}
+                    {% endfor %}
+                </td>
+                <td>{{ game.release_date|date:"Y" }}</td>
+                <td>
+                    <div style="display: flex; gap: 5px; font-size: 0.6rem; font-family: monospace;">
+                        <span style="opacity: {% if game.own_game %}1{% else %}0.3{% endif %}; color: {% if game.own_game %}var(--primary){% else %}#fff{% endif %}; border: 1px solid #444; padding: 1px 3px;" title="Game">G</span>
+                        <span style="opacity: {% if game.own_box %}1{% else %}0.3{% endif %}; color: {% if game.own_box %}var(--primary){% else %}#fff{% endif %}; border: 1px solid #444; padding: 1px 3px;" title="Box">B</span>
+                        <span style="opacity: {% if game.own_manual %}1{% else %}0.3{% endif %}; color: {% if game.own_manual %}var(--primary){% else %}#fff{% endif %}; border: 1px solid #444; padding: 1px 3px;" title="Manual">M</span>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
 </div>
