@@ -12,8 +12,10 @@ from library.models import Game
 from hardware.models import Hardware
 from .models import NetworkVideo, UserProfile
 from blog.models import Post
-from .forms import UserUpdateForm, ProfileUpdateForm
 
+# Form & Filter Imports
+from .forms import UserUpdateForm, ProfileUpdateForm
+from .filters import VideoFilter
 
 def home(request):
     # 1. New Videos (Top Row)
