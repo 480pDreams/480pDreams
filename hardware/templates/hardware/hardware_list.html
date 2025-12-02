@@ -5,89 +5,107 @@
 
 {% block content %}
 
-    <div style="display: flex; gap: 30px; margin-top: 30px; flex-wrap: wrap;">
+<div style="display: flex; gap: 30px; margin-top: 30px; flex-wrap: wrap;">
 
-        <div class="filter-sidebar">
-            <h3 class="retro-font" style="font-size: 1rem; margin-top: 0; color: var(--secondary); border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 20px;">
-                HARDWARE FILTER
-            </h3>
+    <div class="filter-sidebar">
+        <h3 class="retro-font"
+            style="font-size: 1rem; margin-top: 0; color: var(--secondary); border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 20px;">
+            HARDWARE FILTER
+        </h3>
 
-            <form method="get"
-                  hx-get="{% url 'hardware:hardware_list' %}"
-                  hx-target="#hardware-results-area"
-                  hx-push-url="true">
+        <form hx-get="{% url 'hardware:hardware_list' %}"
+              hx-push-url="true"
+              hx-target="#hardware-results-area"
+              method="get">
 
-                <div class="filter-section">
-                    <label class="filter-label">SEARCH</label>
-                    {{ filter.form.name }}
+            <div class="filter-section">
+                <label class="filter-label">SEARCH</label>
+                {{ filter.form.name }}
 
-                    <label class="filter-label" style="margin-top: 10px;">MODEL #</label>
-                    {{ filter.form.model }}
-                </div>
+                <label class="filter-label" style="margin-top: 10px;">MODEL #</label>
+                {{ filter.form.model }}
+            </div>
 
-                <div class="filter-section">
-                    <label class="filter-label">TYPE</label>
-                    {{ filter.form.type }}
-
-                    <label class="filter-label" style="margin-top: 10px;">COMPANY</label>
-                    {{ filter.form.company }}
-
-                    <label class="filter-label" style="margin-top: 10px;">PLATFORM</label>
-                    {{ filter.form.platform }}
-
-                    <label class="filter-label" style="margin-top: 10px;">REGION</label>
-                    {{ filter.form.regions }}
-                </div>
-
-                <div class="filter-section">
-                    <label class="filter-label">RELEASE DATE RANGE</label>
-                    <div style="display: flex; gap: 5px; flex-direction: column;">
-                        <div style="display: flex; align-items: center; gap: 5px;">
-                            <span style="font-size: 0.6rem; color: #666; width: 30px;">FROM</span>
-                            <input type="date" name="release_date_min" value="{{ request.GET.release_date_min }}">
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 5px;">
-                            <span style="font-size: 0.6rem; color: #666; width: 30px;">TO</span>
-                            <input type="date" name="release_date_max" value="{{ request.GET.release_date_max }}">
-                        </div>
-                    </div>
-
-                    <label class="filter-label" style="margin-top: 15px;">SORT BY</label>
-                    {{ filter.form.ordering }}
-                </div>
-
-                <div class="filter-section" style="background: var(--card-bg); padding: 10px; border: var(--border-style);">
-                    <div class="checkbox-row">{{ filter.form.own_item }} In Collection</div>
-                    <div class="checkbox-row">{{ filter.form.missing_box }} Missing Box</div>
-                    <hr style="border: 0; border-top: 1px dashed #444; margin: 5px 0;">
-                    <div class="checkbox-row">{{ filter.form.has_review }} Has Review</div>
-                    <div class="checkbox-row">{{ filter.form.has_unboxing }} Has Condition Video</div>
-                </div>
-
-                <button type="submit" class="btn" style="width: 100%; margin-top: 10px;">
-                    APPLY FILTERS
+            <label class="filter-label" style="margin-top: 10px;">PLATFORM</label>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
+                <button class="platform-icon-btn" name="platform" title="All Platforms" type="submit" value="">ALL
                 </button>
-                <a href="{% url 'hardware:hardware_list' %}" style="display: block; text-align: center; margin-top: 15px; color: #666; font-size: 0.7rem; text-decoration: none;">RESET ALL</a>
-            </form>
-        </div>
 
-        <div style="flex: 3; min-width: 300px;">
-            {% include 'hardware/partials/hardware_grid.html' %}
-        </div>
+                { % for plat in platforms %}
+                <button class="platform-icon-btn {% if request.GET.platform == plat.id|stringformat:'s' %}active{% endif %}" name="platform" title="{{ plat.name }}"
+                        type="submit"
+                        value="{{ plat.id }}">
+                    {% if plat.icon %}
+                    <img alt="{{ plat.name }}" src="{{ plat.icon.url }}">
+                    {% else %}
+                    {{ plat.name|slice:":3" }}
+                    {% endif %}
+                </button>
+                {% endfor %}
+            </div>
+
+            <div class="filter-section">
+                <label class="filter-label">TYPE</label>
+                {{ filter.form.type }}
+
+                <label class="filter-label" style="margin-top: 10px;">COMPANY</label>
+                {{ filter.form.company }}
+
+                <label class="filter-label" style="margin-top: 10px;">REGION</label>
+                {{ filter.form.regions }}
+            </div>
+
+            <div class="filter-section">
+                <label class="filter-label">RELEASE DATE RANGE</label>
+                <div style="display: flex; gap: 5px; flex-direction: column;">
+                    <div style="display: flex; align-items: center; gap: 5px;">
+                        <span style="font-size: 0.6rem; color: #666; width: 30px;">FROM</span>
+                        <input name="release_date_min" type="date" value="{{ request.GET.release_date_min }}">
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 5px;">
+                        <span style="font-size: 0.6rem; color: #666; width: 30px;">TO</span>
+                        <input name="release_date_max" type="date" value="{{ request.GET.release_date_max }}">
+                    </div>
+                </div>
+
+                <label class="filter-label" style="margin-top: 15px;">SORT BY</label>
+                {{ filter.form.ordering }}
+            </div>
+
+            <div class="filter-section" style="background: var(--card-bg); padding: 10px; border: var(--border-style);">
+                <div class="checkbox-row">{{ filter.form.own_item }} In Collection</div>
+                <div class="checkbox-row">{{ filter.form.missing_box }} Missing Box</div>
+                <hr style="border: 0; border-top: 1px dashed #444; margin: 5px 0;">
+                <div class="checkbox-row">{{ filter.form.has_review }} Has Review</div>
+                <div class="checkbox-row">{{ filter.form.has_unboxing }} Has Condition Video</div>
+            </div>
+
+            <button class="btn" style="width: 100%; margin-top: 10px;" type="submit">
+                APPLY FILTERS
+            </button>
+            <a href="{% url 'hardware:hardware_list' %}"
+               style="display: block; text-align: center; margin-top: 15px; color: #666; font-size: 0.7rem; text-decoration: none;">RESET
+                ALL</a>
+        </form>
     </div>
 
-    <script>
-        document.querySelectorAll('select[multiple]').forEach((el) => {
-            new TomSelect(el, {
-                plugins: ['remove_button'],
-                maxItems: 10,
-                wrapperClass: 'ts-wrapper retro-chips',
-                controlInput: '<input>',
-                render: {
-                    item: function(data, escape) { return '<div>' + escape(data.text) + '</div>'; },
-                    option: function(data, escape) { return '<div>' + escape(data.text) + '</div>'; }
-                }
-            });
+    <div style="flex: 3; min-width: 300px;">
+        {% include 'hardware/partials/hardware_grid.html' %}
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('select[multiple]').forEach((el) => {
+        new TomSelect(el, {
+            plugins: ['remove_button'],
+            maxItems: 10,
+            wrapperClass: 'ts-wrapper retro-chips',
+            controlInput: '<input>',
+            render: {
+                item: function(data, escape) { return '<div>' + escape(data.text) + '</div>'; },
+                option: function(data, escape) { return '<div>' + escape(data.text) + '</div>'; }
+            }
         });
-    </script>
+    });
+</script>
 {% endblock %}
