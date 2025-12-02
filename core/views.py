@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.contrib import messages
 from django.utils import timezone
@@ -128,20 +129,23 @@ def video_list(request):
     my_filter = VideoFilter(request.GET, queryset=all_videos)
 
     if my_filter.is_valid():
-        videos = my_filter.qs
+        qs = my_filter.qs
     else:
-        videos = all_videos
+        qs = all_videos
 
-    # Context for filters
+    # PAGINATION: 20 items
+    paginator = Paginator(qs, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     platforms = Platform.objects.all().order_by('name')
 
     context = {
-        'videos': videos,
+        'videos': page_obj,  # Pass the Page Object
         'filter': my_filter,
         'platforms': platforms,
     }
 
-    # HTMX Partial
     if request.headers.get('HX-Request'):
         return render(request, 'core/partials/video_grid.html', context)
 

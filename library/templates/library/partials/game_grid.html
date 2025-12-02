@@ -100,4 +100,30 @@
         </tbody>
     </table>
 
+    {% if games.has_other_pages %}
+    <div style="display: flex; justify-content: center; margin-top: 40px; gap: 20px; align-items: center;">
+        {% if games.has_previous %}
+            <a href="?{% url_replace page=games.previous_page_number %}"
+               hx-get="?{% url_replace page=games.previous_page_number %}"
+               hx-target="#game-results-area"
+               hx-push-url="true"
+               class="btn" style="background: #333; border: 1px solid #666;">&lt; PREV</a>
+        {% else %}
+            <span class="btn" style="background: #111; border: 1px solid #222; color: #444; cursor: default;">&lt; PREV</span>
+        {% endif %}
+
+        <span class="retro-font" style="color: #666; font-size: 0.8rem;">PAGE {{ games.number }} OF {{ games.paginator.num_pages }}</span>
+
+        {% if games.has_next %}
+            <a href="?{% url_replace page=games.next_page_number %}"
+               hx-get="?{% url_replace page=games.next_page_number %}"
+               hx-target="#game-results-area"
+               hx-push-url="true"
+               class="btn" style="background: #333; border: 1px solid #666;">NEXT &gt;</a>
+        {% else %}
+            <span class="btn" style="background: #111; border: 1px solid #222; color: #444; cursor: default;">NEXT &gt;</span>
+        {% endif %}
+    </div>
+    {% endif %}
+
 </div>

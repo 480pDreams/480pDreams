@@ -1,31 +1,30 @@
 from django.shortcuts import render, get_object_or_404
+from django.core.paginator import Paginator
 from .models import Hardware, HardwareType
 from .filters import HardwareFilter
 from library.models import Platform, Region
 
 
 def hardware_list(request):
-    # 1. Base Query
     all_items = Hardware.objects.all().order_by('name')
-
-    # DEBUG: Is the DB empty?
-    print(f"DEBUG: Hardware Count (Raw): {all_items.count()}")
-
-    # 2. Filter
     my_filter = HardwareFilter(request.GET, queryset=all_items)
 
     if my_filter.is_valid():
-        items = my_filter.qs
+        qs = my_filter.qs
     else:
-        items = all_items
+        qs = all_items
 
-    # 3. Context
+    # PAGINATION: 20 items
+    paginator = Paginator(qs, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     types = HardwareType.objects.all().order_by('name')
     platforms = Platform.objects.all().order_by('name')
     regions = Region.objects.all().order_by('name')
 
     context = {
-        'items': items,
+        'items': page_obj,  # Pass the Page Object
         'filter': my_filter,
         'types': types,
         'platforms': platforms,

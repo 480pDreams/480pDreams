@@ -1,20 +1,27 @@
 from django.shortcuts import render, get_object_or_404
+from django.core.paginator import Paginator
 from .models import Game, Platform
 from .filters import GameFilter
 
 
 def game_list(request):
-    all_games = Game.objects.prefetch_related('regional_releases').all().order_by('title')
+    all_games = Game.objects.all().order_by('title')
     my_filter = GameFilter(request.GET, queryset=all_games)
 
     if my_filter.is_valid():
-        games = my_filter.qs
+        qs = my_filter.qs
     else:
-        games = all_games
+        qs = all_games
+
+    # PAGINATION: 20 items
+    paginator = Paginator(qs, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
     platforms = Platform.objects.all().order_by('name')
+
     context = {
-        'games': games,
+        'games': page_obj,  # Pass the Page Object, not the raw list
         'filter': my_filter,
         'platforms': platforms,
     }

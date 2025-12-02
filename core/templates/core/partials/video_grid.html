@@ -1,4 +1,5 @@
 {% load embed_video_tags %}
+{% load library_extras %}
 
 <div id="video-results-area">
 
@@ -94,7 +95,7 @@
                             <div class="table-thumb"></div>
                         {% endif %}
                     </a>
-                </td>
+                 </td>
                 <td>
                     {% if is_locked and not user_is_patron %}
                         <a href="{% url 'membership:select' %}" style="color: #888;">{{ video.title }}</a>
@@ -121,5 +122,31 @@
             {% endfor %}
         </tbody>
     </table>
+
+    {% load library_extras %} {% if videos.has_other_pages %}
+    <div style="display: flex; justify-content: center; margin-top: 40px; gap: 20px; align-items: center;">
+        {% if videos.has_previous %}
+            <a href="?{% url_replace page=videos.previous_page_number %}"
+               hx-get="?{% url_replace page=videos.previous_page_number %}"
+               hx-target="#video-results-area"
+               hx-push-url="true"
+               class="btn" style="background: #333; border: 1px solid #666;">&lt; PREV</a>
+        {% else %}
+            <span class="btn" style="background: #111; border: 1px solid #222; color: #444; cursor: default;">&lt; PREV</span>
+        {% endif %}
+
+        <span class="retro-font" style="color: #666; font-size: 0.8rem;">PAGE {{ videos.number }} OF {{ videos.paginator.num_pages }}</span>
+
+        {% if videos.has_next %}
+            <a href="?{% url_replace page=videos.next_page_number %}"
+               hx-get="?{% url_replace page=videos.next_page_number %}"
+               hx-target="#video-results-area"
+               hx-push-url="true"
+               class="btn" style="background: #333; border: 1px solid #666;">NEXT &gt;</a>
+        {% else %}
+            <span class="btn" style="background: #111; border: 1px solid #222; color: #444; cursor: default;">NEXT &gt;</span>
+        {% endif %}
+    </div>
+    {% endif %}
 
 </div>
