@@ -364,3 +364,78 @@ button:hover, .btn:hover { background: #fff; transform: translate(0, -2px); }
 }
 .profile-form-container {
     flex: 2;
+
+    /* =========================================
+   7. DETAIL PAGE GALLERY (FIXED)
+   ========================================= */
+
+/* The Black Box container */
+.gallery-hero {
+    background: #000;
+    border: var(--border-style);
+    margin-bottom: 10px;
+    display: flex;            /* Centering */
+    justify-content: center;
+    align-items: center;      /* Vertically align spine images */
+    border-radius: var(--radius);
+    width: 100%;
+    min-height: 300px;       /* Ensure it has height even if empty */
+    overflow: hidden;
+}
+
+/* The Main Image - FORCE constraints */
+.gallery-hero img {
+    width: auto !important;          /* Let width scale naturally */
+    height: auto !important;         /* Let height scale naturally */
+    max-width: 100%;                 /* Don't spill horizontally */
+    max-height: 70vh;                /* Don't spill vertically (The "Huge" fix) */
+    display: block;
+    object-fit: contain;
+    background-color: transparent;   /* Remove black bg from image itself */
+    border: none;                    /* Remove generic border */
+    aspect-ratio: auto !important;   /* Override the 4/3 card aspect ratio */
+}
+
+/* The Thumbnail Strip */
+.thumb-strip {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 5px;
+    margin-top: 10px;
+}
+
+/* The Thumbnail Buttons */
+.thumb-btn {
+    width: 60px;
+    height: 60px;
+    border: var(--border-style);
+    background: #000;
+    cursor: pointer;
+    padding: 0;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    border-radius: var(--radius);
+    display: flex;               /* Center the tiny image */
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.thumb-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.7);
+    border: none;
+    aspect-ratio: auto !important; /* Fix aspect ratio here too */
+}
+
+.thumb-btn.active {
+    border-color: var(--primary);
+    box-shadow: 0 0 8px var(--primary);
+}
+
+.thumb-btn.active img {
+    filter: brightness(1);
+}
