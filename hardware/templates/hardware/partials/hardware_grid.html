@@ -16,10 +16,13 @@
                 </a>
 
                 <div class="card-title">{{ item.name }}</div>
+
                 <div class="card-meta">
                     <span>{{ item.type.name }}</span>
                     {% if not item.own_item %}
                         <span style="color: #666; float: right;">[GHOST]</span>
+                    {% else %}
+                        <span style="color: var(--secondary); float: right;">OWNED</span>
                     {% endif %}
                 </div>
             </div>
