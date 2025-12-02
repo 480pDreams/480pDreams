@@ -67,7 +67,7 @@
     --radius: 0px;
 }
 
-/* 2. GLOBAL LAYOUT (FOOTER FIX) */
+/* 2. GLOBAL LAYOUT */
 html, body {
     height: 100%;
     margin: 0;
@@ -80,8 +80,6 @@ body {
     font-family: var(--font-body);
     line-height: 1.6;
     transition: background-color 0.3s, color 0.3s;
-
-    /* This ensures the footer is pushed down */
     display: flex;
     flex-direction: column;
 }
@@ -90,24 +88,21 @@ body {
     max-width: 95vw;
     margin: 0 auto;
     padding: 0 20px;
-
-    /* Grow to fill space */
-    flex: 1 0 auto;
+    flex: 1 0 auto; /* Grow to fill space */
     width: 100%;
     box-sizing: border-box;
-
-    /* CRITICAL: Gap between content and footer */
-    margin-bottom: 80px;
+    /* Removed margin-bottom to stop double spacing issues */
 }
 
 footer {
     flex-shrink: 0;
+    margin-top: 80px !important; /* YOUR FIX: Forced spacing */
     padding: 40px 0;
     text-align: center;
     color: #666;
     font-size: 0.8rem;
     border-top: 1px solid #222;
-    background: #000;
+    background: transparent; /* YOUR FIX: Transparent BG */
     width: 100%;
 }
 
@@ -182,6 +177,7 @@ nav a { font-family: var(--font-header); font-size: 0.8rem; color: #fff; }
     z-index: 20;
 }
 
+/* Standard Card Image */
 .card img {
     width: 100%;
     aspect-ratio: 4/3;
@@ -193,6 +189,7 @@ nav a { font-family: var(--font-header); font-size: 0.8rem; color: #fff; }
     border-radius: calc(var(--radius) - 2px);
 }
 
+/* Video Containers */
 .video-thumb-container, .video-wrapper {
     position: relative;
     z-index: 15;
@@ -218,14 +215,9 @@ nav a { font-family: var(--font-header); font-size: 0.8rem; color: #fff; }
 .card.ghost:hover img { filter: grayscale(0%); opacity: 1; }
 .card.ghost .card-title { color: #888; }
 
-/* FORMS (Fixed Checkboxes) */
-input[type="text"],
-input[type="email"],
-input[type="password"],
-input[type="number"],
-input[type="date"],
-textarea,
-select {
+/* FORMS */
+input[type="text"], input[type="email"], input[type="password"],
+input[type="number"], input[type="date"], textarea, select {
     width: 100%; padding: 10px;
     background: var(--nav-bg);
     border: var(--border-style);
@@ -236,7 +228,7 @@ select {
 }
 input:focus, textarea:focus, select:focus { outline: none; border-color: var(--secondary); }
 
-/* Checkbox Specific */
+/* Checkboxes - FIXED WIDTH */
 input[type="checkbox"] {
     width: auto;
     margin-right: 10px;
@@ -259,7 +251,7 @@ button, .btn, .select-btn {
 }
 button:hover, .btn:hover { background: #fff; transform: translate(0, -2px); }
 
-/* 5. FILTERS & ICONS */
+/* 5. FILTERS */
 .filter-sidebar {
     flex: 1; min-width: 250px; max-width: 300px;
     padding: 20px; border: var(--border-style);
@@ -268,8 +260,9 @@ button:hover, .btn:hover { background: #fff; transform: translate(0, -2px); }
 }
 .filter-section { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px dashed #333; }
 .filter-label { display: block; color: var(--primary); font-size: 0.7rem; margin-bottom: 5px; font-family: var(--font-header); }
-.checkbox-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 0.8rem; color: var(--text-color); }
+.checkbox-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 0.8rem; color: var(--text-color); line-height: 1.2; }
 
+/* Platform Icons */
 .platform-icon-btn {
     width: 40px; height: 40px;
     border: 1px solid #444; background: var(--nav-bg);
@@ -287,7 +280,6 @@ button:hover, .btn:hover { background: #fff; transform: translate(0, -2px); }
 .ts-control { background-color: var(--nav-bg) !important; border: var(--border-style) !important; color: var(--text-color) !important; font-family: var(--font-body) !important; border-radius: var(--radius) !important; padding: 5px !important; min-height: 36px; }
 .ts-dropdown { background-color: var(--nav-bg) !important; border: 1px solid var(--secondary) !important; color: var(--text-color) !important; font-family: var(--font-body) !important; z-index: 9999; }
 .ts-control .item { background-color: var(--secondary) !important; color: #000 !important; border-radius: var(--radius) !important; font-weight: bold; padding: 2px 6px !important; margin-right: 4px !important; }
-.ts-control .item .remove { border-left: 1px solid #000 !important; color: #000 !important; padding-left: 5px !important; margin-left: 5px !important; }
 .ts-dropdown .active { background-color: var(--primary) !important; color: #000 !important; }
 .ts-control input { color: var(--text-color) !important; }
 
@@ -322,15 +314,17 @@ button:hover, .btn:hover { background: #fff; transform: translate(0, -2px); }
     min-height: 300px;
     overflow: hidden;
 }
+/* The specific Gallery Image Fix */
 .gallery-hero img {
     width: auto !important;
     height: auto !important;
     max-width: 100%;
-    max-height: 70vh; /* Prevents massive images */
+    max-height: 70vh;
     display: block;
     object-fit: contain;
     background-color: transparent;
     border: none;
+    aspect-ratio: auto !important;
 }
 .thumb-strip { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; }
 .thumb-btn {
@@ -340,6 +334,6 @@ button:hover, .btn:hover { background: #fff; transform: translate(0, -2px); }
     display: flex; align-items: center; justify-content: center;
     overflow: hidden;
 }
-.thumb-btn img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7); border: none; }
+.thumb-btn img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7); border: none; aspect-ratio: auto !important; }
 .thumb-btn.active { border-color: var(--primary); box-shadow: 0 0 8px var(--primary); }
 .thumb-btn.active img { filter: brightness(1); }
