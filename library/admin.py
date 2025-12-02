@@ -24,16 +24,19 @@ class PublisherAdmin(admin.ModelAdmin):
 
 @admin.register(Platform)
 class PlatformAdmin(admin.ModelAdmin):
+    search_fields = ['name']  # <--- THIS FIXED THE ERROR
     prepopulated_fields = {'slug': ('name',)}
 
 
 @admin.register(Genre)
 class GenreAdmin(admin.ModelAdmin):
+    search_fields = ['name']
     prepopulated_fields = {'slug': ('name',)}
 
 
 @admin.register(Region)
 class RegionAdmin(admin.ModelAdmin):
+    search_fields = ['name']
     prepopulated_fields = {'slug': ('name',)}
 
 
@@ -49,7 +52,6 @@ class GameComponentInline(admin.TabularInline):
     verbose_name = "Extra Component"
 
 
-# NEW: The Missing Piece for Regional Art
 class RegionalReleaseInline(admin.StackedInline):
     model = RegionalRelease
     extra = 0
@@ -71,7 +73,8 @@ class GameAdmin(admin.ModelAdmin):
                        'developers', 'publishers', 'release_date')
         }),
         ('Collection Status', {
-            'fields': ('game_format', 'own_game', 'own_box', 'date_acquired', 'own_manual', 'video_condition', 'condition_notes')
+            'fields': ('game_format', 'own_game', 'date_acquired', 'own_box', 'own_manual', 'video_condition',
+                       'condition_notes')
         }),
         ('Art', {
             'fields': ('box_art', 'back_art', 'spine_art', 'media_art', 'screenshot')
@@ -81,5 +84,4 @@ class GameAdmin(admin.ModelAdmin):
         }),
     )
 
-    # Add the Regional Inline here
     inlines = [RegionalReleaseInline, GameComponentInline, GameVideoInline]

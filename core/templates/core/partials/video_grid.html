@@ -1,0 +1,64 @@
+<div id="video-results-area">
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px;">
+        <h1 class="retro-font" style="margin: 0; font-size: 1.5rem;">Video Archive</h1>
+        <span style="color: #666; font-family: monospace;">{{ videos.count }} CLIPS FOUND</span>
+    </div>
+
+    <div class="grid">
+        {% for video in videos %}
+
+            {% with is_locked=video.is_member_only user_is_patron=user.profile.is_patron %}
+
+            {% if is_locked and not user_is_patron %}
+                <div class="video-card ghost">
+                    <a href="{% url 'membership:select' %}" style="text-decoration: none;">
+                        <div class="video-thumb-container" style="position: relative;">
+                            {% if video.thumbnail %}
+                                <img src="{{ video.thumbnail.url }}" style="width: 100%; height: 100%; object-fit: cover; filter: grayscale(100%) blur(2px);">
+                            {% else %}
+                                <div style="width: 100%; height: 100%; background: #222;"></div>
+                            {% endif %}
+
+                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--primary); font-family: 'Press Start 2P'; font-size: 0.8rem; text-align: center; text-shadow: 2px 2px 0 #000;">
+                                🔒<br>MEMBERS ONLY
+                            </div>
+                        </div>
+                    </a>
+                    <div style="padding: 10px; color: #666;">
+                        <span style="color: #666; font-size: 0.7rem; display: block;">{{ video.get_channel_display }}</span>
+                        {{ video.title }}
+                    </div>
+                </div>
+
+            {% else %}
+                <div class="video-card">
+                    <a href="{{ video.url }}" target="_blank" style="text-decoration: none;">
+                        <div class="video-thumb-container" style="position: relative;">
+                            {% if video.thumbnail %}
+                                <img src="{{ video.thumbnail.url }}" alt="{{ video.title }}" style="width: 100%; height: 100%; object-fit: cover;">
+                            {% else %}
+                                <div style="width: 100%; height: 100%; background: #222; display: flex; align-items: center; justify-content: center; color: #666;">NO THUMB</div>
+                            {% endif %}
+
+                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3rem; color: #fff; text-shadow: 0 0 10px #000; opacity: 0.8;">▶</div>
+                        </div>
+                    </a>
+                    <div style="padding: 10px;">
+                        <span style="color: var(--primary); font-size: 0.7rem; display: block;">{{ video.get_channel_display }}</span>
+                        <div style="color: #fff; font-size: 0.9rem; font-weight: bold;">{{ video.title }}</div>
+
+                        {% if is_locked %}
+                            <div style="color: var(--secondary); font-size: 0.6rem; margin-top: 5px;">🔓 UNLOCKED</div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+            {% endwith %}
+
+        {% empty %}
+            <div style="width: 100%; padding: 40px; text-align: center; color: #666; border: 2px dashed #333;">
+                NO VIDEOS FOUND.
+            </div>
+        {% endfor %}
+    </div>
+</div>

@@ -3,9 +3,12 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from embed_video.fields import EmbedVideoField
+from library.models import Platform, Game, compress_image
+from hardware.models import Hardware
+
 
 # ==========================================
-# 1. USER PROFILE (For Themes)
+# 1. USER PROFILE
 # ==========================================
 class UserProfile(models.Model):
     THEME_CHOICES = [
@@ -14,7 +17,6 @@ class UserProfile(models.Model):
         ('win98', 'Windows 98'),
         ('pc98', 'PC-98 / Japanese'),
     ]
-
     REGION_PREF_CHOICES = [
         ('NTSC-U', 'NTSC-U (America)'),
         ('NTSC-J', 'NTSC-J (Japan)'),
@@ -22,47 +24,71 @@ class UserProfile(models.Model):
     ]
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-
-    # Preferences & Status
     theme = models.CharField(max_length=20, choices=THEME_CHOICES, default='retro')
+    preferred_region = models.CharField(max_length=10, choices=REGION_PREF_CHOICES, default='NTSC-U',
+                                        help_text="Which artwork/title do you want to see by default?")
     is_patron = models.BooleanField(default=False, help_text="Is this user a paying supporter?")
+    avatar = models.ImageField(upload_to='avatars/', blank=True)
+    bio = models.TextField(max_length=500, blank=True)
 
-    # Identity Fields
-    avatar = models.ImageField(upload_to='avatars/', blank=True, help_text="Square images work best")
-    preferred_region = models.CharField(max_length=10, choices=REGION_PREF_CHOICES, default='NTSC-U', help_text="Which artwork/title do you want to see by default?")
-    bio = models.TextField(max_length=500, blank=True, help_text="Tell the network about yourself")
+    def __str__(self): return f"{self.user.username}'s Profile"
 
-    def __str__(self):
-        return f"{self.user.username}'s Profile"
 
-# Signals to auto-create a profile when a User registers
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        UserProfile.objects.create(user=instance)
+    if created: UserProfile.objects.create(user=instance)
+
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
-    # Ensure profile exists (fix for old users)
     UserProfile.objects.get_or_create(user=instance)
     instance.profile.save()
 
 
 # ==========================================
-# 2. NETWORK VIDEOS (For Homepage)
+# 2. NETWORK VIDEOS (The Archive)
 # ==========================================
 class NetworkVideo(models.Model):
     CHANNEL_CHOICES = [
-        ('main', '480pDreams (Main)'),
-        ('reviews', 'Reviews Channel'),
-        ('gameplay', 'Gameplay Channel'),
+        ('480pGames', '480pGames (Gameplay)'),
+        ('480pReviews', '480pReviews (Reviews)'),
+        ('480pUnbox', '480pUnbox (Unboxing)'),
+        ('480pDreams', '480pDreams (Main)'),
+    ]
+
+    TYPE_CHOICES = [
+        ('gameplay', 'Full Gameplay'),
+        ('gamereview', 'Game Review'),
+        ('hardwarereview', 'Hardware Review'),
+        ('detail', 'Detailed Look'),
+        ('pickups', 'Collection Update'),
+        ('setup', 'Setup Update'),
+        ('news', 'News'),
+        ('restoration', 'Hardware Restoration'),
+        ('modification', 'Hardware Modification'),
     ]
 
     title = models.CharField(max_length=200)
     channel = models.CharField(max_length=20, choices=CHANNEL_CHOICES)
-    url = EmbedVideoField()
-    thumbnail = models.ImageField(upload_to='videos/thumbnails/', blank=True)
+    video_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='gameplay')
+    url = EmbedVideoField(help_text="YouTube URL (e.g. https://www.youtube.com/watch?v=...)")
+    thumbnail = models.ImageField(upload_to='videos/thumbnails/', help_text="Upload the YouTube Thumbnail here")
+
+    # Filters
+    platform = models.ForeignKey(Platform, on_delete=models.SET_NULL, null=True, blank=True, related_name='network_videos')
+    related_game = models.ForeignKey(Game, on_delete=models.SET_NULL, null=True, blank=True)
+    related_hardware = models.ForeignKey(Hardware, on_delete=models.SET_NULL, null=True, blank=True)
+    is_member_only = models.BooleanField(default=False, verbose_name="Member Only Content")
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"[{self.channel}] {self.title}"
+
+    def save(self, *args, **kwargs):
+        if self.thumbnail:
+            try:
+                new_image = compress_image(self.thumbnail, max_width=800)
+                if new_image: self.thumbnail.save(self.thumbnail.name, new_image, save=False)
+            except:
+                pass
+        super().save(*args, **kwargs)

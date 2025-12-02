@@ -119,3 +119,28 @@ def update_theme(request):
 @login_required
 def vault(request):
     return render(request, 'core/vault.html')
+
+
+def video_list(request):
+    all_videos = NetworkVideo.objects.all().order_by('-created_at')
+    my_filter = VideoFilter(request.GET, queryset=all_videos)
+
+    if my_filter.is_valid():
+        videos = my_filter.qs
+    else:
+        videos = all_videos
+
+    # Context for filters
+    platforms = Platform.objects.all().order_by('name')
+
+    context = {
+        'videos': videos,
+        'filter': my_filter,
+        'platforms': platforms,
+    }
+
+    # HTMX Partial
+    if request.headers.get('HX-Request'):
+        return render(request, 'core/partials/video_grid.html', context)
+
+    return render(request, 'core/video_list.html', context)
