@@ -8,7 +8,7 @@ class HardwareTypeAdmin(admin.ModelAdmin):
 @admin.register(Company)
 class CompanyAdmin(admin.ModelAdmin):
     search_fields = ['name']
-    prepopulated_fields = {'slug': ('name',)}
+    prepopulated_fields = {'slug': ('name',)} #1
 
 
 @admin.register(Hardware)
