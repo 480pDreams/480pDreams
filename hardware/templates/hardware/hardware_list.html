@@ -54,11 +54,11 @@
                     <div style="display: flex; gap: 5px; flex-direction: column;">
                         <div style="display: flex; align-items: center; gap: 5px;">
                             <span style="font-size: 0.6rem; color: #666; width: 30px;">FROM</span>
-                            {{ filter.form.release_date_min }}
+                            <input type="date" name="release_date_min" value="{{ request.GET.release_date_min }}">
                         </div>
                         <div style="display: flex; align-items: center; gap: 5px;">
                             <span style="font-size: 0.6rem; color: #666; width: 30px;">TO</span>
-                            {{ filter.form.release_date_max }}
+                            <input type="date" name="release_date_max" value="{{ request.GET.release_date_max }}">
                         </div>
                     </div>
 
@@ -67,11 +67,37 @@
                 </div>
 
                 <div class="filter-section" style="background: var(--card-bg); padding: 10px; border: var(--border-style);">
-                    <div class="checkbox-row">{{ filter.form.own_item }} <label for="{{ filter.form.own_item.id_for_label }}">In Collection</label></div>
-                    <div class="checkbox-row">{{ filter.form.missing_box }} <label for="{{ filter.form.missing_box.id_for_label }}">Missing Box</label></div>
+
+                    <div class="checkbox-row">
+                        <label style="display: flex; align-items: center; width: 100%; cursor: pointer;">
+                            {{ filter.form.own_item }}
+                            <span style="margin-left: 8px;">In Collection</span>
+                        </label>
+                    </div>
+
+                    <div class="checkbox-row">
+                        <label style="display: flex; align-items: center; width: 100%; cursor: pointer;">
+                            {{ filter.form.missing_box }}
+                            <span style="margin-left: 8px;">Missing Box</span>
+                        </label>
+                    </div>
+
                     <hr style="border: 0; border-top: 1px dashed #444; margin: 5px 0;">
-                    <div class="checkbox-row">{{ filter.form.has_review }} <label for="{{ filter.form.has_review.id_for_label }}">Has Review</label></div>
-                    <div class="checkbox-row">{{ filter.form.has_unboxing }} <label for="{{ filter.form.has_unboxing.id_for_label }}">Has Condition Video</label></div>
+
+                    <div class="checkbox-row">
+                        <label style="display: flex; align-items: center; width: 100%; cursor: pointer;">
+                            {{ filter.form.has_review }}
+                            <span style="margin-left: 8px;">Has Review</span>
+                        </label>
+                    </div>
+
+                    <div class="checkbox-row">
+                        <label style="display: flex; align-items: center; width: 100%; cursor: pointer;">
+                            {{ filter.form.has_unboxing }}
+                            <span style="margin-left: 8px;">Has Condition Video</span>
+                        </label>
+                    </div>
+
                 </div>
 
                 <button type="submit" class="btn" style="width: 100%; margin-top: 10px;">
