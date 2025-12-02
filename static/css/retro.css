@@ -244,14 +244,34 @@ nav a { font-family: var(--font-header); font-size: 0.8rem; color: #fff; }
 .card.ghost .card-title { color: #888; }
 
 /* Forms */
-input, textarea, select {
-    width: 100%; padding: 10px;
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="date"],
+textarea,
+select {
+    width: 100%;
+    padding: 10px;
     background: var(--nav-bg);
     border: var(--border-style);
     color: var(--text-color);
     font-family: var(--font-body);
     box-sizing: border-box;
     border-radius: var(--radius);
+}
+
+input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--secondary);
+}
+
+/* Checkboxes (Auto Width) */
+input[type="checkbox"], input[type="radio"] {
+    width: auto; /* Fixes the stretching issue */
+    margin-right: 10px;
+    accent-color: var(--secondary);
+    cursor: pointer;
 }
 input:focus, textarea:focus, select:focus { outline: none; border-color: var(--secondary); }
 
