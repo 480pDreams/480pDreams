@@ -38,14 +38,47 @@
             </form>
         </div>
 
-        <div style="flex: 3; min-width: 300px;">
+        <div style="flex: 3; min-width: 300px;" id="view-root">
             {% include 'core/partials/video_grid.html' %}
         </div>
     </div>
 
     <script>
+        // 1. Chips
         document.querySelectorAll('select[multiple]').forEach((el) => {
             new TomSelect(el, { plugins: ['remove_button'], maxItems: 10, wrapperClass: 'ts-wrapper retro-chips', controlInput: '<input>' });
+        });
+
+        // 2. View Switcher
+        function setView(mode) {
+            const root = document.getElementById('view-root');
+            const btnGrid = document.getElementById('btn-grid');
+            const btnList = document.getElementById('btn-list');
+
+            if (!root) return;
+
+            if (mode === 'list') {
+                root.classList.add('view-mode-list');
+                if(btnList) btnList.classList.add('active');
+                if(btnGrid) btnGrid.classList.remove('active');
+            } else {
+                root.classList.remove('view-mode-list');
+                if(btnGrid) btnGrid.classList.add('active');
+                if(btnList) btnList.classList.remove('active');
+            }
+            localStorage.setItem('video_view_mode', mode);
+        }
+
+        // Load saved preference
+        document.addEventListener("DOMContentLoaded", function() {
+            const savedMode = localStorage.getItem('video_view_mode') || 'grid';
+            setView(savedMode);
+        });
+
+        // Re-apply after HTMX update
+        document.body.addEventListener('htmx:afterSwap', function(evt) {
+            const savedMode = localStorage.getItem('video_view_mode') || 'grid';
+            setView(savedMode);
         });
     </script>
 
