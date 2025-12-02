@@ -1,5 +1,4 @@
 /* 480pDreams Global Stylesheet */
-/* IMPORTS */
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans:wght@400;500;700&display=swap');
 
@@ -22,23 +21,31 @@
     --border-style: 1px solid #374151;
     --shadow-style: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
     --radius: 8px;
+    --text-glow: none;
 }
 
-/* THEME: "RETRO" */
+/* THEME: "RETRO" (CRT / Composite Style) */
 [data-theme="retro"] {
-    --bg-color: #0b0c15;
-    --text-color: #e0e0e0;
-    --primary: #ff00ff;
-    --secondary: #00ffff;
-    --accent: #f9d71c;
-    --card-bg: #1a1a24;
-    --nav-bg: #111;
+    --bg-color: #0a0a0a;        /* Screen Black */
+    --text-color: #d0d0d0;      /* OSD Grey */
+
+    /* Composite Cable Colors */
+    --primary: #f1c40f;         /* Video Yellow */
+    --secondary: #e74c3c;       /* Audio Red */
+    --accent: #ecf0f1;          /* Audio White */
+
+    --card-bg: #1a1a1a;         /* Dark Plastic */
+    --nav-bg: #2d2d2d;          /* Silver/Grey Bezel */
+
     --scanline-display: block;
     --font-header: 'Press Start 2P', cursive;
     --font-body: 'Roboto', sans-serif;
-    --border-style: 2px solid #333;
-    --shadow-style: none;
-    --radius: 0px;
+
+    --border-style: 2px solid #555; /* Plastic Bezel Edge */
+    --shadow-style: 0 0 15px rgba(0, 0, 0, 0.8);
+    --radius: 4px;              /* Soft curves like a TV set */
+
+    --text-glow: 0 0 4px rgba(241, 196, 15, 0.4); /* Subtle phosphor bloom */
 }
 
 /* THEME: WINDOWS 98 */
@@ -56,6 +63,7 @@
     --border-style: 2px outset #fff;
     --shadow-style: 4px 4px 0px #000;
     --radius: 0px;
+    --text-glow: none;
 }
 
 /* THEME: PC-98 */
@@ -73,13 +81,14 @@
     --border-style: 2px solid #fff;
     --shadow-style: none;
     --radius: 0px;
+    --text-glow: 0 0 5px #55ff55;
 }
 
 /* =========================================
    2. GLOBAL RESET & LAYOUT
    ========================================= */
 html, body {
-    height: 100%; /* Critical: Ensures flex container can grow */
+    height: 100%;
     margin: 0;
     padding: 0;
 }
@@ -90,8 +99,6 @@ body {
     font-family: var(--font-body);
     line-height: 1.6;
     transition: background-color 0.3s, color 0.3s;
-
-    /* Flexbox Layout Engine */
     display: flex;
     flex-direction: column;
 }
@@ -100,33 +107,29 @@ body {
     max-width: 95vw;
     margin: 0 auto;
     padding: 0 20px;
-
-    /* This tells the container to eat all available space */
     flex: 1 0 auto;
-
     width: 100%;
     box-sizing: border-box;
+    /* Removed margin-bottom to let footer logic handle spacing */
 }
 
 footer {
-    /* Prevent footer from shrinking */
     flex-shrink: 0;
-
-    /* Styling */
-    margin-top: 80px !important;
-    padding: 40px;
+    margin-top: 80px !important; /* Your Fix: Enforced spacing */
+    padding: 40px 0;
     text-align: center;
+    color: #666;
     font-size: 0.8rem;
     border-top: 1px solid #222;
-    background: #000;
+    background: transparent; /* Your Fix: Removed black box */
     width: 100%;
-    box-sizing: border-box; /* Prevents horizontal scrollbar */
 }
 
 h1, h2, h3, .retro-font, .card-title {
     font-family: var(--font-header);
     text-transform: uppercase;
     color: var(--primary);
+    text-shadow: var(--text-glow);
 }
 
 a { text-decoration: none; color: inherit; transition: 0.2s; }
@@ -139,8 +142,8 @@ nav {
     background: var(--nav-bg);
     border-bottom: 3px solid var(--primary);
     padding: 15px 0;
+    box-shadow: var(--shadow-style);
 }
-/* Win98 Nav Override */
 [data-theme="win98"] nav { border-top: 2px outset #fff; border-bottom: 2px outset #fff; }
 
 nav .nav-flex { display: flex; justify-content: space-between; align-items: center; }
@@ -148,7 +151,7 @@ nav ul { list-style: none; padding: 0; display: flex; gap: 30px; margin: 0; alig
 nav a { font-family: var(--font-header); font-size: 0.8rem; color: #fff; }
 [data-theme="win98"] nav a { color: #000; font-weight: bold; }
 
-.nav-logo { font-family: var(--font-header); font-size: 1.2rem; color: var(--primary); }
+.nav-logo { font-family: var(--font-header); font-size: 1.2rem; color: var(--primary); text-shadow: var(--text-glow); }
 .nav-logo img { height: 30px; width: auto; margin-right: 10px; }
 
 .user-badge {
@@ -158,23 +161,24 @@ nav a { font-family: var(--font-header); font-size: 0.8rem; color: #fff; }
     font-family: var(--font-header);
 }
 
-/* Theme Menu */
+/* Theme Menu - FIXED Z-INDEX */
 #theme-menu {
     display: none;
     position: absolute;
-    top: 30px;
+    top: 40px;
     right: 0;
     background: var(--nav-bg);
     border: var(--border-style);
     padding: 10px;
     z-index: 9999 !important;
     min-width: 150px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
 }
-.theme-option { color: var(--text-color); padding: 8px; cursor: pointer; font-family: var(--font-header); font-size: 0.7rem; }
+.theme-option { color: var(--text-color); padding: 10px; cursor: pointer; font-family: var(--font-header); font-size: 0.8rem; }
 .theme-option:hover { background: var(--secondary); color: #000; }
 
 /* =========================================
-   4. COMPONENTS: CARDS, GRIDS, FORMS
+   4. COMPONENTS
    ========================================= */
 .grid, .shelf-grid {
     display: grid;
@@ -189,14 +193,14 @@ nav a { font-family: var(--font-header); font-size: 0.8rem; color: #fff; }
     box-shadow: var(--shadow-style);
     transition: transform 0.2s;
     position: relative;
-    z-index: 1002;
+    z-index: 10;
     border-radius: var(--radius);
 }
 
 .card:hover, .video-card:hover {
     transform: translateY(-5px);
     border-color: var(--primary);
-    z-index: 1003;
+    z-index: 20;
 }
 
 /* Image Handling */
@@ -214,7 +218,7 @@ nav a { font-family: var(--font-header); font-size: 0.8rem; color: #fff; }
 /* Video Containers */
 .video-thumb-container, .video-wrapper {
     position: relative;
-    z-index: 1000 !important;
+    z-index: 15;
     background: #000;
     padding-bottom: 56.25%;
     height: 0;
@@ -223,7 +227,7 @@ nav a { font-family: var(--font-header); font-size: 0.8rem; color: #fff; }
 }
 .video-thumb-container iframe, .video-wrapper iframe {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    z-index: 1001 !important;
+    z-index: 16;
 }
 
 /* Scanlines */
@@ -239,10 +243,9 @@ nav a { font-family: var(--font-header); font-size: 0.8rem; color: #fff; }
 .card.ghost:hover img { filter: grayscale(0%); opacity: 1; }
 .card.ghost .card-title { color: #888; }
 
-/* Forms (Inputs) */
-input[type="text"], input[type="email"], input[type="number"], input[type="date"], textarea, select {
-    width: 100%;
-    padding: 10px;
+/* Forms */
+input, textarea, select {
+    width: 100%; padding: 10px;
     background: var(--nav-bg);
     border: var(--border-style);
     color: var(--text-color);
@@ -263,87 +266,44 @@ button, .btn, .select-btn {
     font-size: 0.8rem;
     border-radius: var(--radius);
     transition: all 0.2s;
-    font-family: var(--font-header);
+    font-weight: bold;
 }
 button:hover, .btn:hover { background: #fff; transform: translate(0, -2px); }
 
-/* =========================================
-   5. FILTER SIDEBAR & TOM SELECT
-   ========================================= */
+/* Platform Icons */
+.platform-icon-btn {
+    width: 40px; height: 40px;
+    border: 1px solid #444; background: var(--nav-bg);
+    cursor: pointer; padding: 2px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.6rem; color: var(--text-color);
+    transition: all 0.2s; flex-shrink: 0;
+}
+.platform-icon-btn img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.platform-icon-btn:hover, .platform-icon-btn.active {
+    border-color: var(--secondary); box-shadow: 0 0 5px var(--secondary); background: #222;
+}
+
+/* Filter Sidebar */
 .filter-sidebar {
     flex: 1; min-width: 250px; max-width: 300px;
-    padding: 20px;
-    border: var(--border-style);
-    height: fit-content;
-    background: var(--nav-bg);
+    padding: 20px; border: var(--border-style);
+    height: fit-content; background: var(--nav-bg);
     border-radius: var(--radius);
 }
 
 .filter-section { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px dashed #333; }
 .filter-label { display: block; color: var(--primary); font-size: 0.7rem; margin-bottom: 5px; font-family: var(--font-header); }
 .checkbox-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 0.8rem; color: var(--text-color); }
-input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--secondary); cursor: pointer; }
 
-/* Platform Icons (Sidebar) */
-.platform-icon-btn {
-    width: 40px;       /* Fixed width */
-    height: 40px;      /* Fixed height */
-    border: 1px solid #444;
-    background: var(--nav-bg);
-    cursor: pointer;
-    padding: 2px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.6rem;
-    color: var(--text-color);
-    transition: all 0.2s;
-    flex-shrink: 0;    /* Prevent squishing */
-}
-
-.platform-icon-btn img {
-    width: 100%;       /* Fill the button */
-    height: 100%;      /* Fill the button */
-    object-fit: contain; /* Keep aspect ratio */
-    display: block;
-}
-
-.platform-icon-btn:hover, .platform-icon-btn.active {
-    border-color: var(--secondary);
-    box-shadow: 0 0 5px var(--secondary);
-    background: #222;
-}
-
-
-/* Tom Select Overrides */
-.ts-control {
-    background-color: var(--nav-bg) !important;
-    border: var(--border-style) !important;
-    color: var(--text-color) !important;
-    font-family: var(--font-body) !important;
-    border-radius: var(--radius) !important;
-    padding: 5px !important; min-height: 36px;
-}
-.ts-dropdown {
-    background-color: var(--nav-bg) !important;
-    border: 1px solid var(--secondary) !important;
-    color: var(--text-color) !important;
-    font-family: var(--font-body) !important;
-    z-index: 9999;
-}
-.ts-control .item {
-    background-color: var(--secondary) !important;
-    color: #000 !important;
-    border-radius: var(--radius) !important;
-    font-weight: bold;
-    padding: 2px 6px !important; margin-right: 4px !important;
-}
+/* Tom Select */
+.ts-control { background-color: var(--nav-bg) !important; border: var(--border-style) !important; color: var(--text-color) !important; font-family: var(--font-body) !important; border-radius: var(--radius) !important; padding: 5px !important; min-height: 36px; }
+.ts-dropdown { background-color: var(--nav-bg) !important; border: 1px solid var(--secondary) !important; color: var(--text-color) !important; font-family: var(--font-body) !important; z-index: 9999; }
+.ts-control .item { background-color: var(--secondary) !important; color: #000 !important; border-radius: var(--radius) !important; font-weight: bold; padding: 2px 6px !important; margin-right: 4px !important; }
 .ts-dropdown .active { background-color: var(--primary) !important; color: #000 !important; }
 .ts-control input { color: var(--text-color) !important; }
 
-/* =========================================
-   6. PROFILE & MEMBERSHIP
-   ========================================= */
+/* Profile & Membership */
 .profile-card {
     flex: 1; min-width: 250px;
     border: 2px solid var(--primary);
@@ -352,45 +312,5 @@ input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--secondar
     text-align: center;
     border-radius: var(--radius);
 }
-
 .profile-form-container {
-    flex: 2; min-width: 300px;
-    border: var(--border-style);
-    padding: 30px;
-    background: var(--card-bg);
-    border-radius: var(--radius);
-}
-
-.form-group { margin-bottom: 15px; }
-.form-group label { display: block; color: #888; font-size: 0.7rem; margin-bottom: 5px; font-family: var(--font-header); }
-
-/* Pricing Cards */
-.price-card {
-    flex: 1; min-width: 200px; padding: 30px;
-    border: var(--border-style); background: var(--card-bg);
-    transition: transform 0.2s; border-radius: var(--radius);
-    text-align: center;
-}
-.price-card:hover { transform: translateY(-5px); border-color: var(--text-color); }
-.price-card.featured { border: 2px solid var(--primary); transform: scale(1.05); }
-
-/* =========================================
-   7. DETAIL PAGE GALLERY
-   ========================================= */
-.gallery-hero {
-    background: #000; border: var(--border-style); margin-bottom: 10px;
-    display: flex; justify-content: center; align-items: flex-start;
-    border-radius: var(--radius);
-}
-.gallery-hero img {
-    width: auto; height: auto; max-width: 100%; max-height: 70vh; display: block;
-}
-.thumb-strip { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; }
-.thumb-btn {
-    width: 60px; height: 60px; border: var(--border-style); background: #000;
-    cursor: pointer; padding: 0; flex-shrink: 0; transition: all 0.2s;
-    border-radius: var(--radius);
-}
-.thumb-btn img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7); }
-.thumb-btn.active { border-color: var(--primary); box-shadow: 0 0 8px var(--primary); }
-.thumb-btn.active img { filter: brightness(1); }
+    flex: 2;
