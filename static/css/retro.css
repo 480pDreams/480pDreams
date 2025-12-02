@@ -91,6 +91,13 @@ body {
     flex-direction: column;
 }
 
+footer {
+    margin-top: auto;
+    padding-top: 60px;
+    padding-bottom: 40px;
+    border-top: 1px solid #333;
+}
+
 .container {
     max-width: 95vw;
     margin: 0 auto;
@@ -144,7 +151,7 @@ nav a { font-family: var(--font-header); font-size: 0.8rem; color: #fff; }
     background: var(--nav-bg);
     border: var(--border-style);
     padding: 10px;
-    z-index: 1000;
+    z-index: 9999 !important;
     min-width: 150px;
 }
 .theme-option { color: var(--text-color); padding: 8px; cursor: pointer; font-family: var(--font-header); font-size: 0.7rem; }
@@ -240,6 +247,7 @@ button, .btn, .select-btn {
     font-size: 0.8rem;
     border-radius: var(--radius);
     transition: all 0.2s;
+    font-family: var(--font-header);
 }
 button:hover, .btn:hover { background: #fff; transform: translate(0, -2px); }
 
