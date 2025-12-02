@@ -68,41 +68,35 @@
 }
 
 /* 2. GLOBAL LAYOUT */
-html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-}
-
+html, body { height: 100%; margin: 0; padding: 0; }
 body {
     background-color: var(--bg-color);
     color: var(--text-color);
     font-family: var(--font-body);
     line-height: 1.6;
     transition: background-color 0.3s, color 0.3s;
-    display: flex;
-    flex-direction: column;
+    display: flex; flex-direction: column;
 }
 
 .container {
     max-width: 95vw;
     margin: 0 auto;
     padding: 0 20px;
-    flex: 1 0 auto; /* Grow to fill space */
+    flex: 1 0 auto;
     width: 100%;
     box-sizing: border-box;
-    /* Removed margin-bottom to stop double spacing issues */
+    margin-bottom: 80px;
 }
 
 footer {
     flex-shrink: 0;
-    margin-top: 80px !important; /* YOUR FIX: Forced spacing */
+    margin-top: 80px !important;
     padding: 40px 0;
     text-align: center;
     color: #666;
     font-size: 0.8rem;
     border-top: 1px solid #222;
-    background: transparent; /* YOUR FIX: Transparent BG */
+    background: transparent;
     width: 100%;
 }
 
@@ -167,17 +161,17 @@ nav a { font-family: var(--font-header); font-size: 0.8rem; color: #fff; }
     box-shadow: var(--shadow-style);
     transition: transform 0.2s;
     position: relative;
-    z-index: 10;
+    z-index: 1002; /* FIX: Above Scanlines (999) */
     border-radius: var(--radius);
 }
 
 .card:hover, .video-card:hover {
     transform: translateY(-5px);
     border-color: var(--primary);
-    z-index: 20;
+    z-index: 1003; /* FIX: Hover State */
 }
 
-/* Standard Card Image */
+/* Image Handling */
 .card img {
     width: 100%;
     aspect-ratio: 4/3;
@@ -192,7 +186,7 @@ nav a { font-family: var(--font-header); font-size: 0.8rem; color: #fff; }
 /* Video Containers */
 .video-thumb-container, .video-wrapper {
     position: relative;
-    z-index: 15;
+    z-index: 1005; /* FIX: Ensure video sits above card base */
     background: #000;
     padding-bottom: 56.25%;
     height: 0;
@@ -201,9 +195,10 @@ nav a { font-family: var(--font-header); font-size: 0.8rem; color: #fff; }
 }
 .video-thumb-container iframe, .video-wrapper iframe {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    z-index: 16;
+    z-index: 1006;
 }
 
+/* Scanlines */
 .scanlines {
     display: var(--scanline-display);
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -215,7 +210,7 @@ nav a { font-family: var(--font-header); font-size: 0.8rem; color: #fff; }
 .card.ghost:hover img { filter: grayscale(0%); opacity: 1; }
 .card.ghost .card-title { color: #888; }
 
-/* FORMS */
+/* Forms */
 input[type="text"], input[type="email"], input[type="password"],
 input[type="number"], input[type="date"], textarea, select {
     width: 100%; padding: 10px;
@@ -228,7 +223,6 @@ input[type="number"], input[type="date"], textarea, select {
 }
 input:focus, textarea:focus, select:focus { outline: none; border-color: var(--secondary); }
 
-/* Checkboxes - FIXED WIDTH */
 input[type="checkbox"] {
     width: auto;
     margin-right: 10px;
@@ -236,7 +230,6 @@ input[type="checkbox"] {
     cursor: pointer;
 }
 
-/* BUTTONS */
 button, .btn, .select-btn {
     padding: 10px 20px;
     background: var(--primary);
@@ -262,7 +255,6 @@ button:hover, .btn:hover { background: #fff; transform: translate(0, -2px); }
 .filter-label { display: block; color: var(--primary); font-size: 0.7rem; margin-bottom: 5px; font-family: var(--font-header); }
 .checkbox-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 0.8rem; color: var(--text-color); line-height: 1.2; }
 
-/* Platform Icons */
 .platform-icon-btn {
     width: 40px; height: 40px;
     border: 1px solid #444; background: var(--nav-bg);
@@ -305,7 +297,7 @@ button:hover, .btn:hover { background: #fff; transform: translate(0, -2px); }
 .price-card:hover { transform: translateY(-5px); border-color: var(--text-color); }
 .price-card.featured { border: 2px solid var(--primary); transform: scale(1.05); }
 
-/* 7. DETAIL PAGE GALLERY (FIXED SIZING) */
+/* 7. DETAIL PAGE GALLERY */
 .gallery-hero {
     background: #000; border: var(--border-style); margin-bottom: 10px;
     display: flex; justify-content: center; align-items: center;
@@ -314,7 +306,6 @@ button:hover, .btn:hover { background: #fff; transform: translate(0, -2px); }
     min-height: 300px;
     overflow: hidden;
 }
-/* The specific Gallery Image Fix */
 .gallery-hero img {
     width: auto !important;
     height: auto !important;

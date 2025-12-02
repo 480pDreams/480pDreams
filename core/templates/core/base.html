@@ -7,12 +7,10 @@
     <title>480pDreams | {% block title %}Home{% endblock %}</title>
 
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
-
     <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.default.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
 
     <link rel="stylesheet" href="{% static 'css/retro.css' %}">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
@@ -38,7 +36,7 @@
                     <button id="theme-btn" onclick="toggleThemeMenu()" style="background: none; border: none; color: #fff; cursor: pointer; font-size: 1.2rem;">
                         <i class="fas fa-palette"></i>
                     </button>
-                    <div id="theme-menu" style="display: none; position: absolute; top: 30px; right: 0; background: #000; border: 1px solid var(--primary); padding: 10px; z-index: 1000; min-width: 150px;">
+                    <div id="theme-menu">
                         <div class="theme-option" onclick="setTheme('modern')">MODERN</div>
                         <div class="theme-option" onclick="setTheme('retro')">RETRO</div>
                         <div class="theme-option" onclick="setTheme('win98')">WIN 98</div>
@@ -48,18 +46,14 @@
 
                 {% if user.is_authenticated %}
                     <li style="border-left: 1px solid #444; padding-left: 20px; margin-left: 10px;">
-                        <a href="{% url 'core:profile' %}" style="text-decoration: none; display: flex; align-items: center; gap: 8px;">
-                            <span style="color: var(--primary); font-size: 0.9rem; font-weight: bold; font-family: var(--font-header);">
-                                {{ user.username|upper }}
-                            </span>
+                        <a href="{% url 'core:profile' %}" style="text-decoration: none;">
+                            <span class="user-badge">{{ user.username|upper }}</span>
                         </a>
                     </li>
-
                     {% if user.profile.is_patron %}
-                        <li><a href="{% url 'japanese:dashboard' %}" style="color: #ff0055; text-shadow: 0 0 5px #ff0055; font-size: 0.8rem;">JP-TRACK</a></li>
+                        <li><a href="{% url 'japanese:dashboard' %}" style="color: #ff0055; font-size: 0.8rem;">JP-TRACK</a></li>
                     {% endif %}
-
-                    {% else %}
+                {% else %}
                     <li style="border-left: 1px solid #444; padding-left: 20px; margin-left: 10px;">
                         <a href="{% url 'account_login' %}" style="color: var(--secondary);">LOGIN</a>
                     </li>
@@ -79,50 +73,58 @@
             </div>
         {% endif %}
 
-        {% block content %}
-        {% endblock %}
+        {% block content %}{% endblock %}
     </div>
 
-    <footer style="text-align: center; padding: 40px; color: #666; font-size: 0.8rem; border-top: 1px solid #222; margin-top: auto;">
+    <footer>
         &copy; 2025 480pDreams Network.
     </footer>
 
     <script>
         const rootElement = document.documentElement;
-        let currentTheme = 'retro';
+        let currentTheme = 'modern'; // Default
 
         {% if user.is_authenticated %}
-            currentTheme = "{{ user.profile.theme }}";
+            // Ensure this renders as a string, even if empty
+            let savedDbTheme = "{{ user.profile.theme }}";
+            if (savedDbTheme && savedDbTheme !== 'None') {
+                currentTheme = savedDbTheme;
+            }
         {% else %}
             const localTheme = localStorage.getItem('site_theme');
             if (localTheme) currentTheme = localTheme;
         {% endif %}
 
-        if (currentTheme !== 'retro') {
+        // Apply Initial Theme
+        if (currentTheme !== 'modern') {
             rootElement.setAttribute('data-theme', currentTheme);
+        } else {
+            rootElement.removeAttribute('data-theme');
         }
 
         function toggleThemeMenu() {
             const menu = document.getElementById('theme-menu');
-            menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
         }
 
         function setTheme(newTheme) {
+            // Apply Visually
             if (newTheme === 'modern') {
-                // Modern is default, so remove the override attribute
                 rootElement.removeAttribute('data-theme');
             } else {
-                // Apply override (e.g. data-theme="retro")
                 rootElement.setAttribute('data-theme', newTheme);
             }
 
-            // Close menu
             document.getElementById('theme-menu').style.display = 'none';
 
+            // Save Persistence
             {% if user.is_authenticated %}
                 fetch("{% url 'core:update_theme' %}", {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
                     body: JSON.stringify({ 'theme': newTheme })
                 });
             {% else %}
@@ -130,7 +132,7 @@
             {% endif %}
         }
 
-        // Close menu if clicking outside
+        // Click Outside to Close Menu
         window.onclick = function(event) {
             if (!event.target.matches('#theme-btn') && !event.target.matches('.fa-palette')) {
                 const menu = document.getElementById('theme-menu');
@@ -140,5 +142,6 @@
             }
         }
     </script>
+
 </body>
 </html>
