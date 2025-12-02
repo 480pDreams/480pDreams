@@ -331,3 +331,70 @@ button:hover, .btn:hover { background: #fff; transform: translate(0, -2px); }
 .thumb-btn img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7); border: none; aspect-ratio: auto !important; }
 .thumb-btn.active { border-color: var(--primary); box-shadow: 0 0 8px var(--primary); }
 .thumb-btn.active img { filter: brightness(1); }
+
+/* =========================================
+   8. CONSOLIDATED VIEW (LIST MODE)
+   ========================================= */
+
+/* View Toggle Buttons */
+.view-toggle {
+    display: flex;
+    gap: 5px;
+    margin-left: 20px;
+}
+.view-btn {
+    background: transparent;
+    border: 1px solid #444;
+    color: #666;
+    padding: 5px 10px;
+    font-size: 0.6rem;
+    cursor: pointer;
+    font-family: var(--font-header);
+    border-radius: var(--radius);
+}
+.view-btn:hover { border-color: var(--text-color); color: var(--text-color); }
+.view-btn.active { background: var(--primary); color: #000; border-color: var(--primary); }
+
+/* The Data Table */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+    display: none; /* Hidden by default */
+}
+
+.data-table th {
+    text-align: left;
+    padding: 10px;
+    border-bottom: 2px solid var(--primary);
+    color: var(--primary);
+    font-family: var(--font-header);
+    font-weight: bold;
+}
+
+.data-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #333;
+    vertical-align: middle;
+    color: var(--text-color);
+}
+
+.data-table tr:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Thumbnail in List */
+.table-thumb {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border: 1px solid #444;
+    background: #000;
+    display: block;
+    border-radius: calc(var(--radius) - 2px);
+}
+
+/* VISIBILITY LOGIC */
+/* If parent has class 'view-mode-list', hide grid, show table */
+.view-mode-list .grid { display: none !important; }
+.view-mode-list .data-table { display: table !important; }

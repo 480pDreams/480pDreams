@@ -1,7 +1,15 @@
 <div id="hardware-results-area">
-    <div style="display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px;">
-        <h1 class="retro-font" style="margin: 0; font-size: 1.5rem;">Hardware Vault</h1>
-        <span style="color: #666; font-family: monospace;">{{ items.count }} ITEMS FOUND</span>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px;">
+        <div style="display: flex; align-items: center;">
+            <h1 class="retro-font" style="margin: 0; font-size: 1.5rem;">Hardware Vault</h1>
+            <span style="color: #666; font-family: monospace; margin-left: 15px; font-size: 0.8rem;">{{ items.count }} ITEMS</span>
+        </div>
+
+        <div class="view-toggle">
+            <button class="view-btn active" id="btn-grid" onclick="setView('grid')">GRID</button>
+            <button class="view-btn" id="btn-list" onclick="setView('list')">LIST</button>
+        </div>
     </div>
 
     <div class="grid">
@@ -16,13 +24,10 @@
                 </a>
 
                 <div class="card-title">{{ item.name }}</div>
-
                 <div class="card-meta">
                     <span>{{ item.type.name }}</span>
                     {% if not item.own_item %}
                         <span style="color: #666; float: right;">[GHOST]</span>
-                    {% else %}
-                        <span style="color: var(--secondary); float: right;">OWNED</span>
                     {% endif %}
                 </div>
             </div>
@@ -32,4 +37,49 @@
             </div>
         {% endfor %}
     </div>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th style="width: 50px;">IMG</th>
+                <th>NAME</th>
+                <th>TYPE</th>
+                <th>PLATFORM</th>
+                <th>MANUFACTURER</th>
+                <th>STATUS</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr class="{% if not item.own_item %}ghost{% endif %}">
+                <td>
+                    <a href="{% url 'hardware:hardware_detail' item.slug %}">
+                        {% if item.image_front %}
+                            <img src="{{ item.image_front.url }}" class="table-thumb">
+                        {% else %}
+                            <div class="table-thumb"></div>
+                        {% endif %}
+                    </a>
+                </td>
+                <td>
+                    <a href="{% url 'hardware:hardware_detail' item.slug %}" style="font-weight: bold; color: var(--text-color);">
+                        {{ item.name }}
+                    </a>
+                    {% if not item.own_item %}<span style="font-size: 0.7rem; color: #666; display: block;">[WISHLIST]</span>{% endif %}
+                </td>
+                <td>{{ item.type.name }}</td>
+                <td>{{ item.platform.name|default:"-" }}</td>
+                <td>{{ item.manufacturer|default:"-" }}</td>
+                <td>
+                    <div style="display: flex; gap: 5px; font-size: 0.6rem; font-family: monospace;">
+                        <span style="opacity: {% if item.own_item %}1{% else %}0.3{% endif %}; color: {% if item.own_item %}var(--primary){% else %}#fff{% endif %}; border: 1px solid #444; padding: 1px 3px;">U</span>
+                        <span style="opacity: {% if item.own_box %}1{% else %}0.3{% endif %}; color: {% if item.own_box %}var(--primary){% else %}#fff{% endif %}; border: 1px solid #444; padding: 1px 3px;">B</span>
+                        <span style="opacity: {% if item.own_accessories %}1{% else %}0.3{% endif %}; color: {% if item.own_accessories %}var(--primary){% else %}#fff{% endif %}; border: 1px solid #444; padding: 1px 3px;">A</span>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
 </div>

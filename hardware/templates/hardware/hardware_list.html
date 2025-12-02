@@ -20,6 +20,8 @@
                 <div class="filter-section">
                     <label class="filter-label">SEARCH</label>
                     {{ filter.form.name }}
+                    <label class="filter-label" style="margin-top: 10px;">MODEL #</label>
+                    {{ filter.form.model }}
                 </div>
 
                 <div class="filter-section">
@@ -67,52 +69,41 @@
                 </div>
 
                 <div class="filter-section" style="background: var(--card-bg); padding: 10px; border: var(--border-style);">
-
                     <div class="checkbox-row">
                         <label style="display: flex; align-items: center; width: 100%; cursor: pointer;">
-                            {{ filter.form.own_item }}
-                            <span style="margin-left: 8px;">In Collection</span>
+                            {{ filter.form.own_item }} <span style="margin-left: 8px;">In Collection</span>
                         </label>
                     </div>
-
                     <div class="checkbox-row">
                         <label style="display: flex; align-items: center; width: 100%; cursor: pointer;">
-                            {{ filter.form.missing_box }}
-                            <span style="margin-left: 8px;">Missing Box</span>
+                            {{ filter.form.missing_box }} <span style="margin-left: 8px;">Missing Box</span>
                         </label>
                     </div>
-
                     <hr style="border: 0; border-top: 1px dashed #444; margin: 5px 0;">
-
                     <div class="checkbox-row">
                         <label style="display: flex; align-items: center; width: 100%; cursor: pointer;">
-                            {{ filter.form.has_review }}
-                            <span style="margin-left: 8px;">Has Review</span>
+                            {{ filter.form.has_review }} <span style="margin-left: 8px;">Has Review</span>
                         </label>
                     </div>
-
                     <div class="checkbox-row">
                         <label style="display: flex; align-items: center; width: 100%; cursor: pointer;">
-                            {{ filter.form.has_unboxing }}
-                            <span style="margin-left: 8px;">Has Condition Video</span>
+                            {{ filter.form.has_unboxing }} <span style="margin-left: 8px;">Has Condition Video</span>
                         </label>
                     </div>
-
                 </div>
 
-                <button type="submit" class="btn" style="width: 100%; margin-top: 10px;">
-                    APPLY FILTERS
-                </button>
+                <button type="submit" class="btn" style="width: 100%; margin-top: 10px;">APPLY FILTERS</button>
                 <a href="{% url 'hardware:hardware_list' %}" style="display: block; text-align: center; margin-top: 15px; color: #666; font-size: 0.7rem; text-decoration: none;">RESET ALL</a>
             </form>
         </div>
 
-        <div style="flex: 3; min-width: 300px;">
+        <div style="flex: 3; min-width: 300px;" id="view-root">
             {% include 'hardware/partials/hardware_grid.html' %}
         </div>
     </div>
 
     <script>
+        // 1. Tom Select
         document.querySelectorAll('select[multiple]').forEach((el) => {
             new TomSelect(el, {
                 plugins: ['remove_button'],
@@ -124,6 +115,38 @@
                     option: function(data, escape) { return '<div>' + escape(data.text) + '</div>'; }
                 }
             });
+        });
+
+        // 2. View Switcher Logic
+        function setView(mode) {
+            const root = document.getElementById('view-root');
+            const btnGrid = document.getElementById('btn-grid');
+            const btnList = document.getElementById('btn-list');
+
+            if (!root) return;
+
+            if (mode === 'list') {
+                root.classList.add('view-mode-list');
+                if(btnList) btnList.classList.add('active');
+                if(btnGrid) btnGrid.classList.remove('active');
+            } else {
+                root.classList.remove('view-mode-list');
+                if(btnGrid) btnGrid.classList.add('active');
+                if(btnList) btnList.classList.remove('active');
+            }
+            localStorage.setItem('hardware_view_mode', mode);
+        }
+
+        // Load saved preference
+        document.addEventListener("DOMContentLoaded", function() {
+            const savedMode = localStorage.getItem('hardware_view_mode') || 'grid';
+            setView(savedMode);
+        });
+
+        // Re-apply after HTMX update
+        document.body.addEventListener('htmx:afterSwap', function(evt) {
+            const savedMode = localStorage.getItem('hardware_view_mode') || 'grid';
+            setView(savedMode);
         });
     </script>
 {% endblock %}
