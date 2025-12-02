@@ -185,15 +185,20 @@ nav a { font-family: var(--font-header); font-size: 0.8rem; color: #fff; }
 /* Video Containers */
 .video-thumb-container, .video-wrapper {
     position: relative;
-    z-index: 1005; /* FIX: Ensure video sits above card base */
+    z-index: 1005;
     background: #000;
     padding-bottom: 56.25%;
     height: 0;
     overflow: hidden;
     border-radius: calc(var(--radius) - 2px);
 }
-.video-thumb-container iframe, .video-wrapper iframe {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+.video-thumb-container iframe, .video-wrapper iframe, .video-thumb-container img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     z-index: 1006;
 }
 
