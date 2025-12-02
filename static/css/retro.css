@@ -2,17 +2,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans:wght@400;500;700&display=swap');
 
-/* =========================================
-   1. THEME ENGINE (VARIABLES)
-   ========================================= */
-
-/* DEFAULT: "MODERN" */
+/* 1. THEME ENGINE */
 :root {
     --bg-color: #121212;
     --text-color: #f3f4f6;
-    --primary: #3b82f6;        /* Modern Blue */
-    --secondary: #10b981;      /* Emerald Green */
-    --accent: #f59e0b;         /* Amber */
+    --primary: #3b82f6;
+    --secondary: #10b981;
+    --accent: #f59e0b;
     --card-bg: #1e1e1e;
     --nav-bg: #1f2937;
     --scanline-display: none;
@@ -21,34 +17,24 @@
     --border-style: 1px solid #374151;
     --shadow-style: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
     --radius: 8px;
-    --text-glow: none;
 }
 
-/* THEME: "RETRO" (CRT / Composite Style) */
 [data-theme="retro"] {
-    --bg-color: #0a0a0a;        /* Screen Black */
-    --text-color: #d0d0d0;      /* OSD Grey */
-
-    /* Composite Cable Colors */
-    --primary: #f1c40f;         /* Video Yellow */
-    --secondary: #e74c3c;       /* Audio Red */
-    --accent: #ecf0f1;          /* Audio White */
-
-    --card-bg: #1a1a1a;         /* Dark Plastic */
-    --nav-bg: #2d2d2d;          /* Silver/Grey Bezel */
-
+    --bg-color: #0a0a0a;
+    --text-color: #d0d0d0;
+    --primary: #f1c40f;
+    --secondary: #e74c3c;
+    --accent: #ecf0f1;
+    --card-bg: #1a1a1a;
+    --nav-bg: #2d2d2d;
     --scanline-display: block;
     --font-header: 'Press Start 2P', cursive;
     --font-body: 'Roboto', sans-serif;
-
-    --border-style: 2px solid #555; /* Plastic Bezel Edge */
+    --border-style: 2px solid #555;
     --shadow-style: 0 0 15px rgba(0, 0, 0, 0.8);
-    --radius: 4px;              /* Soft curves like a TV set */
-
-    --text-glow: 0 0 4px rgba(241, 196, 15, 0.4); /* Subtle phosphor bloom */
+    --radius: 4px;
 }
 
-/* THEME: WINDOWS 98 */
 [data-theme="win98"] {
     --bg-color: #008080;
     --text-color: #000000;
@@ -63,10 +49,8 @@
     --border-style: 2px outset #fff;
     --shadow-style: 4px 4px 0px #000;
     --radius: 0px;
-    --text-glow: none;
 }
 
-/* THEME: PC-98 */
 [data-theme="pc98"] {
     --bg-color: #000022;
     --text-color: #e6e6e6;
@@ -81,12 +65,9 @@
     --border-style: 2px solid #fff;
     --shadow-style: none;
     --radius: 0px;
-    --text-glow: 0 0 5px #55ff55;
 }
 
-/* =========================================
-   2. GLOBAL RESET & LAYOUT
-   ========================================= */
+/* 2. GLOBAL LAYOUT (FOOTER FIX) */
 html, body {
     height: 100%;
     margin: 0;
@@ -99,6 +80,8 @@ body {
     font-family: var(--font-body);
     line-height: 1.6;
     transition: background-color 0.3s, color 0.3s;
+
+    /* This ensures the footer is pushed down */
     display: flex;
     flex-direction: column;
 }
@@ -107,21 +90,24 @@ body {
     max-width: 95vw;
     margin: 0 auto;
     padding: 0 20px;
+
+    /* Grow to fill space */
     flex: 1 0 auto;
     width: 100%;
     box-sizing: border-box;
-    /* Removed margin-bottom to let footer logic handle spacing */
+
+    /* CRITICAL: Gap between content and footer */
+    margin-bottom: 80px;
 }
 
 footer {
     flex-shrink: 0;
-    margin-top: 80px !important; /* Your Fix: Enforced spacing */
     padding: 40px 0;
     text-align: center;
     color: #666;
     font-size: 0.8rem;
     border-top: 1px solid #222;
-    background: transparent; /* Your Fix: Removed black box */
+    background: #000;
     width: 100%;
 }
 
@@ -129,20 +115,16 @@ h1, h2, h3, .retro-font, .card-title {
     font-family: var(--font-header);
     text-transform: uppercase;
     color: var(--primary);
-    text-shadow: var(--text-glow);
 }
 
 a { text-decoration: none; color: inherit; transition: 0.2s; }
 a:hover { color: var(--secondary); }
 
-/* =========================================
-   3. NAVIGATION
-   ========================================= */
+/* 3. NAVIGATION */
 nav {
     background: var(--nav-bg);
     border-bottom: 3px solid var(--primary);
     padding: 15px 0;
-    box-shadow: var(--shadow-style);
 }
 [data-theme="win98"] nav { border-top: 2px outset #fff; border-bottom: 2px outset #fff; }
 
@@ -151,7 +133,7 @@ nav ul { list-style: none; padding: 0; display: flex; gap: 30px; margin: 0; alig
 nav a { font-family: var(--font-header); font-size: 0.8rem; color: #fff; }
 [data-theme="win98"] nav a { color: #000; font-weight: bold; }
 
-.nav-logo { font-family: var(--font-header); font-size: 1.2rem; color: var(--primary); text-shadow: var(--text-glow); }
+.nav-logo { font-family: var(--font-header); font-size: 1.2rem; color: var(--primary); }
 .nav-logo img { height: 30px; width: auto; margin-right: 10px; }
 
 .user-badge {
@@ -161,7 +143,6 @@ nav a { font-family: var(--font-header); font-size: 0.8rem; color: #fff; }
     font-family: var(--font-header);
 }
 
-/* Theme Menu - FIXED Z-INDEX */
 #theme-menu {
     display: none;
     position: absolute;
@@ -177,9 +158,7 @@ nav a { font-family: var(--font-header); font-size: 0.8rem; color: #fff; }
 .theme-option { color: var(--text-color); padding: 10px; cursor: pointer; font-family: var(--font-header); font-size: 0.8rem; }
 .theme-option:hover { background: var(--secondary); color: #000; }
 
-/* =========================================
-   4. COMPONENTS
-   ========================================= */
+/* 4. COMPONENTS */
 .grid, .shelf-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -203,7 +182,6 @@ nav a { font-family: var(--font-header); font-size: 0.8rem; color: #fff; }
     z-index: 20;
 }
 
-/* Image Handling */
 .card img {
     width: 100%;
     aspect-ratio: 4/3;
@@ -215,7 +193,6 @@ nav a { font-family: var(--font-header); font-size: 0.8rem; color: #fff; }
     border-radius: calc(var(--radius) - 2px);
 }
 
-/* Video Containers */
 .video-thumb-container, .video-wrapper {
     position: relative;
     z-index: 15;
@@ -230,7 +207,6 @@ nav a { font-family: var(--font-header); font-size: 0.8rem; color: #fff; }
     z-index: 16;
 }
 
-/* Scanlines */
 .scanlines {
     display: var(--scanline-display);
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -238,12 +214,11 @@ nav a { font-family: var(--font-header); font-size: 0.8rem; color: #fff; }
     background-size: 100% 4px; pointer-events: none; z-index: 999;
 }
 
-/* Ghost Logic */
 .card.ghost img { filter: grayscale(100%); opacity: 0.6; transition: all 0.3s; }
 .card.ghost:hover img { filter: grayscale(0%); opacity: 1; }
 .card.ghost .card-title { color: #888; }
 
-/* Forms */
+/* FORMS (Fixed Checkboxes) */
 input[type="text"],
 input[type="email"],
 input[type="password"],
@@ -251,8 +226,7 @@ input[type="number"],
 input[type="date"],
 textarea,
 select {
-    width: 100%;
-    padding: 10px;
+    width: 100%; padding: 10px;
     background: var(--nav-bg);
     border: var(--border-style);
     color: var(--text-color);
@@ -260,22 +234,17 @@ select {
     box-sizing: border-box;
     border-radius: var(--radius);
 }
+input:focus, textarea:focus, select:focus { outline: none; border-color: var(--secondary); }
 
-input:focus, textarea:focus, select:focus {
-    outline: none;
-    border-color: var(--secondary);
-}
-
-/* Checkboxes (Auto Width) */
-input[type="checkbox"], input[type="radio"] {
-    width: auto; /* Fixes the stretching issue */
+/* Checkbox Specific */
+input[type="checkbox"] {
+    width: auto;
     margin-right: 10px;
     accent-color: var(--secondary);
     cursor: pointer;
 }
-input:focus, textarea:focus, select:focus { outline: none; border-color: var(--secondary); }
 
-/* Buttons */
+/* BUTTONS */
 button, .btn, .select-btn {
     padding: 10px 20px;
     background: var(--primary);
@@ -290,7 +259,17 @@ button, .btn, .select-btn {
 }
 button:hover, .btn:hover { background: #fff; transform: translate(0, -2px); }
 
-/* Platform Icons */
+/* 5. FILTERS & ICONS */
+.filter-sidebar {
+    flex: 1; min-width: 250px; max-width: 300px;
+    padding: 20px; border: var(--border-style);
+    height: fit-content; background: var(--nav-bg);
+    border-radius: var(--radius);
+}
+.filter-section { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px dashed #333; }
+.filter-label { display: block; color: var(--primary); font-size: 0.7rem; margin-bottom: 5px; font-family: var(--font-header); }
+.checkbox-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 0.8rem; color: var(--text-color); }
+
 .platform-icon-btn {
     width: 40px; height: 40px;
     border: 1px solid #444; background: var(--nav-bg);
@@ -304,56 +283,15 @@ button:hover, .btn:hover { background: #fff; transform: translate(0, -2px); }
     border-color: var(--secondary); box-shadow: 0 0 5px var(--secondary); background: #222;
 }
 
-/* Filter Sidebar */
-.filter-sidebar {
-    flex: 1; min-width: 250px; max-width: 300px;
-    padding: 20px; border: var(--border-style);
-    height: fit-content; background: var(--nav-bg);
-    border-radius: var(--radius);
-}
-
-.filter-sidebar input[type="text"],
-.filter-sidebar input[type="number"],
-.filter-sidebar input[type="date"],
-.filter-sidebar select {
-    background-color: var(--nav-bg) !important;
-    color: var(--text-color) !important;
-    border: 1px solid #444 !important;
-    font-family: var(--font-body) !important;
-    padding: 8px;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-.filter-section { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px dashed #333; }
-.filter-label { display: block; color: var(--primary); font-size: 0.7rem; margin-bottom: 5px; font-family: var(--font-header); }
-
-.checkbox-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 8px;
-    font-size: 0.8rem;
-    color: var(--text-color); /* Ensure text is visible */
-    line-height: 1.2; /* Prevent vertical squishing */
-}
-
-.checkbox-row label {
-    cursor: pointer;
-    margin: 0; /* Remove default margins */
-    font-family: var(--font-body); /* Ensure font matches theme */
-}
-
-
-
 /* Tom Select */
 .ts-control { background-color: var(--nav-bg) !important; border: var(--border-style) !important; color: var(--text-color) !important; font-family: var(--font-body) !important; border-radius: var(--radius) !important; padding: 5px !important; min-height: 36px; }
 .ts-dropdown { background-color: var(--nav-bg) !important; border: 1px solid var(--secondary) !important; color: var(--text-color) !important; font-family: var(--font-body) !important; z-index: 9999; }
 .ts-control .item { background-color: var(--secondary) !important; color: #000 !important; border-radius: var(--radius) !important; font-weight: bold; padding: 2px 6px !important; margin-right: 4px !important; }
+.ts-control .item .remove { border-left: 1px solid #000 !important; color: #000 !important; padding-left: 5px !important; margin-left: 5px !important; }
 .ts-dropdown .active { background-color: var(--primary) !important; color: #000 !important; }
 .ts-control input { color: var(--text-color) !important; }
 
-/* Profile & Membership */
+/* 6. PROFILE */
 .profile-card {
     flex: 1; min-width: 250px;
     border: 2px solid var(--primary);
@@ -363,79 +301,45 @@ button:hover, .btn:hover { background: #fff; transform: translate(0, -2px); }
     border-radius: var(--radius);
 }
 .profile-form-container {
-    flex: 2;
-
-    /* =========================================
-   7. DETAIL PAGE GALLERY (FIXED)
-   ========================================= */
-
-/* The Black Box container */
-.gallery-hero {
-    background: #000;
+    flex: 2; min-width: 300px;
     border: var(--border-style);
-    margin-bottom: 10px;
-    display: flex;            /* Centering */
-    justify-content: center;
-    align-items: center;      /* Vertically align spine images */
+    padding: 30px;
+    background: var(--card-bg);
+    border-radius: var(--radius);
+}
+.form-group { margin-bottom: 15px; }
+.form-group label { display: block; color: #888; font-size: 0.7rem; margin-bottom: 5px; font-family: var(--font-header); }
+.price-card { flex: 1; min-width: 200px; padding: 30px; border: var(--border-style); background: var(--card-bg); transition: transform 0.2s; border-radius: var(--radius); text-align: center; }
+.price-card:hover { transform: translateY(-5px); border-color: var(--text-color); }
+.price-card.featured { border: 2px solid var(--primary); transform: scale(1.05); }
+
+/* 7. DETAIL PAGE GALLERY (FIXED SIZING) */
+.gallery-hero {
+    background: #000; border: var(--border-style); margin-bottom: 10px;
+    display: flex; justify-content: center; align-items: center;
     border-radius: var(--radius);
     width: 100%;
-    min-height: 300px;       /* Ensure it has height even if empty */
+    min-height: 300px;
     overflow: hidden;
 }
-
-/* The Main Image - FORCE constraints */
 .gallery-hero img {
-    width: auto !important;          /* Let width scale naturally */
-    height: auto !important;         /* Let height scale naturally */
-    max-width: 100%;                 /* Don't spill horizontally */
-    max-height: 70vh;                /* Don't spill vertically (The "Huge" fix) */
+    width: auto !important;
+    height: auto !important;
+    max-width: 100%;
+    max-height: 70vh; /* Prevents massive images */
     display: block;
     object-fit: contain;
-    background-color: transparent;   /* Remove black bg from image itself */
-    border: none;                    /* Remove generic border */
-    aspect-ratio: auto !important;   /* Override the 4/3 card aspect ratio */
+    background-color: transparent;
+    border: none;
 }
-
-/* The Thumbnail Strip */
-.thumb-strip {
-    display: flex;
-    gap: 10px;
-    overflow-x: auto;
-    padding-bottom: 5px;
-    margin-top: 10px;
-}
-
-/* The Thumbnail Buttons */
+.thumb-strip { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; }
 .thumb-btn {
-    width: 60px;
-    height: 60px;
-    border: var(--border-style);
-    background: #000;
-    cursor: pointer;
-    padding: 0;
-    flex-shrink: 0;
-    transition: all 0.2s;
+    width: 60px; height: 60px; border: var(--border-style); background: #000;
+    cursor: pointer; padding: 0; flex-shrink: 0; transition: all 0.2s;
     border-radius: var(--radius);
-    display: flex;               /* Center the tiny image */
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     overflow: hidden;
 }
-
-.thumb-btn img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    filter: brightness(0.7);
-    border: none;
-    aspect-ratio: auto !important; /* Fix aspect ratio here too */
-}
-
-.thumb-btn.active {
-    border-color: var(--primary);
-    box-shadow: 0 0 8px var(--primary);
-}
-
-.thumb-btn.active img {
-    filter: brightness(1);
-}
+.thumb-btn img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7); border: none; }
+.thumb-btn.active { border-color: var(--primary); box-shadow: 0 0 8px var(--primary); }
+.thumb-btn.active img { filter: brightness(1); }
