@@ -1,5 +1,6 @@
 {% extends 'core/base.html' %}
 {% load static %}
+{% load library_extras %}
 
 {% block title %}Library{% endblock %}
 
@@ -52,12 +53,18 @@
                 </div>
 
                 <div class="filter-section">
-                    <label class="filter-label">RELEASE YEAR RANGE</label>
-                    <div style="display: flex; gap: 5px;">
-                        <input type="number" name="release_year_min" placeholder="1990" value="{{ request.GET.release_year_min }}">
-                        <span style="color:#666; align-self: center;">-</span>
-                        <input type="number" name="release_year_max" placeholder="2005" value="{{ request.GET.release_year_max }}">
+                    <label class="filter-label">RELEASE DATE RANGE</label>
+                    <div style="display: flex; gap: 5px; flex-direction: column;">
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <span style="font-size: 0.6rem; color: #666; width: 30px;">FROM</span>
+                            <input type="date" name="release_date_min" value="{{ request.GET.release_date_min }}">
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <span style="font-size: 0.6rem; color: #666; width: 30px;">TO</span>
+                            <input type="date" name="release_date_max" value="{{ request.GET.release_date_max }}">
+                        </div>
                     </div>
+
                     <label class="filter-label" style="margin-top: 10px;">SORT BY</label>
                     {{ filter.form.ordering }}
                 </div>

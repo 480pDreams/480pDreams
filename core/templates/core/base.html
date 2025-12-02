@@ -108,13 +108,15 @@
         }
 
         function setTheme(newTheme) {
-            if (newTheme === 'retro') {
+            if (newTheme === 'modern') {
+                // Modern is default, so remove the override attribute
                 rootElement.removeAttribute('data-theme');
             } else {
+                // Apply override (e.g. data-theme="retro")
                 rootElement.setAttribute('data-theme', newTheme);
             }
 
-            // Hide menu after selection
+            // Close menu
             document.getElementById('theme-menu').style.display = 'none';
 
             {% if user.is_authenticated %}

@@ -292,6 +292,19 @@ button:hover, .btn:hover { background: #fff; transform: translate(0, -2px); }
     border-radius: var(--radius);
 }
 
+.filter-sidebar input[type="text"],
+.filter-sidebar input[type="number"],
+.filter-sidebar input[type="date"],
+.filter-sidebar select {
+    background-color: var(--nav-bg) !important;
+    color: var(--text-color) !important;
+    border: 1px solid #444 !important;
+    font-family: var(--font-body) !important;
+    padding: 8px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
 .filter-section { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px dashed #333; }
 .filter-label { display: block; color: var(--primary); font-size: 0.7rem; margin-bottom: 5px; font-family: var(--font-header); }
 .checkbox-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 0.8rem; color: var(--text-color); }

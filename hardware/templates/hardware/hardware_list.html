@@ -38,11 +38,11 @@
                     <div style="display: flex; gap: 5px; flex-direction: column;">
                         <div style="display: flex; align-items: center; gap: 5px;">
                             <span style="font-size: 0.6rem; color: #666; width: 30px;">FROM</span>
-                            {{ filter.form.release_date_min }}
+                            <input type="date" name="release_date_min" value="{{ request.GET.release_date_min }}">
                         </div>
                         <div style="display: flex; align-items: center; gap: 5px;">
                             <span style="font-size: 0.6rem; color: #666; width: 30px;">TO</span>
-                            {{ filter.form.release_date_max }}
+                            <input type="date" name="release_date_max" value="{{ request.GET.release_date_max }}">
                         </div>
                     </div>
 
