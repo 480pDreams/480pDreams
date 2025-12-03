@@ -1,101 +1,74 @@
 {% extends 'core/base.html' %}
 {% load static %}
 
-{% block title %}Operator Profile{% endblock %}
+{% block title %}Profile{% endblock %}
 
 {% block content %}
 <div style="max-width: 800px; margin: 40px auto; display: flex; gap: 40px; flex-wrap: wrap;">
 
-    <div style="flex: 1; min-width: 250px;">
-        <div style="border: 2px solid var(--primary); padding: 20px; background: #000; text-align: center;">
-            <div style="width: 150px; height: 150px; margin: 20px auto; border: 2px solid #fff; overflow: hidden;">
-                {% if user.profile.avatar %}
-                    <img src="{{ user.profile.avatar.url }}" style="width: 100%; height: 100%; object-fit: cover;">
-                {% else %}
-                    <div style="width: 100%; height: 100%; background: #222; display: flex; align-items: center; justify-content: center; color: #666;">NO IMG</div>
-                {% endif %}
-            </div>
+    <div class="profile-card">
+        <div style="width: 150px; height: 150px; margin: 20px auto; border: 2px solid #fff; overflow: hidden; border-radius: 50%;">
+            {% if user.profile.avatar %}
+                <img src="{{ user.profile.avatar.url }}" style="width: 100%; height: 100%; object-fit: cover;">
+            {% else %}
+                <div style="width: 100%; height: 100%; background: #222; display: flex; align-items: center; justify-content: center; color: #666;">NO IMG</div>
+            {% endif %}
+        </div>
 
-            <h2 style="margin: 10px 0; font-size: 1.5rem;">{{ user.username }}</h2>
-            <p style="color: #888; font-size: 0.8rem;">{{ user.email }}</p>
+        <h2 style="margin: 10px 0;">{{ user.username }}</h2>
+        <p style="color: #888; font-size: 0.8rem;">{{ user.email }}</p>
 
-            <div style="margin-top: 20px; border-top: 1px solid #333; padding-top: 15px;">
-                {% if user.profile.is_member %}
-                    <div style="color: var(--secondary); font-weight: bold; margin-bottom: 10px;">
-                        ✓ ACTIVE MEMBER
-                    </div>
-                    <a href="{% url 'membership:select' %}" style="color: #fff; font-size: 0.7rem; text-decoration: underline;">
-                        MANAGE SUBSCRIPTION
+        <div style="margin-top: 20px; border-top: 1px solid #333; padding-top: 15px;">
+
+            {% if user.profile.is_member %}
+
+                <div style="color: var(--secondary); font-weight: bold; margin-bottom: 10px;">
+                    ✓ ACTIVE MEMBER
+                </div>
+
+                {% if user.profile.is_patron %}
+                    <a href="{% url 'membership:select' %}" style="color: var(--text-color); font-size: 0.7rem; text-decoration: underline;">
+                        MANAGE BILLING
                     </a>
                 {% else %}
-                        <span style="font-size: 0.7rem; color: #888;">(Admin Granted Membership)</span>
-                    {% endif %}
-                {% else %}
-                    <div style="color: #666; margin-bottom: 10px;">
-                        FREE ACCOUNT
-                    </div>
-                    <a href="{% url 'membership:select' %}" style="display: inline-block; padding: 8px 15px; background: var(--primary); color: #000; text-decoration: none; font-size: 0.7rem; font-weight: bold;">
-                        UPGRADE TO MEMBER
-                    </a>
+                    <span style="font-size: 0.7rem; color: #888;">(Admin Grant Access)</span>
                 {% endif %}
-            </div>
 
-            <div style="margin-top: 30px;">
-            <a href="{% url 'account_logout' %}" style="background: #333; color: #fff; padding: 10px 20px; text-decoration: none; font-size: 0.8rem; border-radius: 4px;">
+            {% else %}
+                <div style="color: #666; margin-bottom: 10px;">
+                    FREE ACCOUNT
+                </div>
+                <a href="{% url 'membership:select' %}" class="btn" style="font-size: 0.7rem;">
+                    UPGRADE
+                </a>
+            {% endif %}
+        </div>
+
+        <div style="margin-top: 30px;">
+            <a href="{% url 'account_logout' %}" style="display: inline-block; border: 1px solid #f55; color: #f55; padding: 8px 15px; border-radius: 4px; font-size: 0.7rem; text-decoration: none;">
                 LOGOUT
             </a>
         </div>
-        </div>
     </div>
 
-    <div style="flex: 2; min-width: 300px;">
-        <div style="border: 1px solid #333; padding: 30px; background: #111;">
-            <h1 class="retro-font" style="margin-top: 0; border-bottom: 1px solid #444; padding-bottom: 10px; margin-bottom: 20px;">
-                Update Profile
-            </h1>
+    <div class="profile-form-container">
+        <h1 class="retro-font" style="margin-top: 0; border-bottom: 1px solid #444; padding-bottom: 10px; margin-bottom: 20px; font-size: 1.5rem;">
+            SETTINGS
+        </h1>
 
-            <form method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group"><label>USERNAME</label>{{ u_form.username }}</div>
+            <div class="form-group"><label>EMAIL</label>{{ u_form.email }}</div>
+            <hr style="border: 0; border-top: 1px dashed #444; margin: 20px 0;">
+            <div class="form-group"><label>AVATAR</label>{{ p_form.avatar }}</div>
+            <div class="form-group"><label>BIO</label>{{ p_form.bio }}</div>
+            <div class="form-group"><label>THEME PREFERENCE</label>{{ p_form.theme }}</div>
+            <div class="form-group"><label>REGION PREF</label>{{ p_form.preferred_region }}</div>
 
-                <div class="form-group">
-                    <label>USERNAME</label>
-                    {{ u_form.username }}
-                </div>
-
-                <div class="form-group">
-                    <label>EMAIL</label>
-                    {{ u_form.email }}
-                </div>
-
-                <hr style="border: 0; border-top: 1px dashed #444; margin: 20px 0;">
-
-                <div class="form-group">
-                    <label>AVATAR</label>
-                    {{ p_form.avatar }}
-                </div>
-
-                <div class="form-group">
-                    <label>BIO</label>
-                    {{ p_form.bio }}
-                </div>
-
-                <div class="form-group">
-                    <label>THEME PREFERENCE</label>
-                    {{ p_form.theme }}
-                </div>
-
-                <div class="form-group">
-                    <label>PREFERRED REGION</label>
-                    {{ p_form.preferred_region }}
-                </div>
-
-                <button type="submit" style="margin-top: 20px; padding: 15px 30px; background: var(--primary); color: #000; font-family: 'Press Start 2P'; border: none; cursor: pointer;">
-                    SAVE CHANGES
-                </button>
-            </form>
-        </div>
+            <button type="submit" style="margin-top: 20px; width: 100%;">SAVE CHANGES</button>
+        </form>
     </div>
 
 </div>
-
 {% endblock %}
