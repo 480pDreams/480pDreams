@@ -13,28 +13,30 @@
         </p>
     </div>
 
-    {% if user.profile.is_patron %}
-        <div style="border: 1px solid var(--secondary); background: #0b141a; padding: 40px; margin-bottom: 60px; border-radius: 8px; display: flex; flex-direction: column; align-items: center;">
+    {% if user.profile.is_member %}
+        <div style="border: 2px solid var(--secondary); background: #0b141a; padding: 40px; text-align: center; margin-bottom: 60px; border-radius: 8px;">
+            <div style="font-size: 4rem; margin-bottom: 20px;">🛡️</div>
+            <h2 class="retro-font" style="color: var(--secondary);">STATUS: ACTIVE</h2>
+            <p style="color: #fff; margin-bottom: 30px;">
+                Thank you for your support. Your access key is valid.
+            </p>
 
-            <div style="font-size: 3rem; color: var(--secondary); margin-bottom: 20px;">✓</div>
+            <div style="display: flex; gap: 20px; justify-content: center;">
 
-            <h2 class="retro-font" style="color: #fff; font-size: 1.2rem; margin-bottom: 10px;">MEMBERSHIP ACTIVE</h2>
+                {% if user.profile.is_patron %}
+                    <a href="{% url 'membership:portal' %}" class="btn" style="background: var(--secondary); color: #000; text-decoration: none;">
+                        MANAGE BILLING
+                    </a>
+                {% else %}
+                     <div style="padding: 15px 30px; border: 1px solid #666; color: #888; font-family: 'Press Start 2P'; font-size: 0.8rem;">
+                        ADMIN GRANT
+                    </div>
+                {% endif %}
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; text-align: left; margin: 30px 0; border-top: 1px dashed #444; border-bottom: 1px dashed #444; padding: 20px 0;">
-                <div>
-                    <div style="font-size: 0.7rem; color: #888; margin-bottom: 5px;">ACCOUNT</div>
-                    <div style="color: #fff;">{{ user.username }}</div>
-                </div>
-                <div>
-                    <div style="font-size: 0.7rem; color: #888; margin-bottom: 5px;">STATUS</div>
-                    <div style="color: var(--secondary);">ACTIVE</div>
-                </div>
+                <a href="{% url 'japanese:dashboard' %}" class="btn" style="background: transparent; border: 1px solid #fff; color: #fff; text-decoration: none;">
+                    JAPANESE TRACKER
+                </a>
             </div>
-
-            <a href="{% url 'membership:portal' %}" class="btn" style="background: #333; color: #fff; border: 1px solid #666;">
-                MANAGE BILLING / CANCEL
-            </a>
-
         </div>
 
     {% else %}
