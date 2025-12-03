@@ -1,5 +1,6 @@
 {% extends 'core/base.html' %}
 {% load embed_video_tags %}
+% load comments_extras %}
 
 {% block title %}{{ item.name }}{% endblock %}
 
@@ -151,4 +152,5 @@
         </div>
     </div>
 </div>
+{% render_comments item %}
 {% endblock %}

@@ -9,4 +9,5 @@ urlpatterns = [
     path('hardware/', include('hardware.urls')),
     path('blog/', include('blog.urls')),
     path('membership/', include('membership.urls')),
+    path('comments/', include('comments.urls')),
 ]

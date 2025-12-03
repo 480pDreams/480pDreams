@@ -1,6 +1,7 @@
 {% extends 'core/base.html' %}
 {% load embed_video_tags %}
 {% load library_extras %}
+{% load comments_extras %}
 
 {% block title %}{{ game.title }}{% endblock %}
 
@@ -297,4 +298,5 @@
         </div>
     </div>
 </div>
+{% render_comments game %}
 {% endblock %}

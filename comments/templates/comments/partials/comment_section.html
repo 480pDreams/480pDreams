@@ -1,0 +1,49 @@
+<div style="margin-top: 60px; border-top: 4px solid var(--primary); padding-top: 30px;">
+    <h2 class="retro-font" style="font-size: 1.2rem; color: #fff; margin-bottom: 20px;">
+        COMMUNICATIONS ({{ comments.count }})
+    </h2>
+
+    <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px;">
+        {% for comment in comments %}
+            <div style="background: #111; border: 1px solid #333; padding: 15px; display: flex; gap: 15px;">
+                <div style="flex-shrink: 0; width: 40px; height: 40px; border: 1px solid #444; overflow: hidden;">
+                    {% if comment.user.profile.avatar %}
+                        <img src="{{ comment.user.profile.avatar.url }}" style="width: 100%; height: 100%; object-fit: cover;">
+                    {% else %}
+                        <div style="width: 100%; height: 100%; background: #222;"></div>
+                    {% endif %}
+                </div>
+
+                <div style="flex: 1;">
+                    <div style="font-size: 0.7rem; color: var(--secondary); margin-bottom: 5px;">
+                        {{ comment.user.username|upper }}
+                        <span style="color: #666; margin-left: 10px;">{{ comment.created_at|date:"M d, Y H:i" }}</span>
+                        {% if comment.user.profile.is_patron %}
+                            <span style="color: var(--accent); margin-left: 10px;">★ MEMBER</span>
+                        {% endif %}
+                    </div>
+                    <div style="color: #ccc; font-size: 0.9rem; line-height: 1.4;">
+                        {{ comment.body|linebreaksbr }}
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p style="color: #666; font-style: italic;">No transmissions received yet.</p>
+        {% endfor %}
+    </div>
+
+    {% if user.is_authenticated %}
+        <div style="background: #000; border: 1px dashed #444; padding: 20px;">
+            <h3 class="retro-font" style="font-size: 0.8rem; color: #888; margin-top: 0;">TRANSMIT DATA</h3>
+            <form method="post" action="{% url 'comments:add_comment' content_type.id object.id %}">
+                {% csrf_token %}
+                {{ comment_form.body }}
+                <button type="submit" class="btn" style="margin-top: 10px; width: auto;">SEND MESSAGE</button>
+            </form>
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 20px; border: 1px solid #333; background: #111;">
+            <a href="{% url 'account_login' %}?next={{ request.path }}" style="color: var(--secondary);">LOG IN</a> TO JOIN THE FREQUENCY.
+        </div>
+    {% endif %}
+</div>

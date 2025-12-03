@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'embed_video',
     'hardware',
     'membership',
+    'comments',
 ]
 
 MIDDLEWARE = [
