@@ -14,21 +14,27 @@
     </div>
 
     {% if user.profile.is_patron %}
-        <div style="border: 2px solid var(--secondary); background: #0b141a; padding: 40px; text-align: center; margin-bottom: 60px; border-radius: 8px;">
-            <div style="font-size: 4rem; margin-bottom: 20px;">🛡️</div>
-            <h2 class="retro-font" style="color: var(--secondary);">STATUS: ACTIVE</h2>
-            <p style="color: #fff; margin-bottom: 30px;">
-                Thank you for your support. Your access key is valid.
-            </p>
+        <div style="border: 1px solid var(--secondary); background: #0b141a; padding: 40px; margin-bottom: 60px; border-radius: 8px; display: flex; flex-direction: column; align-items: center;">
 
-            <div style="display: flex; gap: 20px; justify-content: center;">
-                <a href="{% url 'membership:portal' %}" class="btn" style="background: var(--secondary); color: #000; text-decoration: none;">
-                    MANAGE BILLING
-                </a>
-                <a href="{% url 'japanese:dashboard' %}" class="btn" style="background: transparent; border: 1px solid #fff; color: #fff; text-decoration: none;">
-                    JAPANESE TRACKER
-                </a>
+            <div style="font-size: 3rem; color: var(--secondary); margin-bottom: 20px;">✓</div>
+
+            <h2 class="retro-font" style="color: #fff; font-size: 1.2rem; margin-bottom: 10px;">MEMBERSHIP ACTIVE</h2>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; text-align: left; margin: 30px 0; border-top: 1px dashed #444; border-bottom: 1px dashed #444; padding: 20px 0;">
+                <div>
+                    <div style="font-size: 0.7rem; color: #888; margin-bottom: 5px;">ACCOUNT</div>
+                    <div style="color: #fff;">{{ user.username }}</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.7rem; color: #888; margin-bottom: 5px;">STATUS</div>
+                    <div style="color: var(--secondary);">ACTIVE</div>
+                </div>
             </div>
+
+            <a href="{% url 'membership:portal' %}" class="btn" style="background: #333; color: #fff; border: 1px solid #666;">
+                MANAGE BILLING / CANCEL
+            </a>
+
         </div>
 
     {% else %}
@@ -50,37 +56,39 @@
 
         <h2 class="retro-font" style="text-align: center; margin-bottom: 30px; color: var(--accent);">SELECT FREQUENCY</h2>
 
-        <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+        <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-bottom: 80px;">
 
             <div class="price-card">
                 <h2 class="retro-font" style="font-size: 1.2rem; color: #fff;">BRONZE</h2>
-                <div style="font-size: 2.5rem; margin: 20px 0; font-family: monospace;">$3<span style="font-size: 1rem;">/mo</span></div>
+                <div class="price">$3<span style="font-size: 1rem;">/mo</span></div>
                 <button onclick="checkout('price_YOUR_3_DOLLAR_ID_HERE')" class="select-btn">INITIATE</button>
             </div>
 
             <div class="price-card featured">
                 <h2 class="retro-font" style="font-size: 1.2rem; color: var(--primary);">SILVER</h2>
-                <div style="font-size: 2.5rem; margin: 20px 0; font-family: monospace; color: var(--primary);">$5<span style="font-size: 1rem;">/mo</span></div>
+                <div class="price" style="color: var(--primary);">$5<span style="font-size: 1rem;">/mo</span></div>
                 <button onclick="checkout('price_YOUR_5_DOLLAR_ID_HERE')" class="select-btn" style="background: var(--primary); color: #000;">INITIATE</button>
             </div>
 
             <div class="price-card">
                 <h2 class="retro-font" style="font-size: 1.2rem; color: #fff;">GOLD</h2>
-                <div style="font-size: 2.5rem; margin: 20px 0; font-family: monospace; color: var(--accent);">$10<span style="font-size: 1rem;">/mo</span></div>
+                <div class="price" style="color: var(--accent);">$10<span style="font-size: 1rem;">/mo</span></div>
                 <button onclick="checkout('price_YOUR_10_DOLLAR_ID_HERE')" class="select-btn">INITIATE</button>
             </div>
         </div>
 
-        <div style="margin-top: 40px; padding: 20px; border: 1px dashed #444; text-align: center;">
-            <h3 class="retro-font" style="font-size: 1rem; color: #888;">CUSTOM DONATION</h3>
-            <div style="display: flex; justify-content: center; gap: 10px; align-items: center; margin-top: 10px;">
-                <span style="font-size: 1.5rem;">$</span>
-                <input type="number" id="custom-amount" placeholder="5.00" style="background: #000; color: #fff; border: 1px solid #fff; padding: 10px; font-family: monospace; font-size: 1.2rem; width: 100px; border-radius: 8px;">
-                <button onclick="checkoutCustom()" class="btn">GO</button>
-            </div>
-        </div>
-
     {% endif %}
+
+    <div style="margin-top: 40px; padding: 30px; border: 1px dashed #444; text-align: center; background: #000;">
+        <h3 class="retro-font" style="font-size: 1rem; color: #888;">ONE-TIME DONATION</h3>
+        <p style="color: #666; font-size: 0.8rem; margin-bottom: 20px;">Support the archive without a recurring subscription.</p>
+
+        <div style="display: flex; justify-content: center; gap: 10px; align-items: center;">
+            <span style="font-size: 1.5rem;">$</span>
+            <input type="number" id="custom-amount" placeholder="5.00" style="background: #111; color: #fff; border: 1px solid #444; padding: 10px; font-family: monospace; font-size: 1.2rem; width: 120px; text-align: center;">
+            <button onclick="checkoutCustom()" class="btn" style="padding: 12px 30px;">DONATE</button>
+        </div>
+    </div>
 
 </div>
 
@@ -103,7 +111,8 @@
 
     function checkoutCustom() {
         const amount = document.getElementById('custom-amount').value;
-        if(!amount || amount < 3) { alert("Minimum $3.00 required"); return; }
+        if(!amount || amount < 1) { alert("Please enter a valid amount"); return; }
+
         const cents = Math.round(parseFloat(amount) * 100);
 
         fetch("{% url 'membership:create_checkout' %}", {
@@ -118,4 +127,10 @@
         });
     }
 </script>
+
+<style>
+    .price { font-size: 2.5rem; margin: 20px 0; font-family: monospace; }
+    .select-btn { width: 100%; padding: 15px; background: #333; color: #fff; border: 1px solid #fff; cursor: pointer; font-family: 'Press Start 2P'; font-size: 0.7rem; transition: all 0.2s; }
+    .select-btn:hover { background: #fff; color: #000; }
+</style>
 {% endblock %}
