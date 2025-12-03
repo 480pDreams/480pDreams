@@ -3,7 +3,7 @@ from embed_video.fields import EmbedVideoField
 from PIL import Image
 from io import BytesIO
 from django.core.files.base import ContentFile
-from django.core.exceptions import ValidationError  # <--- NEW IMPORT
+from django.core.exceptions import ValidationError
 
 
 def compress_image(image_field, max_width=800):
@@ -43,14 +43,14 @@ class Genre(models.Model):
 
 
 class Region(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, help_text="e.g. NTSC-U, NTSC-J")
     slug = models.SlugField(unique=True)
 
     def __str__(self): return self.name
 
 
 class Series(models.Model):
-    name = models.CharField(max_length=200, help_text="e.g. Final Fantasy")
+    name = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
 
     def __str__(self): return self.name
@@ -76,47 +76,50 @@ class Publisher(models.Model):
 class Game(models.Model):
     FORMAT_CHOICES = [('PHYSICAL', 'Physical Copy'), ('DIGITAL', 'Digital / Steam')]
 
-    # Meta
+    # --- META DATA ---
     title = models.CharField(max_length=200)
     title_japanese = models.CharField(max_length=200, blank=True, verbose_name="Japanese Title")
     slug = models.SlugField(unique=True)
 
-    # Relationships
     platform = models.ForeignKey('Platform', on_delete=models.CASCADE, related_name='games')
     series = models.ForeignKey('Series', on_delete=models.SET_NULL, null=True, blank=True, related_name='games')
     other_versions = models.ManyToManyField('self', blank=True, symmetrical=True)
+
     genres = models.ManyToManyField('Genre', blank=True)
+
+    # Regions this game exists in (General data)
     regions = models.ManyToManyField('Region', blank=True, related_name='games')
+
     developers = models.ManyToManyField('Developer', blank=True)
     publishers = models.ManyToManyField('Publisher', blank=True)
+
+    # Default / World Release Date (fallback)
     release_date = models.DateField(null=True, blank=True)
 
-    # Market Data
-    price_charting_id = models.CharField(max_length=50, blank=True)
-    estimated_value = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    last_price_update = models.DateTimeField(null=True, blank=True)
-
-    # Collection Tracking
+    # --- COLLECTION TRACKING ---
     game_format = models.CharField(max_length=20, choices=FORMAT_CHOICES, default='PHYSICAL')
+
+    # Boolean Switches
     own_game = models.BooleanField(default=False, verbose_name="Own Game/Disc")
     own_box = models.BooleanField(default=False, verbose_name="Own Box/Case")
     own_manual = models.BooleanField(default=False, verbose_name="Own Manual")
 
-    # NEW: ACQUISITION DATE
-    date_acquired = models.DateField(null=True, blank=True,
-                                     help_text="When did you get this? Required for Recent Acquisitions.")
+    # NEW: Specific Ownership (e.g. "I own the NTSC-J version")
+    owned_regions = models.ManyToManyField('Region', blank=True, related_name='owned_games',
+                                           help_text="Which specific region version do you own?")
 
+    date_acquired = models.DateField(null=True, blank=True)
     condition_notes = models.CharField(max_length=200, blank=True)
     video_condition = EmbedVideoField(blank=True)
 
-    # Art
+    # --- ART ASSETS (Default/US) ---
     box_art = models.ImageField(upload_to='games/covers/', blank=True)
     back_art = models.ImageField(upload_to='games/covers/', blank=True)
     spine_art = models.ImageField(upload_to='games/spines/', blank=True)
     media_art = models.ImageField(upload_to='games/media/', blank=True)
     screenshot = models.ImageField(upload_to='games/screenshots/', blank=True)
 
-    # Content
+    # --- CONTENT FIELDS ---
     description = models.TextField(blank=True)
     written_review = models.TextField(blank=True)
     video_playthrough = EmbedVideoField(blank=True)
@@ -127,9 +130,8 @@ class Game(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.title}"
+        return f"{self.title} ({self.platform.name})"
 
-    # VALIDATION LOGIC: Prevent Date Acquired if Not Owned
     def clean(self):
         if self.date_acquired and not self.own_game:
             raise ValidationError(
@@ -145,7 +147,58 @@ class Game(models.Model):
         super().save(*args, **kwargs)
 
 
-# Child Models
+# ===========================
+# CHILD MODELS
+# ===========================
+
+# 1. REGIONAL VARIANTS (Title, Art, Date)
+class RegionalRelease(models.Model):
+    REGION_CHOICES = [('NTSC-U', 'NTSC-U'), ('NTSC-J', 'NTSC-J'), ('PAL', 'PAL')]
+
+    game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='regional_releases')
+    region_code = models.CharField(max_length=10, choices=REGION_CHOICES)
+
+    title = models.CharField(max_length=200, blank=True)
+    # NEW: Regional Release Date
+    release_date = models.DateField(null=True, blank=True, verbose_name="Regional Release Date")
+
+    box_art = models.ImageField(upload_to='games/covers/regional/', blank=True)
+    back_art = models.ImageField(upload_to='games/covers/regional/', blank=True)
+    spine_art = models.ImageField(upload_to='games/spines/regional/', blank=True)
+
+    def __str__(self):
+        return f"{self.game.title} - {self.region_code}"
+
+    def save(self, *args, **kwargs):
+        if self.box_art:
+            try:
+                new_image = compress_image(self.box_art, max_width=800)
+                if new_image: self.box_art.save(self.box_art.name, new_image, save=False)
+            except:
+                pass
+        super().save(*args, **kwargs)
+
+
+# 2. EXTRA GALLERY IMAGES (Adverts, Flyers)
+class GameImage(models.Model):
+    game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='gallery_images')
+    image = models.ImageField(upload_to='games/gallery/')
+    caption = models.CharField(max_length=100, blank=True, help_text="e.g. Magazine Ad, E3 Flyer")
+
+    def __str__(self):
+        return f"Image for {self.game.title}"
+
+    def save(self, *args, **kwargs):
+        if self.image:
+            try:
+                new_image = compress_image(self.image, max_width=1000)
+                if new_image: self.image.save(self.image.name, new_image, save=False)
+            except:
+                pass
+        super().save(*args, **kwargs)
+
+
+# 3. COMPONENTS & VIDEOS
 class GameComponent(models.Model):
     game = models.ForeignKey('Game', on_delete=models.CASCADE, related_name='components')
     name = models.CharField(max_length=100)
@@ -161,15 +214,3 @@ class GameVideo(models.Model):
     is_patron_only = models.BooleanField(default=False)
 
     def __str__(self): return self.title
-
-
-class RegionalRelease(models.Model):
-    REGION_CHOICES = [('NTSC-U', 'NTSC-U'), ('NTSC-J', 'NTSC-J'), ('PAL', 'PAL')]
-    game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='regional_releases')
-    region_code = models.CharField(max_length=10, choices=REGION_CHOICES)
-    title = models.CharField(max_length=200, blank=True)
-    box_art = models.ImageField(upload_to='games/covers/regional/', blank=True)
-    back_art = models.ImageField(upload_to='games/covers/regional/', blank=True)
-    spine_art = models.ImageField(upload_to='games/spines/regional/', blank=True)
-
-    def __str__(self): return f"{self.game.title} - {self.region_code}"
