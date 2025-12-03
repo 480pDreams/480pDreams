@@ -1,8 +1,6 @@
 {% extends 'core/base.html' %}
 {% load embed_video_tags %}
-% load comments_extras %}
-
-{% block title %}{{ item.name }}{% endblock %}
+{% load comments_extras %}  {% block title %}{{ item.name }}{% endblock %}
 
 {% block content %}
 <div style="margin-top: 20px;">
@@ -14,7 +12,7 @@
 
             <div class="gallery-hero">
                 {% if item.image_front %}
-                    <img id="hero-img" src="{{ item.image_front.url }}" alt="Main Display">
+                    <img id="hero-img" src="{{ item.image_front.url }}" alt="Main">
                 {% else %}
                     <div style="color: #666;">NO IMAGE</div>
                 {% endif %}
@@ -54,11 +52,9 @@
 
             <script>
                 function swapImage(element, url) {
-                    // Change Hero
                     const hero = document.getElementById('hero-img');
                     if(hero) hero.src = url;
 
-                    // Update Active Class
                     const thumbs = document.querySelectorAll('.thumb-btn');
                     thumbs.forEach(t => t.classList.remove('active'));
                     element.classList.add('active');
@@ -78,15 +74,25 @@
                     <td style="padding: 10px; color: #888;">Released</td>
                     <td style="padding: 10px; text-align: right;">{{ item.release_date|date:"Y" }}</td>
                 </tr>
+
                 <tr style="border-bottom: 1px solid #333;">
                     <td style="padding: 10px; color: #888;">Models</td>
-                    <td style="padding: 10px; text-align: right; font-family: monospace;">{{ item.model_numbers|default:"-" }}</td>
+                    <td style="padding: 10px; text-align: right; font-family: monospace; font-size: 0.8rem;">
+                        {{ item.model_numbers|default:"-" }}
+                    </td>
+                </tr>
+
+                <tr style="border-bottom: 1px solid #333;">
+                    <td style="padding: 10px; color: #888;">Platform</td>
+                    <td style="padding: 10px; text-align: right;">{{ item.platform.name|default:"-" }}</td>
                 </tr>
 
                 {% if item.condition_notes %}
                 <tr style="border-bottom: 1px solid #333;">
                     <td style="padding: 10px; color: #888;">Notes</td>
-                    <td style="padding: 10px; text-align: right; color: var(--accent); font-style: italic;">{{ item.condition_notes }}</td>
+                    <td style="padding: 10px; text-align: right; color: var(--accent); font-style: italic;">
+                        {{ item.condition_notes }}
+                    </td>
                 </tr>
                 {% endif %}
 
@@ -94,8 +100,12 @@
                     <td colspan="2" style="padding: 0;">
                         {% if item.video_condition %}
                             <div style="position: relative; width: 100%; aspect-ratio: 9/16; background: #000;">
-                                <div class="video-wrapper" style="height: 100%; padding-bottom: 0;">{% video item.video_condition '100% x 100%' %}</div>
-                                <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.7); color: #fff; text-align: center; padding: 5px; font-size: 0.7rem;">CONDITION REPORT</div>
+                                <div class="video-wrapper" style="height: 100%; padding-bottom: 0;">
+                                    {% video item.video_condition '100% x 100%' %}
+                                </div>
+                                <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.7); color: #fff; text-align: center; padding: 5px; font-size: 0.7rem;">
+                                    CONDITION REPORT
+                                </div>
                             </div>
                         {% else %}
                             <div style="padding: 15px; display: flex; gap: 5px; justify-content: center; font-size: 0.8rem;">
@@ -111,22 +121,29 @@
 
         <div style="flex: 2; min-width: 300px;">
             <h1 style="margin-top: 0; font-size: 2rem;">{{ item.name }}</h1>
+
             <div style="margin-bottom: 20px;">
                 {% for reg in item.regions.all %}
                     <span style="background: var(--primary); color: #000; padding: 2px 8px; font-size: 0.7rem; font-weight: bold; margin-right: 5px;">{{ reg.name }}</span>
                 {% endfor %}
             </div>
-            <div style="margin-bottom: 20px; font-size: 1rem; color: #888; font-style: italic;">{{ item.description|linebreaks }}</div>
+
+            <div style="margin-bottom: 20px; font-size: 1rem; color: #888; font-style: italic;">
+                {{ item.description|linebreaks }}
+            </div>
 
             <hr style="border: 0; border-top: 1px dashed #333; margin: 30px 0;">
 
             <h2 class="retro-font" style="font-size: 1.2rem; color: var(--secondary);">480p Content</h2>
+
             <div style="margin-bottom: 40px;">
                 <h3 class="retro-font" style="font-size: 0.8rem; margin-bottom: 10px;">480p Hardware Review</h3>
                 {% if item.video_review %}
                     <div class="video-wrapper">{% video item.video_review '100% x 100%' %}</div>
                 {% else %}
-                    <div style="border: 2px dashed #333; padding: 20px; background: rgba(0,0,0,0.3); text-align: center; color: #666; font-family: monospace;">[ DATA MISSING ]<br>Not reviewed yet.</div>
+                    <div style="border: 2px dashed #333; padding: 20px; background: rgba(0,0,0,0.3); text-align: center; color: #666; font-family: monospace;">
+                        [ DATA MISSING ]<br>Not reviewed yet.
+                    </div>
                 {% endif %}
             </div>
 
@@ -144,13 +161,22 @@
                             {% endif %}
                         </a>
                         <div class="card-title" style="font-size: 0.8rem;">{{ var.name }}</div>
+                        <div class="card-meta">
+                            {% if not var.own_item %}
+                                <span style="color: #666; float: right;">[GHOST]</span>
+                            {% else %}
+                                <span style="color: var(--secondary); float: right;">OWNED</span>
+                            {% endif %}
+                        </div>
                     </div>
                     {% endfor %}
                 </div>
             </div>
             {% endif %}
+
+            {% render_comments item %}
+
         </div>
     </div>
 </div>
-{% render_comments item %}
 {% endblock %}
