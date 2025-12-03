@@ -31,7 +31,27 @@ class UserProfile(models.Model):
     avatar = models.ImageField(upload_to='avatars/', blank=True)
     bio = models.TextField(max_length=500, blank=True)
 
-    def __str__(self): return f"{self.user.username}'s Profile"
+    @property
+    def is_member(self):
+        """
+        Master check for membership access.
+        Returns True if user pays via Stripe OR has an active Admin Grant.
+        """
+        # 1. Check Stripe
+        if self.is_patron:
+            return True
+
+        # 2. Check Admin Grant
+        # We access the related_name 'admin_grant' from the User model
+        if hasattr(self.user, 'admin_grant'):
+            grant = self.user.admin_grant
+            if grant.is_valid():
+                return True
+
+        return False
+
+    def __str__(self):
+        return f"{self.user.username}'s Profile"
 
 
 @receiver(post_save, sender=User)

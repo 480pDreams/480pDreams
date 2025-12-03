@@ -20,13 +20,16 @@
             <p style="color: #888; font-size: 0.8rem;">{{ user.email }}</p>
 
             <div style="margin-top: 20px; border-top: 1px solid #333; padding-top: 15px;">
-                {% if user.profile.is_patron %}
+                {% if user.profile.is_member %}
                     <div style="color: var(--secondary); font-weight: bold; margin-bottom: 10px;">
                         ✓ ACTIVE MEMBER
                     </div>
                     <a href="{% url 'membership:select' %}" style="color: #fff; font-size: 0.7rem; text-decoration: underline;">
                         MANAGE SUBSCRIPTION
                     </a>
+                {% else %}
+                        <span style="font-size: 0.7rem; color: #888;">(Admin Granted Membership)</span>
+                    {% endif %}
                 {% else %}
                     <div style="color: #666; margin-bottom: 10px;">
                         FREE ACCOUNT

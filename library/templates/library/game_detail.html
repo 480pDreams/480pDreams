@@ -85,9 +85,8 @@
                     <td style="padding: 10px; color: #888;">Platform</td>
                     <td style="padding: 10px; text-align: right;">{{ game.platform.name }}</td>
                 </tr>
-
                 <tr style="border-bottom: 1px solid #333;">
-                    <td style="padding: 10px; color: #888;">Regions</td>
+                    <td style="padding: 10px; color: #888;">Region</td>
                     <td style="padding: 10px; text-align: right;">
                         {% for reg in game.regions.all %}
                             {{ reg.name }}{% if not forloop.last %}, {% endif %}
@@ -210,6 +209,38 @@
                     <p style="color: #666; font-family: monospace; margin: 0;">
                         [ DATA MISSING ]<br>This title has not been reviewed yet.
                     </p>
+                </div>
+            {% endif %}
+
+            {% if game.extra_videos.exists %}
+                <div style="margin-top: 50px; border-top: 4px solid var(--primary); padding-top: 20px;">
+                    <h2 class="retro-font" style="font-size: 1.2rem; color: var(--primary);">
+                        480p Member Content
+                    </h2>
+                    <div class="grid" style="gap: 20px;">
+                        {% for extra in game.extra_videos.all %}
+                            {% if not extra.is_patron_only or user.profile.is_member %}
+                                <div style="background: #000; border: 1px solid #333; padding: 10px;">
+                                    <h4 style="margin: 0 0 10px 0; color: #fff; font-size: 0.9rem;">
+                                        {% if extra.is_patron_only %}
+                                            <span style="color: var(--primary);">[LOCKED]</span>
+                                        {% endif %}
+                                        {{ extra.title }}
+                                    </h4>
+                                    <div class="video-wrapper">
+                                        {% video extra.url '100% x 100%' %}
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div style="background: #111; border: 1px dashed #444; padding: 20px; text-align: center; display: flex; flex-direction: column; justify-content: center; height: 100%;">
+                                    <div style="font-size: 2rem;">🔒</div>
+                                    <div style="color: #666; margin-top: 10px;">{{ extra.title }}</div>
+                                    <div style="color: var(--primary); font-size: 0.7rem; margin-top: 5px;">MEMBERS ONLY</div>
+                                    <a href="{% url 'membership:select' %}" style="margin-top: 10px; color: #fff; text-decoration: underline; font-size: 0.8rem;">Unlock This</a>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
                 </div>
             {% endif %}
 
