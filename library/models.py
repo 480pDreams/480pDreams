@@ -121,6 +121,10 @@ class Game(models.Model):
 
     # --- CONTENT FIELDS ---
     description = models.TextField(blank=True)
+    review_summary = models.CharField(max_length=255, blank=True,
+                                      help_text="A one-sentence verdict (e.g. 'A masterpiece of horror')")
+    review_score = models.DecimalField(max_digits=3, decimal_places=1, null=True, blank=True,
+                                       verbose_name="Score (0-10)", help_text="e.g. 8.5")
     written_review = models.TextField(blank=True)
     video_playthrough = EmbedVideoField(blank=True)
     video_review = EmbedVideoField(blank=True)

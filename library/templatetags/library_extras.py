@@ -59,3 +59,23 @@ def url_replace(context, **kwargs):
     for k, v in kwargs.items():
         query[k] = v
     return query.urlencode()
+
+
+@register.inclusion_tag('library/partials/star_rating.html')
+def render_stars(score):
+    """
+    Converts a score (0-10) into a list of stars.
+    """
+    if score is None:
+        return {'stars': []}
+
+    full_stars = int(score)
+    has_half = (score - full_stars) >= 0.5
+    empty_stars = 10 - full_stars - (1 if has_half else 0)
+
+    return {
+        'full_stars': range(full_stars),
+        'has_half': has_half,
+        'empty_stars': range(empty_stars),
+        'score': score
+    }

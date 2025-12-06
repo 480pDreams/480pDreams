@@ -1,0 +1,10 @@
+<div class="retro-stars" title="{{ score }}/10">
+    {% for i in full_stars %}<i class="fas fa-star"></i>{% endfor %}
+    {% if has_half %}<i class="fas fa-star-half-alt"></i>{% endif %}
+    {% for i in empty_stars %}<i class="far fa-star"></i>{% endfor %}
+    <span style="margin-left: 10px; font-size: 0.8rem; color: var(--primary);">{{ score }}</span>
+</div>
+
+<style>
+    .retro-stars { color: var(--accent); letter-spacing: 2px; display: inline-flex; align-items: center; }
+</style>

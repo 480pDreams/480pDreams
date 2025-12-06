@@ -87,7 +87,7 @@ class GameAdmin(admin.ModelAdmin):
             'fields': ('box_art', 'back_art', 'spine_art', 'media_art', 'screenshot')
         }),
         ('Content', {
-            'fields': ('description', 'written_review', 'video_playthrough', 'video_review', 'is_favorite')
+            'fields': ('description', 'review_summary', 'review_score', 'written_review', 'video_playthrough', 'video_review', 'is_favorite')
         }),
     )
 

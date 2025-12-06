@@ -201,6 +201,16 @@
             </div>
 
             <h2 class="retro-font" style="font-size: 1.2rem; color: var(--secondary);">480p Game Review</h2>
+            {% if game.review_score %}
+                    {% render_stars game.review_score %}
+            {% endif %}
+
+            {% if game.review_summary %}
+                <div style="font-style: italic; color: #aaa; margin-bottom: 20px; border-left: 3px solid var(--primary); padding-left: 10px;">
+                    "{{ game.review_summary }}"
+                </div>
+            {% endif %}
+
             {% if game.written_review %}
                 <div style="font-size: 1.1rem; line-height: 1.8; color: #fff;">
                     {{ game.written_review|linebreaks }}
